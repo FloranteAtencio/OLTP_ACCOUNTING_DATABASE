@@ -131,7 +131,7 @@ BEGIN
     v_changed_by := CURRENT_USER;
     v_pk_column := TG_ARGV[0];
 
-    IF NEW.client_id IS NULL or OLD.client_id IS NULL THEN
+    IF COALESCE(NEW.client_id,NULL) IS NULL or COALESCE(OLD.client_id,NULL) IS NULL THEN
         IF TG_OP = 'DELETE' THEN
             v_record_text := OLD::TEXT;
             PERFORM Finance.create_audit_log(
