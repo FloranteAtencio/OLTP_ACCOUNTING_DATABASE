@@ -76,7 +76,7 @@ BEGIN
         validation_status, 
         validation_errors, 
         imported_at) 
-    VALUES ( p_session_id, p_client_id, p_customer_id, p_invoice_date,  p_due_date, p_status, 'DRAFT', NULL, NOW())
+    VALUES ( p_session_id, p_client_id, p_customer_id, p_invoice_date,  p_due_date, p_amount, p_status, 'DRAFT', NULL, NOW())
     RETURNING ar_staging_id INTO new_ar_staging_id;
 
     INSERT INTO Staging.import_workflows
