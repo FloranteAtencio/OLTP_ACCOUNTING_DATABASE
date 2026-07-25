@@ -127,11 +127,119 @@ DECLARE
     v_field_name TEXT;
     v_old_value TEXT;
     v_new_value TEXT;
+    v_has_column BOOLEAN;
 BEGIN
     v_changed_by := CURRENT_USER;
     v_pk_column := TG_ARGV[0];
 
-    IF COALESCE(NEW.client_id,NULL) IS NULL or COALESCE(OLD.client_id,NULL) IS NULL THEN
+    SELECT EXISTS (
+        SELECT 1 
+        FROM information_schema.columns 
+        WHERE table_schema = TG_TABLE_SCHEMA 
+        AND table_name = TG_TABLE_NAME 
+        AND column_name = 'client_id'
+    ) INTO v_has_column;
+
+    IF v_has_column THEN 
+        
+        -- Handle Primary Key extraction
+        IF TG_OP = 'DELETE' THEN
+            v_client_id := COALESCE(OLD.client_id, NULL);
+            v_record_text := OLD::TEXT;
+
+            EXECUTE format('SELECT ($1).%I', v_pk_column)
+            INTO v_record_pk
+            USING OLD;
+
+        ELSE
+            v_client_id := COALESCE(NEW.client_id, NULL);
+            v_record_text := NEW::TEXT;
+
+            EXECUTE format('SELECT ($1).%I', v_pk_column)
+            INTO v_record_pk
+            USING NEW;
+        END IF;
+
+        -- Create audit header
+        v_audit_id := Finance.create_audit_log(
+            TG_TABLE_NAME,
+            v_record_text,
+            TG_OP,
+            v_changed_by
+        );
+
+        -- Handle DELETE
+        IF TG_OP = 'DELETE' THEN
+            PERFORM Finance.write_extended_audit(
+                v_audit_id,
+                v_client_id,
+                TG_TABLE_NAME,
+                v_record_pk,
+                TG_OP,
+                '*ROW*',
+                row_to_json(OLD)::TEXT,
+                NULL,
+                v_changed_by
+            );
+            RETURN OLD;
+        END IF;
+
+        -- Handle INSERT
+        IF TG_OP = 'INSERT' THEN
+            PERFORM Finance.write_extended_audit(
+                v_audit_id,
+                v_client_id,
+                TG_TABLE_NAME,
+                v_record_pk,
+                TG_OP,
+                '*ROW*',
+                NULL,
+                row_to_json(NEW)::TEXT,
+                v_changed_by
+            );
+            RETURN NEW;
+        END IF;
+
+        -- Handle UPDATE
+        IF TG_OP = 'UPDATE' THEN
+            -- FIX: Use a RECORD variable for the loop
+            FOR v_row IN
+                SELECT column_name
+                FROM information_schema.columns
+                WHERE table_schema = TG_TABLE_SCHEMA
+                AND table_name = TG_TABLE_NAME
+            LOOP
+                v_field_name := v_row.column_name;
+
+                -- Skip audit for internal columns if needed (e.g., updated_at, changed_by)
+                -- IF v_field_name IN ('updated_at', 'changed_by') THEN CONTINUE; END IF;
+
+                EXECUTE format(
+                    'SELECT ($1).%I::TEXT, ($2).%I::TEXT',
+                    v_field_name,
+                    v_field_name
+                )
+                INTO v_old_value, v_new_value
+                USING OLD, NEW;
+
+                IF v_old_value IS DISTINCT FROM v_new_value THEN
+                    PERFORM Finance.write_extended_audit(
+                        v_audit_id,
+                        v_client_id,
+                        TG_TABLE_NAME,
+                        v_record_pk,
+                        'UPDATE',
+                        v_field_name,
+                        v_old_value,
+                        v_new_value,
+                        v_changed_by
+                    );
+                END IF;
+            END LOOP;
+            RETURN NEW;
+        END IF;
+
+    ELSE
         IF TG_OP = 'DELETE' THEN
             v_record_text := OLD::TEXT;
             PERFORM Finance.create_audit_log(
@@ -152,106 +260,7 @@ BEGIN
             RETURN NEW;
         END IF;
 
-          
     END IF;
-    -- Handle Primary Key extraction
-    IF TG_OP = 'DELETE' THEN
-        v_client_id := COALESCE(OLD.client_id, NULL);
-        v_record_text := OLD::TEXT;
-
-        EXECUTE format('SELECT ($1).%I', v_pk_column)
-        INTO v_record_pk
-        USING OLD;
-
-    ELSE
-        v_client_id := COALESCE(NEW.client_id, NULL);
-        v_record_text := NEW::TEXT;
-
-        EXECUTE format('SELECT ($1).%I', v_pk_column)
-        INTO v_record_pk
-        USING NEW;
-    END IF;
-
-    -- Create audit header
-    v_audit_id := Finance.create_audit_log(
-        TG_TABLE_NAME,
-        v_record_text,
-        TG_OP,
-        v_changed_by
-    );
-
-    -- Handle DELETE
-    IF TG_OP = 'DELETE' THEN
-        PERFORM Finance.write_extended_audit(
-            v_audit_id,
-            v_client_id,
-            TG_TABLE_NAME,
-            v_record_pk,
-            TG_OP,
-            '*ROW*',
-            row_to_json(OLD)::TEXT,
-            NULL,
-            v_changed_by
-        );
-        RETURN OLD;
-    END IF;
-
-    -- Handle INSERT
-    IF TG_OP = 'INSERT' THEN
-        PERFORM Finance.write_extended_audit(
-            v_audit_id,
-            v_client_id,
-            TG_TABLE_NAME,
-            v_record_pk,
-            TG_OP,
-            '*ROW*',
-            NULL,
-            row_to_json(NEW)::TEXT,
-            v_changed_by
-        );
-        RETURN NEW;
-    END IF;
-
-    -- Handle UPDATE
-    IF TG_OP = 'UPDATE' THEN
-        -- FIX: Use a RECORD variable for the loop
-        FOR v_row IN
-            SELECT column_name
-            FROM information_schema.columns
-            WHERE table_schema = TG_TABLE_SCHEMA
-            AND table_name = TG_TABLE_NAME
-        LOOP
-            v_field_name := v_row.column_name;
-
-            -- Skip audit for internal columns if needed (e.g., updated_at, changed_by)
-            -- IF v_field_name IN ('updated_at', 'changed_by') THEN CONTINUE; END IF;
-
-            EXECUTE format(
-                'SELECT ($1).%I::TEXT, ($2).%I::TEXT',
-                v_field_name,
-                v_field_name
-            )
-            INTO v_old_value, v_new_value
-            USING OLD, NEW;
-
-            IF v_old_value IS DISTINCT FROM v_new_value THEN
-                PERFORM Finance.write_extended_audit(
-                    v_audit_id,
-                    v_client_id,
-                    TG_TABLE_NAME,
-                    v_record_pk,
-                    'UPDATE',
-                    v_field_name,
-                    v_old_value,
-                    v_new_value,
-                    v_changed_by
-                );
-            END IF;
-        END LOOP;
-
-        RETURN NEW;
-    END IF;
-
 END;
 $$;
 -- 1
