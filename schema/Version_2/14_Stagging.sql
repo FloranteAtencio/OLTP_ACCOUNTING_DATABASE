@@ -53,12 +53,12 @@ CREATE TABLE Staging.import_approvals (
 DROP FUNCTION IF EXISTS Staging.ar_import_data(INT,INT,DATE,DATE,DECIMAL) CASCADE;
 CREATE FUNCTION Staging.ar_import_data(
     p_session_id INT,
-    p_client_id INT,
-    p_customer_id INT,
-    p_invoice_date DATE,
-    p_due_date DATE,
-    p_amount DECIMAL(12,2),
-    p_status VARCHAR
+    p_client_id TEXT,
+    p_customer_id TEXT ,
+    p_invoice_date TEXT,
+    p_due_date TEXT,
+    p_amount TEXT,
+    p_status TEXT
 
 )
 RETURNS INT AS $$
