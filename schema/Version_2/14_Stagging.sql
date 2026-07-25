@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS Staging.stg_ar_imports(
     due_date TEXT,
     status TEXT,
     validation_status VARCHAR(20),
-    validations_errors TEXT,
+    validation_errors TEXT,
     imported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
