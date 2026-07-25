@@ -130,7 +130,29 @@ DECLARE
 BEGIN
     v_changed_by := CURRENT_USER;
     v_pk_column := TG_ARGV[0];
+    IF NEW.client_id IS NULL or OLD.client_id IS NULL THEN
+        IF TG_OP = 'DELETE' THEN
+            v_record_text := OLD::TEXT
+            Finance.create_audit_log(
+                TG_TABLE_NAME,
+                v_record_text,
+                TG_OP,
+                v_changed_by
+            );
+            RETURN OLD;
+        ELSE
+            v_record_text := NEW::TEXT
+            Finance.create_audit_log(
+                TG_TABLE_NAME,
+                v_record_text,
+                TG_OP,
+                v_changed_by
+            );
+            RETURN NEW;
+        END IF;
 
+          
+    END IF;
     -- Handle Primary Key extraction
     IF TG_OP = 'DELETE' THEN
         v_client_id := COALESCE(OLD.client_id, NULL);

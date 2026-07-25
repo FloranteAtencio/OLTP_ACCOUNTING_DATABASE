@@ -202,12 +202,12 @@ INSERT INTO Finance.operations (product_id, quantity, product_cost, product_pric
 
 INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Default'));
 INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Ezra'));
-INSERT INTO Finance.products (product_name, Description, product_unit)
-VALUES  ('Laptop', 'High-performance laptop', 'Unit'),
-('Smartphone', 'Latest model smartphone', 'Unit'),
-('Headphones', 'Noise-cancelling headphones', 'Unit'),
-('Monitor', '24-inch LED monitor', 'Unit'),
-('Keyboard', 'Mechanical keyboard', 'Unit');
+-- INSERT INTO Finance.products (product_name, Description, product_unit)
+-- VALUES  ('Laptop', 'High-performance laptop', 'Unit'),
+-- ('Smartphone', 'Latest model smartphone', 'Unit'),
+-- ('Headphones', 'Noise-cancelling headphones', 'Unit'),
+-- ('Monitor', '24-inch LED monitor', 'Unit'),
+-- ('Keyboard', 'Mechanical keyboard', 'Unit');
 INSERT INTO Finance.warehouses (warehouse_name, location)
 VALUES ('Main Warehouse', '123 Main St, Cityville'),
 ('Secondary Warehouse', '456 Side St, Townsville'),
@@ -301,6 +301,7 @@ VALUES
 (1, 7200, 'Miscellaneous Expense', 'Expense'),
 (1, 7300, 'Inventory Expense','Expense');
 COMMIT;
+
 BEGIN;
 call finance.apply_coa_template (1,1);
 call finance.assign_account_role ('Cash on Hand','cash_account_ar');
