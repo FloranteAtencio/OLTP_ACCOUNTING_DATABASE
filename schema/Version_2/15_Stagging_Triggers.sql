@@ -15,8 +15,8 @@ BEGIN
             source_file, import_session_id, created_by
         ) VALUES (
             TG_TABLE_NAME, 
-            NEW.id, 
-            NEW.client_code, 
+            NEW.id::INT, 
+            NEW.client_code::INT, 
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
             current_setting('app.import_session_id')::INT,
@@ -26,7 +26,7 @@ BEGIN
         INSERT INTO Finance.record_lineage (
             table_name, record_id, client_id, source_type, created_by
         ) VALUES (
-            TG_TABLE_NAME, NEW.id, NEW.client_code, 'MANUAL_ENTRY', current_user
+            TG_TABLE_NAME, NEW.id::INT, NEW.client_code::INT, 'MANUAL_ENTRY', current_user
         );
     END IF;
     RETURN NEW;
