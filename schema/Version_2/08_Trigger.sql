@@ -134,7 +134,7 @@ BEGIN
     IF NEW.client_id IS NULL or OLD.client_id IS NULL THEN
         IF TG_OP = 'DELETE' THEN
             v_record_text := OLD::TEXT;
-            Finance.create_audit_log(
+            PERFORM Finance.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
                 TG_OP,
@@ -143,7 +143,7 @@ BEGIN
             RETURN OLD;
         ELSE
             v_record_text := NEW::TEXT;
-            Finance.create_audit_log(
+            PERFORM Finance.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
                 TG_OP,
