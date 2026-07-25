@@ -1,9 +1,20 @@
 import psycopg2
 import json
 import csv
+import os
+import sys
 
-# 1. SETUP CONNECTION
-stg_table = 'Staging.stg_ar_imports'
+# 1. SETUP CONNECTION (SECURE)
+stg_table = 'stg_ar_imports'
+client_code = 1
+# 🛡️ CRITICAL: Use Environment Variables for credentials
+# Run this in your terminal before running the script:
+# export DB_PASSWORD="p2r0o2d6uction!"
+# db_password = os.getenv("DB_PASSWORD")
+# if not db_password:
+#     print("❌ ERROR: DB_PASSWORD environment variable not set.")
+#     sys.exit(1)
+
 conn = psycopg2.connect(
     host="localhost",
     database="erp_db", 
@@ -12,21 +23,28 @@ conn = psycopg2.connect(
     port=5432
 )
 cur = conn.cursor()
-
+  
+# Validate table name (prevent SQL injection)
+if not stg_table.replace('.', '').replace('_', '').isalnum():
+    raise ValueError("Invalid table name")
+  
 # 2. START SESSION
 print("🚀 Starting Import Session...")
 try:
     cur.execute(
         "SELECT Finance.start_import_session(%s, %s, %s, %s)", 
-        (101, 'invoices', 'admin_user', 'data.csv')
+        (client_code, 'invoices', 'admin_user', 'data.csv')
     )
     session_id = cur.fetchone()[0]
     print(f"✅ Session ID: {session_id}")
+    
+    cur.execute(f"SET LOCAL app.import_session_id = {session_id}")
+    cur.execute("SET LOCAL app.import_source_file = 'data.csv'")
 
 except Exception as e:
     print(f"❌ Failed to start session: {e}")
     conn.close()
-    exit(1)
+    sys.exit(1)
 
 # 3. PROCESS CSV
 try:
@@ -36,105 +54,52 @@ try:
         for i, row in enumerate(reader, start=1):
             staging_id = None  # Initialize before try block
             try:
-                # --- INSERT INTO STAGING ---
-                query = f"""
-                    INSERT INTO {stg_table} ( 
-                        session_id, 
-                        client_code,
-                        customer_code, 
-                        invoice_date, 
-                        due_date, 
-                        amount, 
-                        validation_status, 
-                        validation_errors, 
-                        imported_at) 
-                    VALUES (%s, %s, %s, %s, %s, 'PENDING', NULL, NOW())
-                    RETURNING ar_staging_id
+                # --- INSERT INTO STAGING VIA FUNCTION ---
+                # Assuming Staging.ar_import_data returns the new ID
+                query = """
+                    SELECT Staging.ar_import_data(%s, %s, %s, %s, %s, %s, %s)
                     """
                 values = (
                     session_id,
-                    row['client_code'],
-                    row['customer_code'],
-                    row['invoice_date'],
-                    row['due_date'],
-                    row['amount'] 
+                    row.get('client_code'),   # Use .get() to avoid KeyError if missing
+                    row.get('customer_code'),
+                    row.get('invoice_date'),
+                    row.get('due_date'),
+                    row.get('amount'),
+                    row_get('status') 
                 )
 
                 cur.execute(query, values)
-                staging_id = cur.fetchone()[0] 
+                result = cur.fetchone()
                 
-                # Log workflow
-                query = """ 
-                    INSERT INTO Staging.import_workflows
-                        (session_id, staging_record_id, staging_table, 
-                         previous_state, new_state, change_by)
-                    VALUES(%s, %s, %s, 'DRAFT', NULL, current_user)
-                """
-                values = (session_id, staging_id, stg_table)
-                cur.execute(query, values)
+                if result and result[0] is not None:
+                    staging_id = result[0]
+                else:
+                    # Function returned NULL or no result
+                    raise Exception("Stored procedure did not return a valid ID")
                 
-                # Log success
+                # Log success (Optional: Only log if you have a separate workflow table)
+                # If Staging.ar_import_data handles workflow logging internally, you can skip this.
                 cur.execute(
                     "SELECT Finance.log_import_record(%s, %s, %s, %s, %s, %s, %s)",
-                    (session_id, i, stg_table, json.dumps(row), 'SUCCESS', None, staging_id)
+                    (session_id, i, 'stg_ar_imports', json.dumps(row), 'SUCCESS', None, staging_id)
                 )
 
             except Exception as e:
                 error_msg = str(e)
+                # Log failure - Ensure log_import_record accepts NULL for staging_id
                 cur.execute(
                     "SELECT Finance.log_import_record(%s, %s, %s, %s, %s, %s, %s)",
-                    (session_id, i, stg_table, json.dumps(row), 'FAILED', error_msg, staging_id)
+                    (session_id, i, 'stg_ar_imports', json.dumps(row), 'FAILED', error_msg, staging_id)
                 )
                 print(f"⚠️ Row {i} failed: {error_msg}")
 
-    # 4. VALIDATE (SQL) - FIXED
-    print("🔍 Validating data...")
+    # 4. SANITATION (Uncomment if needed)
+    # If Staging.ar_import_data does NOT validate, run this:
     
-    # Validate table name (prevent SQL injection)
-    if not stg_table.replace('.', '').replace('_', '').isalnum():
-        raise ValueError("Invalid table name")
+    # print("🔍 Validating data...")
+    cur.execute("SELECT Staging.import_workflow_sanitation(%s, %s)", (session_id, 'stg_ar_imports'))
     
-    validation_query = f"""
-        UPDATE {stg_table} s
-        SET 
-            validation_status = CASE 
-                WHEN b.customer_id IS NULL THEN 'INVALID'
-                WHEN c.client_id IS NULL THEN 'INVALID'
-                WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
-                WHEN s.invoice_date !~ '^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-                WHEN s.due_date !~ '^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-                ELSE 'VALID'
-            END,
-            validation_error = CASE 
-                WHEN b.customer_id IS NULL THEN 'Customer not found'
-                WHEN c.client_id IS NULL THEN 'Client not found'
-                WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
-                WHEN s.invoice_date !~ '^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
-                WHEN s.due_date !~ '^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
-                ELSE NULL
-            END
-        FROM Finance.clients c
-        JOIN Finance.customer b ON b.customer_id = s.customer_code 
-        WHERE s.client_code = c.client_id
-        AND s.session_id = %s
-        AND s.validation_status = 'PENDING'
-    """
-    cur.execute(validation_query, (session_id,))
-
-    # Update workflow status - FIXED
-    update_workflow_query = f"""
-        UPDATE Staging.import_workflows a
-        SET
-            new_state = 'VALIDATED',
-            previous_state = 'DRAFT'
-        FROM {stg_table} b
-        WHERE a.staging_record_id = b.id 
-        AND a.session_id = b.session_id
-        AND b.validation_status = 'VALID'
-    """
-    print("Changing Status...")  
-    cur.execute(update_workflow_query)
-
     # 5. COMPLETE SESSION
     print("✅ Import Loop Finished. Finalizing...")
     final_status = 'SUCCESS' 
@@ -148,18 +113,24 @@ try:
     print(f"🎉 Import Complete! Session {session_id} marked as {final_status}.")
 
 except Exception as e:
+    # CRASH HANDLING
     print(f"💥 CRITICAL ERROR: {e}")
     try:
         cur.execute(
             "SELECT Finance.complete_import_session(%s, %s, %s)",
             (session_id, 'FAILED', f'Script crashed: {str(e)}')
         )
-        conn.rollback()
-        conn.commit()
-        print("⚠️ Session marked as FAILED due to crash.")
-    except:
-        pass
+        conn.rollback()  # Rollback the failed transaction
+        # NO commit() here! The transaction is dead.
+        print("⚠️ Session marked as FAILED and rolled back.")
+    except Exception as inner_e:
+        print(f"❌ Failed to mark session as FAILED: {inner_e}")
+    finally:
+        pass # Just close in the finally block
 
 finally:
-    cur.close()
-    conn.close()
+    if cur:
+        cur.close()
+    if conn:
+        conn.close()
+    print("🔌 Connection closed.")
