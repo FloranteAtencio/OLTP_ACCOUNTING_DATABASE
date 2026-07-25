@@ -130,9 +130,10 @@ DECLARE
 BEGIN
     v_changed_by := CURRENT_USER;
     v_pk_column := TG_ARGV[0];
+
     IF NEW.client_id IS NULL or OLD.client_id IS NULL THEN
         IF TG_OP = 'DELETE' THEN
-            v_record_text := OLD::TEXT
+            v_record_text := OLD::TEXT;
             Finance.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
@@ -141,7 +142,7 @@ BEGIN
             );
             RETURN OLD;
         ELSE
-            v_record_text := NEW::TEXT
+            v_record_text := NEW::TEXT;
             Finance.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
