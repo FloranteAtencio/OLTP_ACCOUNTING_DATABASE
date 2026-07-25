@@ -80,8 +80,8 @@ BEGIN
     RETURNING id INTO new_ar_staging_id;
 
     INSERT INTO Staging.import_workflows
-    (session_id, staging_record_id, staging_table,previous_state, new_state, change_by)
-    VALUES(p_session_id, new_ar_staging_id, 'Staging.ar_import_data', 'DRAFT', NULL, current_user);
+    (session_id, staging_record_id, staging_table,previous_state, new_state, changed_by)
+    VALUES(p_session_id, new_ar_staging_id, 'ar_import_data',NULL, 'DRAFT',current_user);
 
     RETURN new_ar_staging_id;
 END; 
