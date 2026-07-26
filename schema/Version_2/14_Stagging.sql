@@ -139,7 +139,7 @@ BEGIN
                     c.client_id = s.client_code
                 AND b.customer_id = s.customer_code::INT
                 AND s.session_id = p_session_id
-                AND s.validation_status = 'DRAFT'
+                AND s.validation_status = 'DRAFT';
          
             UPDATE Staging.import_workflows a
             SET
@@ -149,7 +149,7 @@ BEGIN
             FROM Staging.stg_ar_imports b
             WHERE a.staging_record_id = b.id 
             AND a.session_id = b.session_id
-            AND b.validation_status = 'VALID'
+            AND b.validation_status = 'VALID';
 
 EXCEPTION
     WHEN OTHERS THEN
@@ -284,7 +284,7 @@ BEGIN
         SELECT *
         FROM Staging.stg_ar_import
         WHERE session_id = p_session_id
-          AND validation_status = 'APPROVED_L3'
+          AND validation_status = 'APPROVED_L3';
     LOOP
         CALL Finance.ar_transaction(
             r.client_id,
