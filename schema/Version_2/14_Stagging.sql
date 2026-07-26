@@ -185,12 +185,11 @@ BEGIN
         '
         UPDATE Staging.import_workflows a
         SET
-            new_state = %L,
-            previous_state = %L,
-            notes = %L
-        FROM %s b
-        WHERE
-            a.session_id = b.session_id
+            a.new_state = %L,
+            a.previous_state = %L,
+            a.notes = %L
+        FROM %s b 
+        AND a.session_id = b.session_id
         AND b.session_id = %L
         AND b.validation_status = %L;
         ',
