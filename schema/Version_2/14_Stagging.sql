@@ -181,18 +181,25 @@ BEGIN
     END IF;
 
     PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
-
-    EXECUTE format('
+    EXECUTE format(
+        '
         UPDATE Staging.import_workflows a
         SET
-            new_state = %I,
-            previous_state = %I,
-            notes = %I
+            new_state = %L,
+            previous_state = %L,
+            notes = %L
         FROM %s b
-        WHERE a.staging_record_id = b.id 
-        AND b.session_id = %I
-        AND b.validation_status = %I;',
-        'VALID', 'PENDING', 'PENDING FOR APPROVAL', use_table, p_session_id, 'VALID'
+        WHERE
+            a.session_id = b.session_id
+        AND b.session_id = %L
+        AND b.validation_status = %L;
+        ',
+        'VALID',
+        'PENDING',
+        'PENDING FOR APPROVAL',
+        use_table,
+        p_session_id,
+        'VALID'
         );
 
 EXCEPTION
