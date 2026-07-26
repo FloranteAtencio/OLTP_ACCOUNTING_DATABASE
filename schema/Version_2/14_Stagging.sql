@@ -114,7 +114,7 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
-    
+
             UPDATE Staging.stg_ar_imports s
             SET 
                 validation_status = CASE 
@@ -136,7 +136,7 @@ BEGIN
                 FROM Finance.clients c,
                     Finance.customers b
                 WHERE
-                    c.client_id = s.client_code
+                    c.client_id = s.client_code::INT
                 AND b.customer_id = s.customer_code::INT
                 AND s.session_id = p_session_id
                 AND s.validation_status = 'DRAFT';
