@@ -113,10 +113,10 @@ BEGIN
     END IF;
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
-    -- Active: 1785005402014@@127.0.0.1@5432@erp_db@staging
+
     EXECUTE format(
             $fmt$
-            UPDATE %I s
+            UPDATE %L s
             SET 
                 validation_status = CASE 
                     WHEN b.customer_id IS NULL THEN ''INVALID''
@@ -141,7 +141,7 @@ BEGIN
             AND s.validation_status = ''DRAFT'' 
             $fmt$,
             table_related,  -- %I: Table name (Identifier)
-            p_session_id    -- %s: Session ID (Value)
+            p_session_id    -- %L: Session ID (Value)
         );
 
         EXECUTE format(
