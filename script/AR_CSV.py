@@ -66,7 +66,7 @@ try:
                     row.get('invoice_date'),
                     row.get('due_date'),
                     row.get('amount'),
-                    row_get('status') 
+                    row.get('status') 
                 )
 
                 cur.execute(query, values)
@@ -98,7 +98,8 @@ try:
     # If Staging.ar_import_data does NOT validate, run this:
     
     # print("🔍 Validating data...")
-    cur.execute("SELECT Staging.import_workflow_sanitation(%s, %s)", (session_id, 'stg_ar_imports'))
+    cur.execute("CALL Staging.import_workflow_sanitation(%s, %s)", (session_id, 'stg_ar_imports'))
+    print("✅ Sanitation Complete Finished. Finalizing...")
     
     # 5. COMPLETE SESSION
     print("✅ Import Loop Finished. Finalizing...")

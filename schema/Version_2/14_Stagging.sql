@@ -87,7 +87,6 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 
-
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
     IN p_session_id INT,
     IN table_related TEXT
@@ -190,10 +189,10 @@ BEGIN
             notes = ''PENDING FOR APPROVAL''
         FROM Staging.%I b
         WHERE a.staging_record_id = b.id 
-        AND a.session_id = b.session_id
-        AND b.validation_status = ''VALID''
+        AND b.session_id = %L
+        AND b.validation_status = ''VALID'';
         $fmt$
-        , table_related);
+        , table_related,p_session_id);
 
 EXCEPTION
     WHEN OTHERS THEN
