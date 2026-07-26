@@ -116,7 +116,7 @@ BEGIN
     -- Active: 1785005402014@@127.0.0.1@5432@erp_db@staging
     EXECUTE format(
             $fmt$
-            UPDATE Staging.%I s
+            UPDATE %I s
             SET 
                 validation_status = CASE 
                     WHEN b.customer_id IS NULL THEN ''INVALID''
