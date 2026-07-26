@@ -185,13 +185,13 @@ BEGIN
     EXECUTE format('
         UPDATE Staging.import_workflows a
         SET
-            new_state = %L,
-            previous_state = %L,
-            notes = %L
-        FROM %L b
+            new_state = %I,
+            previous_state = %I,
+            notes = %I
+        FROM %s b
         WHERE a.staging_record_id = b.id 
-        AND b.session_id = %L
-        AND b.validation_status = %L;',
+        AND b.session_id = %I
+        AND b.validation_status = %I;',
         'VALID', 'PENDING', 'PENDING FOR APPROVAL', use_table, p_session_id, 'VALID'
         );
 
