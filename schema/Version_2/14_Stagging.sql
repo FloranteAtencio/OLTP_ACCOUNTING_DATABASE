@@ -114,49 +114,42 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
-    EXECUTE format(
-            $fmt$
-            UPDATE %L s
+    
+            UPDATE Staging.stg_ar_imports s
             SET 
                 validation_status = CASE 
-                    WHEN b.customer_id IS NULL THEN ''INVALID''
-                    WHEN c.client_id IS NULL THEN ''INVALID''
-                    WHEN s.amount !~ ''^[0-9.]+$'' THEN ''INVALID''
-                    WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
-                    WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
-                    ELSE ''VALID''
+                    WHEN b.customer_id IS NULL THEN 'INVALID'
+                    WHEN c.client_id IS NULL THEN 'INVALID'
+                    WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
+                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
+                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
+                    ELSE 'VALID'
                 END,
-                validation_error = CASE 
-                    WHEN b.customer_id IS NULL THEN ''Customer not found''
-                    WHEN c.client_id IS NULL THEN ''Client not found''
-                    WHEN s.amount !~ ''^[0-9.]+$'' THEN ''Invalid amount format''
-                    WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''  
-                    WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''
+                validation_errors = CASE 
+                    WHEN b.customer_id IS NULL THEN 'Customer not found'
+                    WHEN c.client_id IS NULL THEN 'Client not found'
+                    WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
+                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
+                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
                     ELSE NULL
                 END
-            FROM Finance.clients c
-            JOIN Finance.customers b ON b.customer_id = s.customer_code 
-            WHERE s.client_code = c.client_id
-            AND s.session_id = %L
-            AND s.validation_status = ''DRAFT'' 
-            $fmt$,
-            table_related,  -- %I: Table name (Identifier)
-            p_session_id    -- %L: Session ID (Value)
-        );
-
-        EXECUTE format(
-            $fmt$
+                FROM Finance.clients c,
+                    Finance.customers b
+                WHERE
+                    c.client_id = s.client_code
+                AND b.customer_id = s.customer_code::INT
+                AND s.session_id = p_session_id
+                AND s.validation_status = 'DRAFT'
+         
             UPDATE Staging.import_workflows a
             SET
-                new_state = ''PENDING'',
-                previous_state = ''DRAFT'',
-                notes = ''PENDING FOR VALIDATION''
-            FROM Staging.%I b
+                new_state = 'PENDING',
+                previous_state = 'DRAFT',
+                notes = 'PENDING FOR VALIDATION'
+            FROM Staging.stg_ar_imports b
             WHERE a.staging_record_id = b.id 
             AND a.session_id = b.session_id
-            AND b.validation_status = ''VALID''
-            $fmt$, 
-            table_related);
+            AND b.validation_status = 'VALID'
 
 EXCEPTION
     WHEN OTHERS THEN
