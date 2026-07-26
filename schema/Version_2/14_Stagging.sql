@@ -163,7 +163,9 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_validation(
 LANGUAGE plpgsql as $$
 DECLARE
     new_session_id INT;
+    use_table TEXT;
 BEGIN
+    use_table = 'Staging.'||table_related;
 
     SELECT session_id INTO new_session_id
     FROM Finance.import_sessions a
@@ -180,19 +182,18 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
 
-    EXECUTE format(
-        $fmt$
+    EXECUTE format('
         UPDATE Staging.import_workflows a
         SET
-            new_state = ''VALID'',
-            previous_state = ''PENDING'',
-            notes = ''PENDING FOR APPROVAL''
-        FROM Staging.%I b
+            new_state = %L,
+            previous_state = %L,
+            notes = %L
+        FROM %L b
         WHERE a.staging_record_id = b.id 
         AND b.session_id = %L
-        AND b.validation_status = ''VALID'';
-        $fmt$
-        , table_related,p_session_id);
+        AND b.validation_status = %L;',
+        'VALID', 'PENDING', 'PENDING FOR APPROVAL', use_table, p_session_id, 'VALID'
+        );
 
 EXCEPTION
     WHEN OTHERS THEN
