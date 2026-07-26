@@ -113,35 +113,35 @@ BEGIN
     END IF;
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
-    
+    -- Active: 1785005402014@@127.0.0.1@5432@erp_db@staging
     EXECUTE format(
-        $fmt$
-        UPDATE Staging.%I s
-        SET 
-            validation_status = CASE 
-                WHEN b.customer_id IS NULL THEN ''INVALID''
-                WHEN c.client_id IS NULL THEN ''INVALID''
-                WHEN s.amount !~ ''^[0-9.]+$'' THEN ''INVALID''
-                WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
-                WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
-                ELSE ''VALID''
-            END,
-            validation_error = CASE 
-                WHEN b.customer_id IS NULL THEN ''Customer not found''
-                WHEN c.client_id IS NULL THEN ''Client not found''
-                WHEN s.amount !~ ''^[0-9.]+$'' THEN ''Invalid amount format''
-                WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''  
-                WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''
-                ELSE NULL
-            END
-        FROM Finance.clients c
-        JOIN Finance.customers b ON b.customer_code = s.customer_code 
-        WHERE s.client_code = c.client_id
-        AND s.session_id = %s
-        AND s.validation_status = ''DRAFT'' 
-        $fmt$,
-        table_related,  -- %I: Table name (Identifier)
-        p_session_id    -- %s: Session ID (Value)
+            $fmt$
+            UPDATE Staging.%I s
+            SET 
+                validation_status = CASE 
+                    WHEN b.customer_id IS NULL THEN ''INVALID''
+                    WHEN c.client_id IS NULL THEN ''INVALID''
+                    WHEN s.amount !~ ''^[0-9.]+$'' THEN ''INVALID''
+                    WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
+                    WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''INVALID''  
+                    ELSE ''VALID''
+                END,
+                validation_error = CASE 
+                    WHEN b.customer_id IS NULL THEN ''Customer not found''
+                    WHEN c.client_id IS NULL THEN ''Client not found''
+                    WHEN s.amount !~ ''^[0-9.]+$'' THEN ''Invalid amount format''
+                    WHEN s.invoice_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''  
+                    WHEN s.due_date !~ ''^\d{{4}}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'' THEN ''Invalid Date''
+                    ELSE NULL
+                END
+            FROM Finance.clients c
+            JOIN Finance.customers b ON b.customer_id = s.customer_code 
+            WHERE s.client_code = c.client_id
+            AND s.session_id = %L
+            AND s.validation_status = ''DRAFT'' 
+            $fmt$,
+            table_related,  -- %I: Table name (Identifier)
+            p_session_id    -- %s: Session ID (Value)
         );
 
         EXECUTE format(
