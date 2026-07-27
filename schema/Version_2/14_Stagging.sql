@@ -87,6 +87,48 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
+    p_session_id
+)
+LANGUAGE plpgsql as $$
+DECLARE
+BEGIN
+
+    UPDATE Staging.stg_ar_imports s
+    SET 
+        validation_status = CASE 
+            WHEN b.customer_id IS NULL THEN 'INVALID'
+            WHEN c.client_id IS NULL THEN 'INVALID'
+            WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
+            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
+            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
+            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
+            ELSE 'VALID'
+        END,
+        validation_errors = CASE 
+            WHEN b.customer_id IS NULL THEN 'Customer not found'
+            WHEN c.client_id IS NULL THEN 'Client not found'
+            WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
+            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
+            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
+            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
+            ELSE NULL
+        END
+    FROM Finance.clients c,
+        Finance.customers b
+    WHERE
+        c.client_id = s.client_code::INT
+    AND b.customer_id = s.customer_code::INT
+    AND s.session_id = p_session_id
+    AND s.validation_status = 'DRAFT';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Account Receivables Sanitations Failed: %' SQLERRM;
+
+END;
+$$;
+
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
     IN p_session_id INT,
     IN table_related TEXT
@@ -113,46 +155,20 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
+    CASE
+        WHEN table_related = 'stg_ar_imports' THEN CALL Staging.ar_sanitation(p_session_id);
+        ELSE RAISE NOTICE 'Please select a staging table or use the right table';
+    END;
 
-            UPDATE Staging.stg_ar_imports s
-            SET 
-                validation_status = CASE 
-                    WHEN b.customer_id IS NULL THEN 'INVALID'
-                    WHEN c.client_id IS NULL THEN 'INVALID'
-                    WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
-                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-                    WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-                    ELSE 'VALID'
-                END,
-                validation_errors = CASE 
-                    WHEN b.customer_id IS NULL THEN 'Customer not found'
-                    WHEN c.client_id IS NULL THEN 'Client not found'
-                    WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
-                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
-                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
-                    WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-                    ELSE NULL
-                END
-                FROM Finance.clients c,
-                    Finance.customers b
-                WHERE
-                    c.client_id = s.client_code::INT
-                AND b.customer_id = s.customer_code::INT
-                AND s.session_id = p_session_id
-                AND s.validation_status = 'DRAFT';
-         
-            UPDATE Staging.import_workflows a
-            SET
-                new_state = 'PENDING',
-                previous_state = 'DRAFT',
-                notes = 'PENDING FOR VALIDATION'
-            FROM Staging.stg_ar_imports b
-            WHERE a.staging_record_id = b.id 
-            AND a.session_id = b.session_id
-            AND b.validation_status = 'VALID';
+    UPDATE Staging.import_workflows a
+    SET
+        new_state = 'PENDING',
+        previous_state = 'DRAFT',
+        notes = 'PENDING FOR VALIDATION'
+    FROM Staging.stg_ar_imports b
+    WHERE a.staging_record_id = b.id 
+    AND a.session_id = b.session_id
+    AND b.validation_status = 'VALID';
 
 EXCEPTION
     WHEN OTHERS THEN
