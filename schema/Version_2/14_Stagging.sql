@@ -124,7 +124,7 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Account Receivables Sanitations Failed: %' SQLERRM;
+        RAISE EXCEPTION 'Account Receivables Sanitations Failed: %', SQLERRM;
 
 END;
 $$;
