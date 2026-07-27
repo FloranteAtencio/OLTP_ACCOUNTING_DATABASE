@@ -128,51 +128,57 @@ EXCEPTION
 
 END;
 $$;
-
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
     IN p_session_id INT,
     IN table_related TEXT
 )
-LANGUAGE plpgsql as $$
+LANGUAGE plpgsql AS $$
 DECLARE
-    
     new_session_id INT;
-
 BEGIN
+    -- 1. Validate Session ID
     SELECT session_id INTO new_session_id
-    FROM Finance.import_sessions a
-    WHERE a.session_id = p_session_id
+    FROM Finance.import_sessions
+    WHERE session_id = p_session_id
     LIMIT 1;
-    -- IMPORTANT: Validate table name first to prevent SQL injection
-    -- If table_related comes from user input, check it against a whitelist
-    IF table_related NOT IN ('stg_ar_imports', 'stg_other_table') THEN
-        RAISE EXCEPTION 'Invalid table name: %', table_related;
-    END IF;
 
     IF new_session_id IS NULL THEN
-        RAISE EXCEPTION 'invalid Session ID : %', new_session_id;
+        RAISE EXCEPTION 'Invalid Session ID: %', p_session_id;
     END IF;
 
-    PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
+    -- 2. Validate Table Name (Whitelist approach)
+    IF table_related NOT IN ('stg_ar_imports', 'stg_other_table') THEN
+        RAISE EXCEPTION 'Invalid table name: %. Allowed: stg_ar_imports, stg_other_table', table_related;
+    END IF;
 
-    CASE
-        WHEN table_related = 'stg_ar_imports' THEN CALL Staging.ar_sanitation(p_session_id)
-        ELSE RAISE NOTICE 'Please select a staging table or use the right table';
-    END;
+    -- 3. Execute Table-Specific Sanitation
+    IF table_related = 'stg_ar_imports' THEN
+        CALL Staging.ar_sanitation(p_session_id);
+        
+        -- 4. Update Workflows ONLY for this specific table
+        UPDATE Staging.import_workflows a
+        SET
+            new_state = 'PENDING',
+            previous_state = 'DRAFT',
+            notes = 'PENDING FOR VALIDATION'
+        FROM Staging.stg_ar_imports b
+        WHERE a.staging_record_id = b.id 
+        AND a.session_id = b.session_id
+        AND b.validation_status = 'VALID'
+        AND a.session_id = p_session_id; -- Ensure we only update records for this session
 
-    UPDATE Staging.import_workflows a
-    SET
-        new_state = 'PENDING',
-        previous_state = 'DRAFT',
-        notes = 'PENDING FOR VALIDATION'
-    FROM Staging.stg_ar_imports b
-    WHERE a.staging_record_id = b.id 
-    AND a.session_id = b.session_id
-    AND b.validation_status = 'VALID';
+    ELSIF table_related = 'stg_other_table' THEN
+        -- Example: Call a different sanitation procedure or skip
+        -- CALL Staging.other_sanitation(p_session_id); 
+        RAISE NOTICE 'Sanitation logic for stg_other_table is not yet implemented.';
+        
+        -- Update logic for other_table would go here if needed
+        -- UPDATE Staging.import_workflows ... FROM Staging.stg_other_table ...
+    END IF;
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging import sanitation failed: %', SQLERRM;
+        RAISE EXCEPTION 'Staging import sanitation failed for session %: %', p_session_id, SQLERRM;
 END;
 $$;
 
