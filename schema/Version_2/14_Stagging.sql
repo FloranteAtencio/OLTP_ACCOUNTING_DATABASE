@@ -157,7 +157,7 @@ BEGIN
 
     CASE
         WHEN table_related = 'stg_ar_imports' THEN CALL Staging.ar_sanitation(p_session_id)
-        ELSE RAISE NOTICE 'Please select a staging table or use the right table'
+        ELSE RAISE NOTICE 'Please select a staging table or use the right table';
     END;
 
     UPDATE Staging.import_workflows a
