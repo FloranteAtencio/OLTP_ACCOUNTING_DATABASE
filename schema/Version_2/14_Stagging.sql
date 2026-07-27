@@ -112,36 +112,38 @@ BEGIN
     END IF;
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
-    UPDATE Staging.stg_ar_imports s
-    SET 
-        validation_status = CASE 
-            WHEN b.customer_id IS NULL THEN 'INVALID'
-            WHEN c.client_id IS NULL THEN 'INVALID'
-            WHEN s.amount !~ '^[0-9]+(\.[0-9]{1,2})?$' THEN 'INVALID'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue', 'Returned', 'Partially Returned', 'Partially Paid') THEN 'INVALID'
-            WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-            ELSE 'VALID'
-        END,
-        validation_errors = CASE 
-            WHEN b.customer_id IS NULL THEN 'Customer not found'
-            WHEN c.client_id IS NULL THEN 'Client not found'
-            WHEN s.amount !~ '^[0-9]+(\.[0-9]{1,2})?$' THEN 'Invalid amount format'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid invoice date'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid due date'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue', 'Returned', 'Partially Returned', 'Partially Paid') THEN 'Invalid status value'
-            WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid movement date'
-            ELSE NULL
-        END
-    FROM Finance.clients c
-    JOIN Finance.customers b ON b.customer_id = s.customer_code::INT
-    JOIN Staging.stg_ar_imports s ON s.client_code::INT = c.client_id
-    WHERE
-        c.client_id = s.client_code::INT
-        AND s.session_id = p_session_id
-        AND s.validation_status = 'DRAFT';
 
+
+            UPDATE Staging.stg_ar_imports s
+            SET 
+                validation_status = CASE 
+                    WHEN b.customer_id IS NULL THEN 'INVALID'
+                    WHEN c.client_id IS NULL THEN 'INVALID'
+                    WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
+                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
+                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
+                    WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
+                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
+                    ELSE 'VALID'
+                END,
+                validation_errors = CASE 
+                    WHEN b.customer_id IS NULL THEN 'Customer not found'
+                    WHEN c.client_id IS NULL THEN 'Client not found'
+                    WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
+                    WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
+                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
+                    WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
+                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
+                    ELSE NULL
+                END
+                FROM Finance.clients c,
+                    Finance.customers b
+                WHERE
+                    c.client_id = s.client_code::INT
+                AND b.customer_id = s.customer_code::INT
+                AND s.session_id = p_session_id
+                AND s.validation_status = 'DRAFT';
+         
             UPDATE Staging.import_workflows a
             SET
                 new_state = 'PENDING',
