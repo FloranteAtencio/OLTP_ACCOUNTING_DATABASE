@@ -121,7 +121,9 @@ BEGIN
                     WHEN c.client_id IS NULL THEN 'INVALID'
                     WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
                     WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
+                    WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
+                    WHEN s.status CHECK (VALUE NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid')) THEN 'INVALID'
+                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
                     ELSE 'VALID'
                 END,
                 validation_errors = CASE 
@@ -130,6 +132,8 @@ BEGIN
                     WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
                     WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
                     WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
+                    WHEN s.status CHECK (VALUE NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid')) THEN 'INVALID'
+                    WHEN s.movement_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
                     ELSE NULL
                 END
                 FROM Finance.clients c,
