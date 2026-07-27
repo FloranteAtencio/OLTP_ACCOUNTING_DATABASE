@@ -88,7 +88,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
-    p_session_id
+    p_session_id INT
 )
 LANGUAGE plpgsql as $$
 DECLARE
