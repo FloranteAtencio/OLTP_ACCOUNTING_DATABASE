@@ -156,8 +156,8 @@ BEGIN
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
     CASE
-        WHEN table_related = 'stg_ar_imports' THEN CALL Staging.ar_sanitation(p_session_id);
-        ELSE RAISE NOTICE 'Please select a staging table or use the right table';
+        WHEN table_related = 'stg_ar_imports' THEN CALL Staging.ar_sanitation(p_session_id)
+        ELSE RAISE NOTICE 'Please select a staging table or use the right table'
     END;
 
     UPDATE Staging.import_workflows a
