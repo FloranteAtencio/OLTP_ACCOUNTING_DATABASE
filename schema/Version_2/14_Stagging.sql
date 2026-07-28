@@ -420,7 +420,7 @@ BEGIN
     END IF;
 
     IF table_related IS NULL THEN   
-        RAISE EXCEPTION 'Invalid table referecne : ',table_related;
+        RAISE EXCEPTION 'Invalid table referecne : %',table_related;
     END IF;
 
     PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
