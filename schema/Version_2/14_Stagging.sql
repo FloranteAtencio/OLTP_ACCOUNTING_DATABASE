@@ -107,7 +107,7 @@ BEGIN
         FROM Staging.stg_ar_imports a 
         WHERE a.session_id = p_session_id
     ) THEN
-        RETURN 'Staging.stg_ar_import'; -- Fixed typo in string and removed extra dot
+        RETURN 'Staging.stg_ar_imports'; -- Fixed typo in string and removed extra dot
     END IF;
 
     RETURN NULL; -- Explicit return if no match found
@@ -197,7 +197,7 @@ BEGIN
         RAISE EXCEPTION 'Invalid Session ID: %', p_session_id;
     END IF;
 
-    table_related := Staging.table_verification(new_session_id);
+    SELECT Staging.table_verification(new_session_id) INTO table_related;
  
     -- 2. Validate Table Name (Whitelist approach)
     IF table_related IS NULL THEN
