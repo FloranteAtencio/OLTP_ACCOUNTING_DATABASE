@@ -104,7 +104,7 @@ BEGIN
 
     IF EXISTS (
         SELECT 1 
-        FROM Staging.stg_ar_import a 
+        FROM Staging.stg_ar_imports a 
         WHERE a.session_id = p_session_id
     ) THEN
         RETURN 'Staging.stg_ar_import'; -- Fixed typo in string and removed extra dot
@@ -157,7 +157,6 @@ BEGIN
     AND s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 
-    
     UPDATE Staging.import_workflows a
     SET
         new_state = 'PENDING',
@@ -204,7 +203,9 @@ BEGIN
     IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %. Not Allowed:', table_related;
     END IF;
-
+    
+    PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
+    
     -- 3. Execute Table-Specific Sanitation
     IF table_related = 'Staging.stg_ar_imports' THEN
         CALL Staging.ar_sanitation(new_session_id);
