@@ -242,7 +242,7 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    table_related := Staging.table_verification(new_session_id);
+    SELECT Staging.table_verification(new_session_id) INTO table_related;
 
     IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %', table_related;
