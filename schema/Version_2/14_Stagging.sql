@@ -209,10 +209,10 @@ BEGIN
     -- 3. Execute Table-Specific Sanitation
     IF table_related = 'Staging.stg_ar_imports' THEN
         CALL Staging.ar_sanitation(new_session_id);
-        RETURN;
+        
     ELSIF table_related = 'stg_other_table' THEN
         RAISE EXCEPTION 'Sanitation logic for stg_other_table is not yet implemented.';
-        RETURN;    
+            
     END IF;
 
  -- Ensure we only update records for this session
