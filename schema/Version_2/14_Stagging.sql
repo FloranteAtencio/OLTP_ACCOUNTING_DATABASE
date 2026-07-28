@@ -396,6 +396,10 @@ BEGIN
         previous_state = new_previous_state
     WHERE session_id = new_session_id AND new_state = new_previous_state;
 
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Staging post for ar import failed % ', SQLERRM;
+
 END;
 $$;
 
@@ -425,9 +429,13 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
 
-    IF table_related = 'Staging.stg_ar_imports'
+    IF table_related = 'Staging.stg_ar_imports' THEN
         CALL Staging.post_ar_import(new_session_id);
     END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Staging main post transaction failed % ', SQLERRM;
 
 END;
 $$;
