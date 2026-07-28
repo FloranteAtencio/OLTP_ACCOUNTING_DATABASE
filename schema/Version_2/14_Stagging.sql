@@ -210,7 +210,7 @@ BEGIN
 
     ELSIF table_related = 'stg_other_table' THEN
         RAISE EXCEPTION 'Sanitation logic for stg_other_table is not yet implemented.';
-        RETURN 0;    
+        RETURN;    
     END IF;
 
  -- Ensure we only update records for this session
