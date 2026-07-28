@@ -89,15 +89,14 @@ BEGIN
     RETURN new_ar_staging_id;
 END; 
 $$ LANGUAGE plpgsql;
-DROP FUNCTION IF EXISTS Staging.table_verification(INT);
 
 -- ===================================================
 -- This is where you can add and change the table returns for dynamic programming
 -- just add if conditions inside the table verification
 -- ===================================================
-CREATE FUNCTION Staging.table_verification(
-    p_session_id INT
-)
+
+DROP FUNCTION IF EXISTS Staging.table_verification(INT);
+CREATE FUNCTION Staging.table_verification(p_session_id INT)
 RETURNS VARCHAR AS $$
 DECLARE
     v_table_name VARCHAR;
@@ -112,6 +111,10 @@ BEGIN
     END IF;
 
     RETURN NULL; -- Explicit return if no match found
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE EXCEPTION 'Table verifications failed : %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -120,7 +123,7 @@ $$ LANGUAGE plpgsql;
 -- =====================================
 
 CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
-    p_session_id INT
+    IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
 DECLARE
@@ -205,7 +208,7 @@ BEGIN
     -- 3. Execute Table-Specific Sanitation
     IF table_related = 'Staging.stg_ar_imports' THEN
         CALL Staging.ar_sanitation(new_session_id);
-
+        RETURN;
     ELSIF table_related = 'stg_other_table' THEN
         RAISE EXCEPTION 'Sanitation logic for stg_other_table is not yet implemented.';
         RETURN;    
@@ -358,7 +361,7 @@ EXCEPTION
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE Staging.post_ar_import(p_session_id INT)
+CREATE OR REPLACE PROCEDURE Staging.post_ar_import( IN p_session_id INT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
