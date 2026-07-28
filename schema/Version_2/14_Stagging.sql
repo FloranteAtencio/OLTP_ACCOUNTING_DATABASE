@@ -195,8 +195,7 @@ BEGIN
         RAISE EXCEPTION 'Invalid Session ID: %', p_session_id;
     END IF;
 
-   
-    SELECT Staging.table_verification(new_session_id) INTO table_related;
+    table_related := Staging.table_verification(new_session_id);
  
     -- 2. Validate Table Name (Whitelist approach)
     IF table_related IS NULL THEN
@@ -205,8 +204,7 @@ BEGIN
 
     -- 3. Execute Table-Specific Sanitation
     IF table_related = 'Staging.stg_ar_imports' THEN
-        CALL Staging.ar_sanitation(p_session_id);
-
+        CALL Staging.ar_sanitation(new_session_id);
 
     ELSIF table_related = 'stg_other_table' THEN
         RAISE EXCEPTION 'Sanitation logic for stg_other_table is not yet implemented.';
@@ -240,7 +238,7 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    SELECT Staging.table_verification(new_session_id) INTO table_related;
+    table_related := Staging.table_verification(new_session_id);
 
     IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %', table_related;
