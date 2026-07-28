@@ -399,7 +399,7 @@ BEGIN
 END;
 $$;
 
-CREATE OR DROP PROCEDURE Staging.import_workflow_posting(
+CREATE OR REPLACE PROCEDURE Staging.import_workflow_posting(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
@@ -426,6 +426,8 @@ BEGIN
     PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
 
     IF table_related = 'Staging.stg_ar_imports'
+        CALL Staging.post_ar_import(new_session_id);
+    END IF;
 
 END;
 $$;
