@@ -49,7 +49,10 @@ CREATE TABLE Staging.import_approvals (
 
     comments TEXT
 );
-
+-- =============================================
+-- this area is for import for each staging table
+-- you can add more functions
+-- ==============================================
 DROP FUNCTION IF EXISTS Staging.ar_import_data(INT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT) CASCADE;
 CREATE FUNCTION Staging.ar_import_data(
     p_session_id INT,
@@ -86,6 +89,35 @@ BEGIN
     RETURN new_ar_staging_id;
 END; 
 $$ LANGUAGE plpgsql;
+DROP FUNCTION IF EXISTS Staging.table_verification(INT);
+
+-- ===================================================
+-- This is where you can add and change the table returns for dynamic programming
+-- just add if conditions inside the table verification
+-- ===================================================
+CREATE FUNCTION Staging.table_verification(
+    p_session_id INT
+)
+RETURNS VARCHAR AS $$
+DECLARE
+    v_table_name VARCHAR;
+BEGIN
+
+    IF EXISTS (
+        SELECT 1 
+        FROM Staging.stg_ar_import a 
+        WHERE a.session_id = p_session_id
+    ) THEN
+        RETURN 'Staging.stg_ar_import'; -- Fixed typo in string and removed extra dot
+    END IF;
+
+    RETURN NULL; -- Explicit return if no match found
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================
+-- add more procedure for sanitation for each staging table
+-- =====================================
 
 CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
     p_session_id INT
@@ -122,18 +154,35 @@ BEGIN
     AND s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 
+    
+    UPDATE Staging.import_workflows a
+    SET
+        new_state = 'PENDING',
+        previous_state = 'DRAFT',
+        notes = 'PENDING FOR VALIDATION'
+    FROM Staging.stg_ar_imports b
+    WHERE a.staging_record_id = b.id 
+    AND a.session_id = b.session_id
+    AND b.validation_status = 'VALID'
+    AND a.session_id = p_session_id;
+    
 EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Account Receivables Sanitations Failed: %', SQLERRM;
 
 END;
 $$;
+
+-- =====================================
+-- the main staging work flow santation
+-- =====================================
+
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
-    IN p_session_id INT,
-    IN table_related TEXT
+    IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
 DECLARE
+    table_related TEXT;
     new_session_id INT;
 BEGIN
     -- 1. Validate Session ID
@@ -146,48 +195,40 @@ BEGIN
         RAISE EXCEPTION 'Invalid Session ID: %', p_session_id;
     END IF;
 
+    table_related := SELECT Staging.table_verification(new_session_id);
+    
     -- 2. Validate Table Name (Whitelist approach)
-    IF table_related NOT IN ('stg_ar_imports', 'stg_other_table') THEN
-        RAISE EXCEPTION 'Invalid table name: %. Allowed: stg_ar_imports, stg_other_table', table_related;
+    IF table_related IS NULL THEN
+        RAISE EXCEPTION 'Invalid table name: %. Not Allowed:', table_related;
     END IF;
 
     -- 3. Execute Table-Specific Sanitation
-    IF table_related = 'stg_ar_imports' THEN
+    IF table_related = 'Staging.stg_ar_imports' THEN
         CALL Staging.ar_sanitation(p_session_id);
-        
-        -- 4. Update Workflows ONLY for this specific table
-        UPDATE Staging.import_workflows a
-        SET
-            new_state = 'PENDING',
-            previous_state = 'DRAFT',
-            notes = 'PENDING FOR VALIDATION'
-        FROM Staging.stg_ar_imports b
-        WHERE a.staging_record_id = b.id 
-        AND a.session_id = b.session_id
-        AND b.validation_status = 'VALID'
-        AND a.session_id = p_session_id; -- Ensure we only update records for this session
+
 
     ELSIF table_related = 'stg_other_table' THEN
-        -- Example: Call a different sanitation procedure or skip
-        -- CALL Staging.other_sanitation(p_session_id); 
-        RAISE NOTICE 'Sanitation logic for stg_other_table is not yet implemented.';
-        
-        -- Update logic for other_table would go here if needed
-        -- UPDATE Staging.import_workflows ... FROM Staging.stg_other_table ...
+        RAISE EXCEPTION 'Sanitation logic for stg_other_table is not yet implemented.';
+        RETURN 0;    
     END IF;
 
+ -- Ensure we only update records for this session
 EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import sanitation failed for session %: %', p_session_id, SQLERRM;
 END;
 $$;
 
+-- =====================================
+-- main validations workflow
+-- =====================================
+
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_validation(
-    IN p_session_id INT,
-    IN table_related VARCHAR(50)
+    IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
 DECLARE
+    table_related TEXT;
     new_session_id INT;
     use_table TEXT;
 BEGIN
@@ -198,7 +239,9 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    IF table_related NOT IN ('stg_ar_imports', 'stg_other_table') THEN
+    table_related := SELECT Staging.table_verification(new_session_id);
+
+    IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %', table_related;
     END IF;
 
@@ -286,32 +329,50 @@ EXCEPTION
 END;
 $$;
 
+CREATE OR REPLACE  PROCEDURE Staging.import_workflow_reject(
+    IN p_session_id INT
+)
+LANGUAGE plpgsql AS $$
+DECLARE
+    new_session_id INT;
+BEGIN
+    SELECT a.session_id INTO new_session_id
+    FROM Finance.import_sessions a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+
+    IF new_session_id IS NULL THEN 
+        RAISE EXCEPTION 'Session ID not valid';
+    END IF;
+
+    PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
+
+    UPDATE Staging.import_workflows a
+    SET
+        new_state = 'REJECT',
+        previous_state = 'DRAFT'
+    WHERE a.session_id = new_session_id;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Staging import workflows Rejection Failed % ', SQLERRM;
+END;
+$$;
+
 CREATE OR REPLACE PROCEDURE Staging.post_ar_import(p_session_id INT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
     r RECORD;
     new_previous_state VARCHAR(50);
-    new_session_id INT;
-BEGIN
 
-    SELECT session_id INTO new_session_id
-    FROM Finance.import_sessions a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
-
+BEGIN    
+    
     SELECT new_state INTO new_previous_state
     FROM Staging.import_workflow a
     WHERE a.session_id = p_session_id
     LIMIT 1;
-   
-
-    IF new_session_id IS NULL THEN
-        RAISE EXCEPTION 'invalid Session ID : %', new_session_id;
-    END IF;
-
-    PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
- 
+    
     FOR r IN
         SELECT *
         FROM Staging.stg_ar_import
@@ -333,6 +394,37 @@ BEGIN
     SET new_state = 'POSTED',
         previous_state = new_previous_state
     WHERE session_id = new_session_id AND new_state = new_previous_state;
+
+END;
+$$;
+
+CREATE OR DROP PROCEDURE Staging.import_workflow_posting(
+    IN p_session_id INT
+)
+LANGUAGE plpgsql AS $$
+DECLARE
+    new_session_id INT;
+    table_related TEXT;
+BEGIN
+    
+    SELECT session_id INTO new_session_id
+    FROM Finance.import_sessions a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+
+    table_related := SELECT Staging.table_verification(new_session_id);
+
+    IF new_session_id IS NULL THEN
+        RAISE EXCEPTION 'invalid Session ID : %', new_session_id;
+    END IF;
+
+    IF table_related IS NULL THEN   
+        RAISE EXCEPTION 'Invalid table referecne : ',table_related;
+    END IF;
+
+    PERFORM 1 FROM Finance.import_sessions WHERE session_id = p_session_id;
+
+    IF table_related = 'Staging.stg_ar_imports'
 
 END;
 $$;
