@@ -233,9 +233,7 @@ LANGUAGE plpgsql as $$
 DECLARE
     table_related VARCHAR;
     new_session_id INT;
-    use_table TEXT;
 BEGIN
-    use_table = 'Staging.'||table_related;
 
     SELECT session_id INTO new_session_id
     FROM Finance.import_sessions a
@@ -268,8 +266,8 @@ BEGIN
         'VALID',
         'PENDING',
         'PENDING FOR APPROVAL',
-        use_table,
-        p_session_id,
+        table_related,
+        new_session_id,
         'VALID'
         );
 
