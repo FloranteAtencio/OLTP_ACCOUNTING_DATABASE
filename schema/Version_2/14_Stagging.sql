@@ -134,7 +134,7 @@ BEGIN
         validation_status = CASE 
             WHEN b.customer_id IS NULL THEN 'INVALID'
             WHEN c.client_id IS NULL THEN 'INVALID'
-            WHEN s.amount !~ '^[0-9.]+$' THEN 'INVALID'
+            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'INVALID'
             WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
             WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
             WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
@@ -143,7 +143,7 @@ BEGIN
         validation_errors = CASE 
             WHEN b.customer_id IS NULL THEN 'Customer not found'
             WHEN c.client_id IS NULL THEN 'Client not found'
-            WHEN s.amount !~ '^[0-9.]+$' THEN 'Invalid amount format'
+            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'Invalid amount format'
             WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
             WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
             WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
@@ -277,12 +277,11 @@ EXCEPTION
 END;
 $$;
 
-CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval(
+CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L1(
     IN p_session_id INT,
-    IN p_level SMALLINT,
-    IN p_status  VARCHAR(20),
-    IN p_approve_by VARCHAR(20),
-    IN p_approve_state VARCHAR(20)
+    -- IN p_level SMALLINT, --1 , 2 3
+    -- IN p_status  VARCHAR(20), -- APPROVE_L1,APPROVE_L2,APPROVE_L3
+    IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
 DECLARE
@@ -296,7 +295,7 @@ BEGIN
     LIMIT 1;
 
     SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflow a
+    FROM Staging.import_workflows a
     WHERE a.session_id = p_session_id
     LIMIT 1;
     
@@ -304,31 +303,136 @@ BEGIN
         RAISE EXCEPTION 'Please Check Session_id provided!';
     END IF;
 
-    IF p_approve_state NOT IN ('APPROVE_L1','APPROVE_L2','APPROVE_L3') THEN
-        RAISE EXCEPTION 'Please Check approve state: APPROVE_L1, APPROVE_L2, APPROVE_L3';
-    END IF;
+    -- IF p_status NOT IN ('APPROVE_L1','APPROVE_L2','APPROVE_L3') THEN
+    --     RAISE EXCEPTION 'Please Check approve state: APPROVE_L1, APPROVE_L2, APPROVE_L3';
+    -- END IF;
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
     INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
     SELECT  a.session_id,
             a.staging_record_id,
-            p_status,
-            p_level,
+            'APPROVE_L1',
+            1,
             p_approve_by
-    FROM Staging.import_workflow a 
+    FROM Staging.import_workflows a 
     WHERE a.new_state = 'VALID' AND a.session_id = new_session_id;
 
-    UPDATE import_workflow
-    SET new_state = p_approve_state,
+    UPDATE import_workflows
+    SET new_state = 'APPROVE_L1',
         previous_state = new_previous_state
-    WHERE session_id = new_session_id AND new_state = new_previous_state;
+    WHERE session_id = new_session_id AND new_state = 'VALID';
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging import approval failed: %', SQLERRM;
+        RAISE EXCEPTION 'Staging import approval_l1 failed: %', SQLERRM;
 END;
 $$;
+
+CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L2(
+    IN p_session_id INT,
+    -- IN p_level SMALLINT, --1 , 2 3
+    -- IN p_status  VARCHAR(20), -- APPROVE_L1,APPROVE_L2,APPROVE_L3
+    IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
+)
+LANGUAGE plpgsql as $$
+DECLARE
+    new_session_id INT;
+    new_previous_state VARCHAR(50);
+BEGIN
+
+    SELECT session_id INTO new_session_id
+    FROM Finance.import_sessions a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+
+    SELECT new_state INTO new_previous_state
+    FROM Staging.import_workflows a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+    
+    IF new_session_id IS NULL THEN
+        RAISE EXCEPTION 'Please Check Session_id provided!';
+    END IF;
+
+    -- IF p_status NOT IN ('APPROVE_L1','APPROVE_L2','APPROVE_L3') THEN
+    --     RAISE EXCEPTION 'Please Check approve state: APPROVE_L1, APPROVE_L2, APPROVE_L3';
+    -- END IF;
+
+    PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
+
+    INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
+    SELECT  a.session_id,
+            a.staging_record_id,
+            'APPROVE_L2',
+            2,
+            p_approve_by
+    FROM Staging.import_workflows a 
+    WHERE a.new_state = 'APPROVE_L1' AND a.session_id = new_session_id;
+
+    UPDATE import_workflows
+    SET new_state = 'APPROVE_L2',
+        previous_state = new_previous_state
+    WHERE session_id = new_session_id AND new_state = 'APPROVE_L1';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Staging import approval_l2 failed: %', SQLERRM;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L3(
+    IN p_session_id INT,
+    -- IN p_level SMALLINT, --1 , 2 3
+    -- IN p_status  VARCHAR(20), -- APPROVE_L1,APPROVE_L2,APPROVE_L3
+    IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
+)
+LANGUAGE plpgsql as $$
+DECLARE
+    new_session_id INT;
+    new_previous_state VARCHAR(50);
+BEGIN
+
+    SELECT session_id INTO new_session_id
+    FROM Finance.import_sessions a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+
+    SELECT new_state INTO new_previous_state
+    FROM Staging.import_workflows a
+    WHERE a.session_id = p_session_id
+    LIMIT 1;
+    
+    IF new_session_id IS NULL THEN
+        RAISE EXCEPTION 'Please Check Session_id provided!';
+    END IF;
+
+    -- IF p_status NOT IN ('APPROVE_L1','APPROVE_L2','APPROVE_L3') THEN
+    --     RAISE EXCEPTION 'Please Check approve state: APPROVE_L1, APPROVE_L2, APPROVE_L3';
+    -- END IF;
+
+    PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
+
+    INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
+    SELECT  a.session_id,
+            a.staging_record_id,
+            'APPROVE_L3',
+            3,
+            p_approve_by
+    FROM Staging.import_workflows a 
+    WHERE a.new_state = 'APPROVE_L2' AND a.session_id = new_session_id;
+
+    UPDATE import_workflows
+    SET new_state = 'APPROVE_L3',
+        previous_state = new_previous_state
+    WHERE session_id = new_session_id AND new_state = 'APPROVE_L2';
+
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Staging import approval_l3 failed : %', SQLERRM;
+END;
+$$;
+
 
 CREATE OR REPLACE  PROCEDURE Staging.import_workflow_reject(
     IN p_session_id INT
@@ -394,7 +498,7 @@ BEGIN
     UPDATE import_workflow
     SET new_state = 'POSTED',
         previous_state = new_previous_state
-    WHERE session_id = new_session_id AND new_state = new_previous_state;
+    WHERE session_id = new_session_id AND new_state = 'APPROVED_L3';
 
 EXCEPTION
     WHEN OTHERS THEN
