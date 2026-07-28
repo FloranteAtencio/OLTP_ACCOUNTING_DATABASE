@@ -182,7 +182,7 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
 )
 LANGUAGE plpgsql AS $$
 DECLARE
-    table_related TEXT;
+    table_related VARCHAR;
     new_session_id INT;
 BEGIN
     -- 1. Validate Session ID
@@ -228,7 +228,7 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_validation(
 )
 LANGUAGE plpgsql as $$
 DECLARE
-    table_related TEXT;
+    table_related VARCHAR;
     new_session_id INT;
     use_table TEXT;
 BEGIN
@@ -404,7 +404,7 @@ CREATE OR DROP PROCEDURE Staging.import_workflow_posting(
 LANGUAGE plpgsql AS $$
 DECLARE
     new_session_id INT;
-    table_related TEXT;
+    table_related VARCHAR;
 BEGIN
     
     SELECT session_id INTO new_session_id
