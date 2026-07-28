@@ -195,8 +195,9 @@ BEGIN
         RAISE EXCEPTION 'Invalid Session ID: %', p_session_id;
     END IF;
 
-    table_related := SELECT Staging.table_verification(new_session_id);
-    
+   
+    SELECT Staging.table_verification(new_session_id) INTO table_related;
+ 
     -- 2. Validate Table Name (Whitelist approach)
     IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %. Not Allowed:', table_related;
@@ -239,7 +240,7 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    table_related := SELECT Staging.table_verification(new_session_id);
+    SELECT Staging.table_verification(new_session_id) INTO table_related;
 
     IF table_related IS NULL THEN
         RAISE EXCEPTION 'Invalid table name: %', table_related;
@@ -411,8 +412,8 @@ BEGIN
     FROM Finance.import_sessions a
     WHERE a.session_id = p_session_id
     LIMIT 1;
-
-    table_related := SELECT Staging.table_verification(new_session_id);
+    
+    SELECT Staging.table_verification(new_session_id) INTO table_related;
 
     IF new_session_id IS NULL THEN
         RAISE EXCEPTION 'invalid Session ID : %', new_session_id;
