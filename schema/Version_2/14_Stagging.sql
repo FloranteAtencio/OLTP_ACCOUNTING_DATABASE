@@ -474,7 +474,7 @@ DECLARE
 BEGIN    
     
     SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflow a
+    FROM Staging.import_workflows a
     WHERE a.session_id = p_session_id
     LIMIT 1;
     
