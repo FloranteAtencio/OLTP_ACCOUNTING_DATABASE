@@ -487,12 +487,12 @@ BEGIN
           AND b.new_state = 'APPROVE_L3'
     LOOP
         CALL Finance.ar_transaction(
-            r.client_id,
-            r.customer_id,
+            r.client_code::INT,
+            r.customer_code::INT,
             r.due_date::DATE,
             r.invoice_date::DATE,
             r.amount::DECIMAL,
-            r.status,
+            r.status::VARCHAR,
             gen_random_uuid()::TEXT
         );
     END LOOP;
