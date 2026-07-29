@@ -361,14 +361,21 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
-    INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
-    SELECT  a.session_id,
-            a.staging_record_id,
-            'APPROVE_L2',
-            2,
-            p_approve_by
-    FROM Staging.import_workflows a 
-    WHERE a.new_state = 'APPROVE_L1' AND a.session_id = new_session_id;
+    -- INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
+    -- SELECT  a.session_id,
+    --         a.staging_record_id,
+    --         'APPROVE_L2',
+    --         2,
+    --         p_approve_by
+    -- FROM Staging.import_workflows a 
+    -- WHERE a.new_state = 'APPROVE_L1' AND a.session_id = new_session_id;
+
+    UPDATE Staging.import_approvals
+    SET
+        approval_status = 'APPROVE_L2',
+        approval_level = 2,
+        approved_by = p_approve_by
+    WHERE approval_status = 'APPROVE_L1' AND session_id = new_session_id;
 
     UPDATE import_workflows
     SET new_state = 'APPROVE_L2',
@@ -413,14 +420,21 @@ BEGIN
 
     PERFORM 1 FROM Finance.import_sessions a where a.session_id = p_session_id;
 
-    INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
-    SELECT  a.session_id,
-            a.staging_record_id,
-            'APPROVE_L3',
-            3,
-            p_approve_by
-    FROM Staging.import_workflows a 
-    WHERE a.new_state = 'APPROVE_L2' AND a.session_id = new_session_id;
+    -- INSERT INTO Staging.import_approvals (session_id, staging_record_id,approval_status,approval_level,approved_by)
+    -- SELECT  a.session_id,
+    --         a.staging_record_id,
+    --         'APPROVE_L3',
+    --         3,
+    --         p_approve_by
+    -- FROM Staging.import_workflows a 
+    -- WHERE a.new_state = 'APPROVE_L2' AND a.session_id = new_session_id;
+    
+    UPDATE Staging.import_approvals
+    SET
+        approval_status = 'APPROVE_L3',
+        approval_level = 3,
+        approved_by = p_approve_by
+    WHERE approval_status = 'APPROVE_L2' AND session_id = new_session_id;
 
     UPDATE import_workflows
     SET new_state = 'APPROVE_L3',
