@@ -479,10 +479,12 @@ BEGIN
     LIMIT 1;
     
     FOR r IN
-        SELECT *
-        FROM Staging.stg_ar_imports
-        WHERE session_id = p_session_id
-          AND validation_status = 'APPROVED_L3'
+        SELECT a.*
+        FROM Staging.stg_ar_imports a
+        LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
+        WHERE a.session_id = p_session_id
+          AND validation_status = 'VALID'
+          AND b.new_state = 'APPROVE_L3'
     LOOP
         CALL Finance.ar_transaction(
             r.client_id,
