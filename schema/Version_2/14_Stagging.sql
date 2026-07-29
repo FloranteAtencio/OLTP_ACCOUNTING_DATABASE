@@ -480,7 +480,7 @@ BEGIN
     
     FOR r IN
         SELECT *
-        FROM Staging.stg_ar_import
+        FROM Staging.stg_ar_imports
         WHERE session_id = p_session_id
           AND validation_status = 'APPROVED_L3'
     LOOP
