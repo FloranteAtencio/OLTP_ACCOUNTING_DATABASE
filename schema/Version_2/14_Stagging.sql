@@ -504,7 +504,7 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging post for ar import failed % ', SQLERRM;
+        RAISE EXCEPTION 'Staging post for ar import failed : % ', SQLERRM;
 
 END;
 $$;
@@ -541,7 +541,7 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging main post transaction failed % ', SQLERRM;
+        RAISE EXCEPTION 'Staging main post transaction failed : % ', SQLERRM;
 
 END;
 $$;

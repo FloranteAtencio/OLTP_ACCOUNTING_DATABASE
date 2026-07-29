@@ -198,7 +198,7 @@ BEGIN
             CALL Finance.insert_journal(p_clientId, new_transaction_id, 'ar_account', TRUE, p_Amount, p_InvoiceDate);
             
             -- 8. Log State Change
-            PERFORM Finance.record_state_change(new_transaction_id, p_clientId, 'DRAFT', 'For Validation', current_user, 'Account Receivables successful draft!');
+            PERFORM Finance.record_state_change(new_transaction_id, p_clientId, 'DRAFT', 'For Validation', current_user::VARCHAR, 'Account Receivables successful draft!');
 
             EXIT; -- Success
             
