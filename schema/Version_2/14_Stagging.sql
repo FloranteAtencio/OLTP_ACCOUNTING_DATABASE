@@ -498,7 +498,7 @@ BEGIN
     UPDATE staging.import_workflows
     SET new_state = 'POSTED',
         previous_state = new_previous_state
-    WHERE session_id = new_session_id AND new_state = 'APPROVED_L3';
+    WHERE session_id = p_session_id AND new_state = 'APPROVED_L3';
 
 EXCEPTION
     WHEN OTHERS THEN
