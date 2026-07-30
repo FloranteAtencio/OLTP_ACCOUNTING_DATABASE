@@ -169,7 +169,7 @@ BEGIN
         -- Create audit header
         v_audit_id := Audit.create_audit_log(
             TG_TABLE_NAME,
-            v_record_text,
+            row_to_json(v_record_pk),
             TG_OP,
             v_changed_by
         );
@@ -353,10 +353,9 @@ CREATE TRIGGER charts_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.charts
 FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
 
-CREATE TRIGGER ar_import_changes
-AFTER INSERT ON Staging.stg_ar_imports
-FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
-
+-- CREATE TRIGGER ar_import_changes
+-- AFTER INSERT ON Staging.stg_ar_imports
+-- FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
 
 COMMIT;
 
