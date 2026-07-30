@@ -148,8 +148,8 @@ BEGIN
         
         -- Handle Primary Key extraction
         IF TG_OP = 'DELETE' THEN
-            v_client_id := COALESCE(OLD.session_id, NULL);
-            v_client_id := COALESCE(OLD.client_id, NULL);
+            v_session_id := COALESCE(OLD.session_id, NULL);
+            v_client_id := COALESCE(OLD.client_code, NULL);
             v_record_text := OLD::TEXT;
 
             EXECUTE format('SELECT ($1).%I', v_pk_column)
@@ -158,7 +158,7 @@ BEGIN
 
         ELSE
             v_session_id := COALESCE(NEW.session_id, NULL);
-            v_client_id := COALESCE(NEW.client_id, NULL);
+            v_client_id := COALESCE(NEW.client_code, NULL);
             v_record_text := NEW::TEXT;
 
             EXECUTE format('SELECT ($1).%I', v_pk_column)
@@ -178,7 +178,7 @@ BEGIN
         IF TG_OP = 'DELETE' THEN
             PERFORM Finance.write_extended_audit(
                 v_audit_id,
-                v_client_id,
+                v_client_id::INT,
                 TG_TABLE_NAME,
                 v_record_pk,
                 TG_OP,
@@ -195,7 +195,7 @@ BEGIN
         IF TG_OP = 'INSERT' THEN
             PERFORM Finance.write_extended_audit(
                 v_audit_id,
-                v_client_id,
+                v_client_id::INT,
                 TG_TABLE_NAME,
                 v_record_pk,
                 TG_OP,
@@ -233,7 +233,7 @@ BEGIN
                 IF v_old_value IS DISTINCT FROM v_new_value THEN
                     PERFORM Finance.write_extended_audit(
                         v_audit_id,
-                        v_client_id,
+                        v_client_id::INT,
                         TG_TABLE_NAME,
                         v_record_pk,
                         'UPDATE',
