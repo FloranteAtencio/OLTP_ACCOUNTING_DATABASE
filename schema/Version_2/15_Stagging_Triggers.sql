@@ -37,6 +37,11 @@ DROP TRIGGER IF EXISTS trg_auto_lineage ON Staging.stg_ar_imports;
 CREATE TRIGGER trg_auto_lineage
 AFTER INSERT ON Staging.stg_ar_imports
 FOR EACH ROW EXECUTE FUNCTION Finance.auto_lineage_trigger();
+
+CREATE TRIGGER ar_import_changes
+AFTER INSERT OR UPDATE OR DELETE ON Staging.stg_ar_imports
+FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(id);
+
 COMMIT;
 
 SELECT '15. STAGGING TRIGGERS COMPLETE' as  Status;

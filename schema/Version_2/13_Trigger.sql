@@ -70,7 +70,8 @@ CREATE OR REPLACE FUNCTION Finance.write_extended_audit(
     p_field_name TEXT,
     p_old_value TEXT,
     p_new_value TEXT,
-    p_changed_by TEXT
+    p_changed_by TEXT,
+    p_session_id INT
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -86,7 +87,8 @@ BEGIN
         field_name,
         old_value,
         new_value,
-        changed_by
+        changed_by,
+        session_id
     )
     VALUES(
         p_audit_id,
@@ -97,7 +99,8 @@ BEGIN
         p_field_name,
         p_old_value,
         p_new_value,
-        p_changed_by
+        p_changed_by,
+        p_session_id
     );
 
 END;
@@ -128,6 +131,7 @@ DECLARE
     v_old_value TEXT;
     v_new_value TEXT;
     v_has_column BOOLEAN;
+    v_session_id INT;
 BEGIN
     v_changed_by := CURRENT_USER;
     v_pk_column := TG_ARGV[0];
@@ -137,13 +141,14 @@ BEGIN
         FROM information_schema.columns 
         WHERE table_schema = TG_TABLE_SCHEMA 
         AND table_name = TG_TABLE_NAME 
-        AND column_name = 'client_id'
+        AND column_name = 'session_id'
     ) INTO v_has_column;
 
     IF v_has_column THEN 
         
         -- Handle Primary Key extraction
         IF TG_OP = 'DELETE' THEN
+            v_client_id := COALESCE(OLD.session_id, NULL);
             v_client_id := COALESCE(OLD.client_id, NULL);
             v_record_text := OLD::TEXT;
 
@@ -152,6 +157,7 @@ BEGIN
             USING OLD;
 
         ELSE
+            v_session_id := COALESCE(NEW.session_id, NULL);
             v_client_id := COALESCE(NEW.client_id, NULL);
             v_record_text := NEW::TEXT;
 
@@ -179,7 +185,8 @@ BEGIN
                 '*ROW*',
                 row_to_json(OLD)::TEXT,
                 NULL,
-                v_changed_by
+                v_changed_by,
+                v_session_id
             );
             RETURN OLD;
         END IF;
@@ -195,7 +202,8 @@ BEGIN
                 '*ROW*',
                 NULL,
                 row_to_json(NEW)::TEXT,
-                v_changed_by
+                v_changed_by,
+                v_session_id
             );
             RETURN NEW;
         END IF;
@@ -232,7 +240,8 @@ BEGIN
                         v_field_name,
                         v_old_value,
                         v_new_value,
-                        v_changed_by
+                        v_changed_by,
+                        v_session_id
                     );
                 END IF;
             END LOOP;
