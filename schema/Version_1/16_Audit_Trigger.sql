@@ -253,7 +253,7 @@ BEGIN
             v_record_text := OLD::TEXT;
             PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
-                v_record_text,
+                row_to_json(v_record_text),
                 TG_OP,
                 v_changed_by
             );
@@ -262,7 +262,7 @@ BEGIN
             v_record_text := NEW::TEXT;
             PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
-                v_record_text,
+                row_to_json(v_record_text),
                 TG_OP,
                 v_changed_by
             );
