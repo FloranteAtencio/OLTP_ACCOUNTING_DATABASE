@@ -169,7 +169,7 @@ BEGIN
         -- Create audit header
         v_audit_id := Audit.create_audit_log(
             TG_TABLE_NAME,
-            row_to_json(v_record_pk),
+            v_record_text,
             TG_OP,
             v_changed_by
         );
@@ -253,7 +253,7 @@ BEGIN
             v_record_text := OLD::TEXT;
             PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
-                row_to_json(v_record_text),
+                row_to_json(OLD)::TEXT,
                 TG_OP,
                 v_changed_by
             );
@@ -262,7 +262,7 @@ BEGIN
             v_record_text := NEW::TEXT;
             PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
-                row_to_json(v_record_text),
+                row_to_json(NEW)::TEXT,
                 TG_OP,
                 v_changed_by
             );
@@ -356,6 +356,7 @@ FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
 -- CREATE TRIGGER ar_import_changes
 -- AFTER INSERT ON Staging.stg_ar_imports
 -- FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
+
 
 COMMIT;
 
