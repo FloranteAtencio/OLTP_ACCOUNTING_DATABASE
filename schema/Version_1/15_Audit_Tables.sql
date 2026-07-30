@@ -2,6 +2,11 @@ BEGIN;
 
 CREATE SCHEMA Audit;
 
+-- =========================================================
+-- Audit
+-- Loging
+-- =========================================================
+
 DROP TABLE IF EXISTS Audit.audit_logs CASCADE;
 CREATE TABLE IF NOT EXISTS Audit.audit_logs (
     audit_id SERIAL PRIMARY KEY,
@@ -64,6 +69,11 @@ CREATE TABLE Audit.import_detail_logs (
     created_record_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- =========================================================
+-- Audit
+-- Trail
+-- =========================================================
 
 DROP TABLE IF EXISTS Audit.transaction_lifecycle CASCADE;
 CREATE TABLE Audit.transaction_lifecycle (

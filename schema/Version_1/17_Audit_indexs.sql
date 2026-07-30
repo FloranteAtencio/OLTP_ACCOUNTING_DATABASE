@@ -29,10 +29,6 @@ CREATE INDEX idx_record_lineage_table ON Audit.record_lineage(table_name, record
 CREATE INDEX idx_record_lineage_source ON Audit.record_lineage(source_type);
 CREATE INDEX idx_record_lineage_session ON Audit.record_lineage(import_session_id);
 
--- =======================================
--- Compliance Schema
--- =======================================
-
 COMMIT;
 
 SELECT 'Audit Schema indexs Complete' as Status;

@@ -2,7 +2,7 @@ BEGIN;
 
 CREATE SCHEMA Compliance;
 -- ============================================================
--- compliance schema to be transer later
+-- compliance schema log
 -- ============================================================
 DROP TABLE IF EXISTS Compliance.import_validation_log CASCADE;
 CREATE TABLE Compliance.import_validation_log (
@@ -17,7 +17,9 @@ CREATE TABLE Compliance.import_validation_log (
     severity VARCHAR(20) DEFAULT 'ERROR' CHECK (severity IN ('ERROR', 'WARNING', 'INFO')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
+-- ========================================
+-- compliance schema Trails
+-- =========================================
 DROP TABLE IF EXISTS Compliance.compliance_log CASCADE;
 CREATE TABLE Compliance.compliance_log (
     compliance_id BIGSERIAL PRIMARY KEY,
