@@ -150,8 +150,8 @@ ALTER TABLE Finance.ap_ext
 ALTER TABLE Finance.ar_ext
     ADD CONSTRAINT accountreceivables_chk_status CHECK (Status IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid'));
 
-ALTER TABLE Finance.audit_logs 
-    ADD CONSTRAINT auditlogs_chk_status CHECK (Operation IN ('INSERT', 'UPDATE', 'DELETE'));
+-- ALTER TABLE Finance.audit_logs 
+--     ADD CONSTRAINT auditlogs_chk_status CHECK (Operation IN ('INSERT', 'UPDATE', 'DELETE'));
 
 ALTER TABLE Finance.vendors
     ADD CONSTRAINT chk_valid_email_supplier CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
