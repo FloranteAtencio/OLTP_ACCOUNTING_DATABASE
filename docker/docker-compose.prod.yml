@@ -9,7 +9,7 @@ services:
       - "127.0.0.1:5432:5432"   # 🔒 LOCAL ONLY
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ../schema/Version_1/01_Finane:/docker-entrypoint-initdb.d
+      - ../schema/Version_1/01_Finance:/docker-entrypoint-initdb.d
       - ../schema/Version_1/02_Staging:/docker-entrypoint-initdb.d
       - ../schema/Version_1/03_Audit:/docker-entrypoint-initdb.d
       - ../schema/Version_1/04_Complaince:/docker-entrypoint-initdb.d
