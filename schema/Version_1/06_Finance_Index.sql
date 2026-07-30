@@ -48,9 +48,9 @@ BEGIN;
     CREATE INDEX IF NOT EXISTS idx_inventory_audits_warehouse ON Finance.inventory_audits(warehouse_id);
 
     -- Audit indexes
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON Finance.audit_logs(log_time);
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_table ON Finance.audit_logs(table_name);
-    CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON Finance.audit_logs(changed_by);
+    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON Finance.audit_logs(log_time);
+    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_table ON Finance.audit_logs(table_name);
+    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON Finance.audit_logs(changed_by);
 
     -- Event log indexes
     CREATE INDEX IF NOT EXISTS idx_event_log_type ON Finance.event_log(event_type);
