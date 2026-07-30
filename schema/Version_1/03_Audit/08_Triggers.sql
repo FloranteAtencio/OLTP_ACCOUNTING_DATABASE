@@ -6,11 +6,11 @@ SELECT '15. STAGGING TRIGGERS START' as  Status;
 
 BEGIN;
 
-CREATE OR REPLACE FUNCTION Finance.auto_lineage_trigger()
+CREATE OR REPLACE FUNCTION Audit.auto_lineage_trigger()
 RETURNS TRIGGER AS $$
 BEGIN
     IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
-        INSERT INTO Finance.record_lineage (
+        INSERT INTO Audit.record_lineage (
             table_name, record_id, client_id, source_type, 
             source_file, import_session_id, created_by
         ) VALUES (
@@ -23,7 +23,7 @@ BEGIN
             current_user
         );
     ELSE
-        INSERT INTO Finance.record_lineage (
+        INSERT INTO Audit.record_lineage (
             table_name, record_id, client_id, source_type, created_by
         ) VALUES (
             TG_TABLE_NAME, NEW.id::INT, NEW.client_code::INT, 'MANUAL_ENTRY', current_user
@@ -36,11 +36,8 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS trg_auto_lineage ON Staging.stg_ar_imports;
 CREATE TRIGGER trg_auto_lineage
 AFTER INSERT ON Staging.stg_ar_imports
-FOR EACH ROW EXECUTE FUNCTION Finance.auto_lineage_trigger();
+FOR EACH ROW EXECUTE FUNCTION Audit.auto_lineage_trigger();
 
-CREATE TRIGGER ar_import_changes
-AFTER INSERT OR UPDATE OR DELETE ON Staging.stg_ar_imports
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(id);
 
 COMMIT;
 

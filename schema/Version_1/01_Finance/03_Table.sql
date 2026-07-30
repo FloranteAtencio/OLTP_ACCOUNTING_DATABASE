@@ -1,3 +1,5 @@
+SELECT 'Finance Schema Table Start!' as  Status;
+
 BEGIN;
 -- ============================================
 -- 1. CLIENTS TABLE
@@ -278,22 +280,7 @@ CREATE TABLE IF NOT EXISTS Finance.ap_ext (
     );
 
 -- ============================================
--- 20. AUDIT LOGS
--- ============================================
-    DROP TABLE IF EXISTS Finance.audit_logs CASCADE;
-    CREATE TABLE IF NOT EXISTS Finance.audit_logs (
-        audit_id SERIAL PRIMARY KEY,
-        table_name VARCHAR(255) NOT NULL,
-        rec_transact TEXT NOT NULL,
-        operation VARCHAR(20) NOT NULL, 
-        log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        changed_by VARCHAR(50) NOT NULL,
-        prev_hash TEXT,
-        row_hash TEXT
-    );
-
--- ============================================
--- 21. EVENT LOG
+-- 20. EVENT LOG
 -- ============================================    
 DROP TABLE IF  EXISTS Finance.event_log CASCADE;
 CREATE TABLE IF NOT EXISTS Finance.event_log (
@@ -305,4 +292,7 @@ CREATE TABLE IF NOT EXISTS Finance.event_log (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     processed_at TIMESTAMP
 );    
+
 COMMIT;
+
+SELECT 'Finance Schema Table Complete!' as  Status;

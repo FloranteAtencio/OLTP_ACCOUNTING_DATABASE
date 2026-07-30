@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE OR REPLACE FUNCTION Finance.partition_weekly_basis(tableselected text, schemaselected text)
 RETURNS void AS $$
 DECLARE
@@ -39,3 +41,7 @@ BEGIN
             RAISE EXCEPTION 'Transaction failed: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT;
+
+SELECT 'Finance Schema Partitioning Complete!' as  Status;

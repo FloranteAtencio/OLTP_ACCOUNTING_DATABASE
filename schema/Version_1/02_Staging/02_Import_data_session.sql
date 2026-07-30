@@ -1,0 +1,42 @@
+BEGIN;
+
+DROP FUNCTION IF EXISTS Staging.ar_import_data(INT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT) CASCADE;
+CREATE FUNCTION Staging.ar_import_data(
+    p_session_id INT,
+    p_client_id TEXT,
+    p_customer_id TEXT ,
+    p_invoice_date TEXT,
+    p_due_date TEXT,
+    p_amount TEXT,
+    p_status TEXT
+
+)
+RETURNS INT AS $$
+DECLARE
+    new_ar_staging_id INT;
+BEGIN
+    INSERT INTO Staging.stg_ar_imports( 
+        session_id, 
+        client_code,
+        customer_code, 
+        invoice_date, 
+        due_date, 
+        amount,
+        status, 
+        validation_status, 
+        validation_errors, 
+        imported_at) 
+    VALUES ( p_session_id, p_client_id, p_customer_id, p_invoice_date,  p_due_date, p_amount, p_status, 'DRAFT', NULL, NOW())
+    RETURNING id INTO new_ar_staging_id;
+
+    INSERT INTO Staging.import_workflows
+    (session_id, staging_record_id, staging_table,previous_state, new_state, changed_by)
+    VALUES(p_session_id, new_ar_staging_id, 'ar_import_data',NULL, 'DRAFT',current_user);
+
+    RETURN new_ar_staging_id;
+END; 
+$$ LANGUAGE plpgsql;
+
+COMMIT;
+
+SELECT 'Staging Schema import data session complete' as Status;

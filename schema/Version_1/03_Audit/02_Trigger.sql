@@ -5,7 +5,7 @@ BEGIN;
 -- Created functions to seperate from the main trigger function
 -- ============================================
 
-CREATE OR REPLACE FUNCTION Finance.create_audit_log(
+CREATE OR REPLACE FUNCTION Audit.create_audit_log(
     p_table_name TEXT,
     p_record_data TEXT,
     p_operation TEXT,
@@ -21,12 +21,12 @@ BEGIN
 
     SELECT row_hash
     INTO v_prev_hash
-    FROM Finance.audit_logs
+    FROM Audit.audit_logs
     ORDER BY audit_id DESC
     LIMIT 1
     FOR UPDATE;
 
-    INSERT INTO Finance.audit_logs(
+    INSERT INTO Audit.audit_logs(
         table_name,
         rec_transact,
         operation,
@@ -61,7 +61,7 @@ $$;
 -- Created functions to seperate from the main trigger function
 -- ============================================
 
-CREATE OR REPLACE FUNCTION Finance.write_extended_audit(
+CREATE OR REPLACE FUNCTION Audit.write_extended_audit(
     p_audit_id INT,
     p_client_id INT,
     p_table_name TEXT,
@@ -78,7 +78,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
 
-    INSERT INTO Finance.audit_logs_extended(
+    INSERT INTO Audit.audit_logs_extended(
         audit_id,
         client_id,
         table_name,
@@ -110,7 +110,7 @@ $$;
 -- Seperated Functions
 -- STEP 3. Create function trigger
 -- ============================================
-CREATE OR REPLACE FUNCTION Finance.fn_extended_audit_trigger()
+CREATE OR REPLACE FUNCTION Audit.fn_extended_audit_trigger()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
@@ -167,7 +167,7 @@ BEGIN
         END IF;
 
         -- Create audit header
-        v_audit_id := Finance.create_audit_log(
+        v_audit_id := Audit.create_audit_log(
             TG_TABLE_NAME,
             v_record_text,
             TG_OP,
@@ -176,7 +176,7 @@ BEGIN
 
         -- Handle DELETE
         IF TG_OP = 'DELETE' THEN
-            PERFORM Finance.write_extended_audit(
+            PERFORM Audit.write_extended_audit(
                 v_audit_id,
                 v_client_id::INT,
                 TG_TABLE_NAME,
@@ -193,7 +193,7 @@ BEGIN
 
         -- Handle INSERT
         IF TG_OP = 'INSERT' THEN
-            PERFORM Finance.write_extended_audit(
+            PERFORM Audit.write_extended_audit(
                 v_audit_id,
                 v_client_id::INT,
                 TG_TABLE_NAME,
@@ -231,7 +231,7 @@ BEGIN
                 USING OLD, NEW;
 
                 IF v_old_value IS DISTINCT FROM v_new_value THEN
-                    PERFORM Finance.write_extended_audit(
+                    PERFORM Audit.write_extended_audit(
                         v_audit_id,
                         v_client_id::INT,
                         TG_TABLE_NAME,
@@ -251,7 +251,7 @@ BEGIN
     ELSE
         IF TG_OP = 'DELETE' THEN
             v_record_text := OLD::TEXT;
-            PERFORM Finance.create_audit_log(
+            PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
                 TG_OP,
@@ -260,7 +260,7 @@ BEGIN
             RETURN OLD;
         ELSE
             v_record_text := NEW::TEXT;
-            PERFORM Finance.create_audit_log(
+            PERFORM Audit.create_audit_log(
                 TG_TABLE_NAME,
                 v_record_text,
                 TG_OP,
@@ -275,82 +275,89 @@ $$;
 -- 1
 CREATE TRIGGER audit_transactions
 AFTER INSERT OR UPDATE OR DELETE ON Finance.transactions
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(transaction_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(transaction_id);
 -- 2
 CREATE TRIGGER audit_inventory
 AFTER INSERT OR UPDATE OR DELETE ON Finance.inventory_audits
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(management_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(management_id);
 -- 3
 CREATE TRIGGER audit_journals
 AFTER INSERT OR UPDATE OR DELETE ON Finance.journals
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(journal_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(journal_id);
 -- 4
 CREATE TRIGGER audit_ap
 AFTER INSERT OR UPDATE OR DELETE ON Finance.account_payables
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(payable_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(payable_id);
 -- 5
 CREATE TRIGGER audit_ar
 AFTER INSERT OR UPDATE OR DELETE ON Finance.account_receivables
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(receivable_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(receivable_id);
 -- 6
 CREATE TRIGGER customer_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.customers 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(customer_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(customer_id);
 -- 7 
 CREATE TRIGGER supplier_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.vendors 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(vendor_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(vendor_id);
 -- 8
 CREATE TRIGGER product_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.products 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(product_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(product_id);
 -- 9
 CREATE TRIGGER inventory_transfers_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.inventory_transfers 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(transfer_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(transfer_id);
 -- 10
 CREATE TRIGGER purchase_returns_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.purchase_returns 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(return_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(return_id);
 -- 11
 CREATE TRIGGER warehouse_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.warehouses 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(warehouse_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(warehouse_id);
 -- 12
 CREATE TRIGGER sale_returns_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.sale_returns 
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(return_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(return_id);
 -- 13
 CREATE TRIGGER clients_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.clients
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(client_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(client_id);
 -- 14
 CREATE TRIGGER coatemplates_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.coa_templates
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(template_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(template_id);
 -- 15
 CREATE TRIGGER account_roles_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.account_roles
-FOR  EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(role_id);
+FOR  EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(role_id);
 -- 16
 CREATE TRIGGER account_properties_changes 
 AFTER INSERT OR UPDATE OR DELETE ON Finance.account_properties
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(property_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(property_id);
 -- 17
 CREATE TRIGGER account_receivables_ext_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.ar_ext
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(ar_ext_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(ar_ext_id);
 -- 18
 CREATE TRIGGER account_payables_ext_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.ap_ext
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(ap_ext_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(ap_ext_id);
 -- 19
 CREATE TRIGGER coa_templates_account_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.coa_template_accounts
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(template_account_Id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(template_account_Id);
 -- 20
 CREATE TRIGGER charts_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.charts
-FOR EACH ROW EXECUTE FUNCTION Finance.fn_extended_audit_trigger(chart_id);
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
+
+CREATE TRIGGER ar_import_changes
+AFTER INSERT OR UPDATE OR DELETE ON Staging.stg_ar_imports
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
+
 
 COMMIT;
+
+SELECT 'Audit Schema Trigger complete!' AS Status;

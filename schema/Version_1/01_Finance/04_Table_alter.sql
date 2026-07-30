@@ -20,6 +20,7 @@ ALTER TABLE Finance.products ADD COLUMN client_id INT REFERENCES Finance.clients
 ALTER TABLE Finance.clients 
     ADD inventory_method VARCHAR(20) CHECK ( inventory_method IN ('PERPETUAL','PERIODIC')),
     ADD inventory_cost_method VARCHAR(20) CHECK ( inventory_cost_method IN ('FIFO','LIFO','AVCO'));
+
 COMMIT;
 
-SELECT 'Table alter Loaded complete ' as Status;
+SELECT 'Finance Schema Table alter complete!' as  Status;

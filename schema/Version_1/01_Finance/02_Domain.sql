@@ -1,3 +1,5 @@
+SELECT 'Finance Schema Domain Start!' as  Status;
+
 BEGIN;
 -- Email domain
 DROP DOMAIN IF EXISTS email_type CASCADE;
@@ -41,3 +43,4 @@ CREATE DOMAIN audit_log_typing as VARCHAR(50)
     CONSTRAINT valid_audit_log_typing CHECK (VALUE IN ('INSERT', 'UPDATE', 'DELETE'));
 
 COMMIT;
+SELECT 'Finance Schema Domain Complete!' as  Status;

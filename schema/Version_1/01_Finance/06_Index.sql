@@ -1,6 +1,5 @@
 
 -- Verification
-SELECT '04. Index ADD PERFORMANCE INDEXES' AS status;
 
 BEGIN;
     -- ============================================
@@ -60,4 +59,4 @@ BEGIN;
 
 COMMIT;
 
-SELECT 'Indexes Successfully Applied' AS status;
+SELECT 'Finance Schema Index Complete!' as  Status;

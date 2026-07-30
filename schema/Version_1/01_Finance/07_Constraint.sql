@@ -226,4 +226,6 @@ ALTER TABLE Finance.customers
 COMMIT;
 
 -- Verification
-SELECT 'Constraints and Indexes Successfully Applied' AS status;
+SELECT 'Finance Schema Table Start!' as  Status;
+
+SELECT ' Finance Schema Constraints complete' AS status;
