@@ -126,11 +126,11 @@ ALTER TABLE Finance.inventory_transfers
     ADD CONSTRAINT different_locations CHECK (from_location_id != to_location_id);
 
 -- Audit Logs
-ALTER TABLE Finance.audit_logs
-    ALTER COLUMN table_name SET NOT NULL,
-    ALTER COLUMN rec_transact SET NOT NULL,
-    ALTER COLUMN operation SET NOT NULL,
-    ALTER COLUMN changed_by SET NOT NULL;
+-- ALTER TABLE Finance.audit_logs
+--     ALTER COLUMN table_name SET NOT NULL,
+--     ALTER COLUMN rec_transact SET NOT NULL,
+--     ALTER COLUMN operation SET NOT NULL,
+--     ALTER COLUMN changed_by SET NOT NULL;
 
 -- Event Log
 ALTER TABLE Finance.event_log
