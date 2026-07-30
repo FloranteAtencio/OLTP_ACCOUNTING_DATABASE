@@ -38,7 +38,6 @@ CREATE TRIGGER trg_auto_lineage
 AFTER INSERT ON Staging.stg_ar_imports
 FOR EACH ROW EXECUTE FUNCTION Audit.auto_lineage_trigger();
 
-
 COMMIT;
 
 SELECT '15. STAGGING TRIGGERS COMPLETE' as  Status;
