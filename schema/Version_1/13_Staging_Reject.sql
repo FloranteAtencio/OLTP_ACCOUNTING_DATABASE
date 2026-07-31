@@ -7,6 +7,7 @@ LANGUAGE plpgsql AS $$
 DECLARE
     new_session_id INT;
 BEGIN
+
     SELECT a.session_id INTO new_session_id
     FROM Audit.import_sessions a
     WHERE a.session_id = p_session_id

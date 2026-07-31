@@ -8,6 +8,8 @@ DECLARE
     new_previous_state VARCHAR(50);
 
 BEGIN    
+
+    SET LOCAL app.allow_direct_insert = 'true';
     
     SELECT new_state INTO new_previous_state
     FROM Staging.import_workflows a

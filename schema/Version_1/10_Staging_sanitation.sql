@@ -10,7 +10,7 @@ RETURNS VARCHAR AS $$
 DECLARE
     v_table_name VARCHAR;
 BEGIN
-
+    
     IF EXISTS (
         SELECT 1 
         FROM Staging.stg_ar_imports a 
@@ -96,6 +96,7 @@ DECLARE
     table_related VARCHAR;
     new_session_id INT;
 BEGIN
+
     -- 1. Validate Session ID
     SELECT session_id INTO new_session_id
     FROM Audit.import_sessions

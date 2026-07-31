@@ -1,8 +1,7 @@
 BEGIN;
 
-
 CREATE OR REPLACE PROCEDURE Finance.sample_data(
-    
+
 )
 LANGUAGE plpgsql AS $$
 DECLARE
