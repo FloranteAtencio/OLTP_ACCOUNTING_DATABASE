@@ -5,8 +5,8 @@ RETURNS TRIGGER AS $$
 
 BEGIN
 
-    IF current_setting('app.guard_trigger', TRUE) IS NULL THEN
-        RAISE EXCEPTION 'INSERT Transaction is not allowed'
+    IF current_setting('app.allow_direct_insert', TRUE) IS NULL THEN
+        RAISE EXCEPTION 'INSERT Transaction is not allowed';
     END IF;
 
 END;
