@@ -4,17 +4,18 @@ CREATE OR REPLACE FUNCTION Audit.Guard_trigger()
 RETURNS TRIGGER 
 LANGUAGE plpgsql
 AS $$
-DECLARE
 BEGIN
-
-    IF current_setting('app.allow_direct_insert', true) IS NULL THEN
-        RAISE EXCEPTION 'INSERT Transaction is not allowed';
+    -- Only block direct INSERTs if the setting is not enabled
+    IF TG_OP = 'INSERT' AND current_setting('app.allow_direct_insert', true) IS NULL THEN
+        RAISE EXCEPTION 'Direct INSERT is not allowed';
     END IF;
 
     IF TG_OP = 'DELETE' THEN
         RETURN OLD;
     ELSE
         RETURN NEW;
+    END IF;
+    
 END;
 $$;
 -- 1
