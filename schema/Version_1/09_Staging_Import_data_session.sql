@@ -41,7 +41,7 @@ BEGIN
         ) VALUES (
             'stg_ar_import', 
             new_ar_staging_id, 
-            p_customer_id::INT, 
+            p_client_id::INT, 
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
             p_session_id::INT,
