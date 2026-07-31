@@ -22,12 +22,7 @@ BEGIN
             current_setting('app.import_session_id')::INT,
             current_user
         );
-    ELSE
-        INSERT INTO Audit.record_lineage (
-            table_name, record_id, client_id, source_type, created_by
-        ) VALUES (
-            TG_TABLE_NAME, NEW.id::INT, NEW.client_code::INT, 'MANUAL_ENTRY', current_user
-        );
+
     END IF;
     RETURN NEW;
 END;

@@ -1,4 +1,13 @@
 BEGIN;
+
+
+CREATE OR REPLACE PROCEDURE Finance.sample_data()
+LANGUAGE plpgsql AS $$
+DECLARE
+BEGIN
+
+SET LOCAL app.allow_direct_insert = 'true';
+
 INSERT INTO Finance.vendors (vendor_name, contact_info, email, address) VALUES ('Sandoval Inc', '(668)693-3883', 'falexander@example.org', 'Unit 8062 Box 9263 DPO AA 71455');
 INSERT INTO Finance.customers (customer_name, contact_info, email, address) VALUES ('Shane Hill', '925-997-9164', 'kathryn37@example.org', '7682 Ward Walk Suite 909 New Rodneyburgh, MI 88519');
 INSERT INTO Finance.products (product_id, product_name, description, product_unit) VALUES (1000, 'us', 'Service tell poor side join late crime stop.', 'unit');
@@ -300,9 +309,7 @@ VALUES
 (1, 7100, 'Taxes & Licenses', 'Expense'),
 (1, 7200, 'Miscellaneous Expense', 'Expense'),
 (1, 7300, 'Inventory Expense','Expense');
-COMMIT;
 
-BEGIN;
 call finance.apply_coa_template (1,1);
 call finance.assign_account_role ('Cash on Hand','cash_account_ar');
 call finance.assign_account_role ('Accounts Receivable','ar_account');
@@ -442,5 +449,5 @@ CALL Finance.assign_account_role ('Purchase Returns & Allowances','PR&Allowances
 --     )
 --     ,'sale-2026-0003'
 -- );
-
-COMMIT;
+END;
+$$;

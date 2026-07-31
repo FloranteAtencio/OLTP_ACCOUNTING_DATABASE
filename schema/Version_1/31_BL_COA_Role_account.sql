@@ -6,6 +6,7 @@ LANGUAGE plpgsql AS $$
 DECLARE
     v_rows_affected INT;
 BEGIN
+    SET LOCAL app.allow_direct_insert = 'true';
     -- Insert roles for matching accounts
     INSERT INTO Finance.account_roles (chart_id, role_name)
     SELECT
@@ -36,7 +37,7 @@ CREATE OR REPLACE PROCEDURE Finance.apply_coa_template(
 )
 LANGUAGE plpgsql AS $$
 BEGIN
-
+    SET LOCAL app.allow_direct_insert = 'true';
     PERFORM 1
     FROM Finance.clients
     WHERE client_id = p_clientId
