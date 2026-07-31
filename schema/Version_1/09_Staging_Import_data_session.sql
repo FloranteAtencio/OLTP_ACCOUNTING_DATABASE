@@ -44,7 +44,7 @@ BEGIN
             p_customer_id::INT, 
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
-            current_setting('app.import_session_id')::INT,
+            p_session_id::INT,
             current_user
     );
     -- END IF;
