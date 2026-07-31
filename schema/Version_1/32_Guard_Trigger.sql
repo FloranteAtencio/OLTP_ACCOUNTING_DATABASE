@@ -7,12 +7,15 @@ AS $$
 DECLARE
 BEGIN
 
-    IF current_setting('app.allow_direct_insert', TRUE) IS NULL THEN
+    IF current_setting('app.allow_direct_insert', true) IS NULL THEN
         RAISE EXCEPTION 'INSERT Transaction is not allowed';
     END IF;
-
+    
+    IF TG_OP 'DELETE' THEN
+    RETURN OLD;
+    ELSE
+    RETURN NEW;
 END;
-
 $$;
 -- 1
 CREATE TRIGGER Guard_audit_transactions
