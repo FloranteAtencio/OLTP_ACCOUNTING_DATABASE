@@ -1,8 +1,10 @@
 BEGIN;
 
 CREATE OR REPLACE FUNCTION Audit.Guard_trigger()
-RETURNS TRIGGER AS $$
-
+RETURNS TRIGGER 
+LANGUAGE plpgsql
+AS $$
+DECLARE
 BEGIN
 
     IF current_setting('app.allow_direct_insert', TRUE) IS NULL THEN
