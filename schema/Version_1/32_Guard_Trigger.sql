@@ -10,11 +10,11 @@ BEGIN
     IF current_setting('app.allow_direct_insert', true) IS NULL THEN
         RAISE EXCEPTION 'INSERT Transaction is not allowed';
     END IF;
-    
-    IF TG_OP 'DELETE' THEN
-    RETURN OLD;
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
     ELSE
-    RETURN NEW;
+        RETURN NEW;
 END;
 $$;
 -- 1
