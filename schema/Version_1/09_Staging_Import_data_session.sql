@@ -34,20 +34,20 @@ BEGIN
     (session_id, staging_record_id, staging_table,previous_state, new_state, changed_by)
     VALUES(p_session_id, new_ar_staging_id, 'ar_import_data',NULL, 'DRAFT',current_user);
 
-    IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
-        INSERT INTO Audit.record_lineage (
+    -- IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
+    INSERT INTO Audit.record_lineage (
             table_name, record_id, client_id, source_type, 
             source_file, import_session_id, created_by
         ) VALUES (
-            TG_TABLE_NAME, 
+            'stg_ar_import', 
             new_ar_staging_id, 
             p_customer_id::INT, 
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
             current_setting('app.import_session_id')::INT,
             current_user
-        );
-    END IF;
+    );
+    -- END IF;
 
     RETURN new_ar_staging_id;
 END; 
