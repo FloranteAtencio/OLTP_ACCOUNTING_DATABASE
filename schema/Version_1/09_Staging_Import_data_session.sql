@@ -13,8 +13,17 @@ CREATE FUNCTION Staging.ar_import_data(
 )
 RETURNS INT AS $$
 DECLARE
+    new_previous_hash TEXT;
     new_ar_staging_id INT;
 BEGIN
+
+    SELECT row_hash
+    INTO v_prev_hash
+    FROM Audit.audit_logs
+    ORDER BY audit_id DESC
+    LIMIT 1
+    FOR UPDATE;
+
 
     INSERT INTO Staging.stg_ar_imports( 
         session_id, 
@@ -37,7 +46,7 @@ BEGIN
     -- IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
     INSERT INTO Audit.record_lineage (
             table_name, record_id, client_id, source_type, 
-            source_file, import_session_id, created_by
+            source_file, import_session_id, created_by,prev_hash, row_hash
         ) VALUES (
             'stg_ar_import', 
             new_ar_staging_id, 
@@ -45,7 +54,16 @@ BEGIN
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
             p_session_id::INT,
-            current_user
+            current_user,
+            new_previous_hash,
+            md5(
+                COALESCE(new_previous_hash,'')
+                || p_session_id,
+                || 'stg_ar_import',
+                || 'SPREADSHEET_IMPORT'
+                || new_ar_staging_id
+                || current_user
+            )
     );
     -- END IF;
 

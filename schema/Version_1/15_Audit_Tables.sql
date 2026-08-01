@@ -143,6 +143,8 @@ CREATE TABLE Audit.record_lineage (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_modified_by VARCHAR(100),
     last_modified_at TIMESTAMP,
+    prev_hash TEXT,
+    row_hash TEXT,
     is_original BOOLEAN DEFAULT TRUE
 );
 
