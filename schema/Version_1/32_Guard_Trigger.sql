@@ -6,7 +6,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     -- Only block direct INSERTs if the setting is not enabled
-    IF TG_OP = 'INSERT' AND current_setting('app.allow_direct_insert', true) IS NULL THEN
+    IF current_setting('app.allow_direct_insert', true) IS NULL THEN
         RAISE EXCEPTION 'Direct INSERT is not allowed';
     END IF;
 
