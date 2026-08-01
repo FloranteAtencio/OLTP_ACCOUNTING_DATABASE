@@ -18,9 +18,9 @@ DECLARE
 BEGIN
 
     SELECT row_hash
-    INTO v_prev_hash
-    FROM Audit.audit_logs
-    ORDER BY audit_id DESC
+    INTO new_previous_hash
+    FROM Audit.record_lineage
+    ORDER BY lineage_id DESC
     LIMIT 1
     FOR UPDATE;
 
