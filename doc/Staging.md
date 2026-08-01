@@ -1,7 +1,7 @@
-# Staging schema
+# Staging 
 
 ---
-## Goal Purpose 
+## Purpose
   * Ensure a consistent data and uncorrupted data as possible.
   * Built for ground testing of data to sanitate validate and seek for approval of the higher positions before posting to production schema. 
 
@@ -15,7 +15,7 @@
 ---
 ## Resolve
   * Create process to catch early inconsistent data to avoid corrupted data before they enter the production schema through sanitation, validation and approval. 
-  * Data source history tracking Capture and log every successful and fail transaction for data tracking.
+  * Data source file and every data are log for every successful and fail transaction for import session log
   * Data that are not suitable for staging schema will be log at lineage table for tracking (expecting all the data are consistent)
 ---
 

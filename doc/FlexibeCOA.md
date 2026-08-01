@@ -1,16 +1,17 @@
-Flexible charts
+# Flexible charts
 
--- Goal
-Purpose is for multiple tenant of clients that has unique set of charts of account. This is will help us to distinct identify each client financial records and their own format of accounts.
+---
+## Goal
+  * Purpose is for multiple tenant of clients that has unique set of charts of account. This is will help us to distinct identify each client financial records and their own format of accounts.
 
 
--- Resolve
-This update helps me from break my code with different accountcode and account base on our clients norms.With the help of this update we can assign and identify which account has role to use specific use for (Account Receivables, Account Payables Revenue and so on.)
+---
+## Resolve
+  * This update helps me from break my code with different accountcode and account base on our clients norms.With the help of this update we can assign and identify which account has role to use specific use for (Account Receivables, Account Payables Revenue and so on.)
 
--- Challenges
-This update changes 20% of the version 1 and added. 
-Tables added and modify some of tables for clients to be able distinctly identify.
-Business logic this make multiple changes due inorder to adapt to the new update.
+---
+## Challenges
+  * This update changes 20% of the version 1 and added. Tables added and modify some of tables for clients to be able distinctly identify. Business logic this make multiple changes due inorder to adapt to the new update.
 
 here are the code added to and edit from the version 1 
 
