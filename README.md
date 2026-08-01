@@ -1,6 +1,6 @@
 # 🧠 Accounting Database System (PostgreSQL)
 
-A modular **Accounting database system** designed to handle inventory, sales, and financial transactions using PostgreSQL.
+A modular **Accounting database system** designed to handle inventory, sales, and financial transactions and more using PostgreSQL.
 
 ---
 
@@ -22,6 +22,12 @@ A modular **Accounting database system** designed to handle inventory, sales, an
   * Tracks customer balances and supplier obligations
   * Supports payment status and due dates
 
+* 🥞 **Multitenant client and Chart of Account**
+
+  * Multiple Clients can simultaneously operate 
+  * Multiple Chart of account custom made for every Clients needs
+
+
 * ⚙️ **Stored Procedures (PL/pgSQL)**
 
   * Centralized transaction processing
@@ -37,30 +43,30 @@ A modular **Accounting database system** designed to handle inventory, sales, an
   * Revenue and profit
   * Aging reports (AR/AP)
 
-* 🫆 **Audit Logs / Extended Audit Logs
+* 🫆 **Audit Logs / Extended Audit Logs**
 
  * Audit Hash Code Chain
  * Automatic Recording Every Transaction
  * Summary Import Logs
 
-* 📋 **Audit Trail
+* 📋 **Audit Trail**
  
  * Transaction Life Cycle
  * Import Session
 
-* 📝 **Compliance
-
+* 📝 **Compliance**
+  
  * Compliance log
  * import compliance log
 
-* 🗂 **Staging
+* 🗂 **Staging**
   
   * Data Testing
   * Sanitation
   * Validation
   * Approval
     
-* 🛡️ **Trigger Guard
+* 🛡️ **Trigger Guard**
 
   * Prevent direct operation to table
   * Need specific setting to perform CRUD Operations
@@ -118,51 +124,6 @@ A modular **Accounting database system** designed to handle inventory, sales, an
 
 ---
 
-## ⚙️ How to Run
-
-1. Clone the repository:
-
-   ```bash
- git clone https://github.com/FloranteAtencio/bookkeeping-database.git
-   ```
-
-2. Open PostgreSQL (pgAdmin, DBeaver, or CLI)
-
-3. Execute the SQL files in order:
-
-   * Schema / Tables
-   * Functions & Procedures
-   * Sample Data (if available)
-
----
-
-## 📊 Example Queries
-
-### Inventory Overview
-
-```sql
-SELECT product_id, warehouse_id,
-SUM(CASE 
-    WHEN action_type = 'Purchase' THEN quantity
-    WHEN action_type = 'Sale' THEN -quantity
-    ELSE 0 END) AS stock
-FROM finance.inventory_audit
-GROUP BY product_id, warehouse_id;
-```
-
----
-
-### Accounting Balance Check
-
-```sql
-SELECT 
-SUM(CASE WHEN is_debit THEN amount ELSE 0 END) AS total_debit,
-SUM(CASE WHEN NOT is_debit THEN amount ELSE 0 END) AS total_credit
-FROM finance.journals;
-```
-
----
-
 ## 💼 Business Value
 
 This system simulates a real Accounting backend where:
@@ -171,13 +132,31 @@ This system simulates a real Accounting backend where:
 * Sales generate accounts receivable
 * Purchases generate accounts payable
 * Financial reports can be derived from journal entries
-
+* Record Data Lineage From Staging to Production to Archive
+* Multiple Tenant and custom made Chart of Account
+* Record Operations Logs with Hash Chain
+* Idempotency key to prevent duplicate process
+* Staging area (Sanitation, Validations and Approval) Before posting to productions table
+* Compliance log (for every successful and failure transactions)
+* Import log (Record every successful and failure import transaction)
+* Guard any data from direct transaction to void by passing the process
+* Transaction Lifecycle data tracking inside production schema
+  
 ---
 
 ## 📌 Future Improvements
 
-* Data Replication(Master Slave)
-* Data warehouse integration (analytics layer)
-* API or frontend dashboard integration
+* High Availability (HA)
+* Disaster Recovery (DR)
+* Logical replication
+* Backup strategies
+* Query tuning with EXPLAIN ANALYZE
+* PostgreSQL extensions
+* Row-Level Security (RLS)
+* Database migrations
+* CI/CD for database deployments
+* Performance benchmarking
+* Monitoring with tools like pg_stat_statements
+* Event-driven architectures and messaging
 
 ---
