@@ -3,7 +3,7 @@
 ---
 ## Goal Purpose 
   * Ensure a consistent data and uncorrupted data as possible.
-  * Built for ground testing for data to sanitate validate and seek for approval of the higher positions before posting to production schema. 
+  * Built for ground testing of data to sanitate validate and seek for approval of the higher positions before posting to production schema. 
 
 ---
 ## Challenges
@@ -21,7 +21,7 @@
 
 # DISCLAIMER 
   * In this repo I focus only at Account Receivable only! make sure you have python  and with psycopg2 python extensions installed
-# Location
-  * Staging schema tables and object are at schema/version_1 name with <number>_Staging_<objects>.sql
-  * Python script and sample are at /script/stage
+# TO Use it
+  * Staging schema tables and object are at schema/version_1 SQL script with name of 'Staging'
+  * Python script and sample Data are at /script/stage
   * Just run the python script in order from import to sanitation to validation to approval to posting 
