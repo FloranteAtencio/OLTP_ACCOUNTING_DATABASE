@@ -100,7 +100,7 @@ BEGIN
         approved_by = p_approve_by
     WHERE approval_status = 'APPROVE_L1' AND session_id = new_session_id;
 
-    UPDATE import_workflows
+    UPDATE Staging.import_workflows
     SET new_state = 'APPROVE_L2',
         previous_state = new_previous_state
     WHERE session_id = new_session_id AND new_state = 'APPROVE_L1';
@@ -159,7 +159,7 @@ BEGIN
         approved_by = p_approve_by
     WHERE approval_status = 'APPROVE_L2' AND session_id = new_session_id;
 
-    UPDATE import_workflows
+    UPDATE Staging.import_workflows
     SET new_state = 'APPROVE_L3',
         previous_state = new_previous_state
     WHERE session_id = new_session_id AND new_state = 'APPROVE_L2';
