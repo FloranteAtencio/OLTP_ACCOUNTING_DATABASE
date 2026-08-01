@@ -148,3 +148,11 @@ docker-compose down -v
 docker-compose up -d
 docker logs erp_postgres
 ```
+6. docker compose <yaml is at docker/>
+```bash
+docker composer -f docker/docker-composer.prod.yaml up
+```
+### Use sample data at tmp/data
+```bash
+  docker exec -i erp_postgres psql -U erp_admin -d erp_db < temp/data/data_sample.sql
+```
