@@ -37,18 +37,59 @@ A modular **Accounting database system** designed to handle inventory, sales, an
   * Revenue and profit
   * Aging reports (AR/AP)
 
+* 🫆 **Audit Logs / Extended Audit Logs
+
+ * Audit Hash Code Chain
+ * Automatic Recording Every Transaction
+ * Summary Import Logs
+
+* 📋 **Audit Trail
+ 
+ * Transaction Life Cycle
+ * Import Session
+
+* 📝 **Compliance
+
+ * Compliance log
+ * import compliance log
+
+* 🗂 **Staging
+  
+  * Data Testing
+  * Sanitation
+  * Validation
+  * Approval
+    
+* 🛡️ **Trigger Guard
+
+  * Prevent direct operation to table
+  * Need specific setting to perform CRUD Operations
+
 ---
 
 ## 🏗️ System Architecture
 
 ```
-[Transactions]
+[CSV, API, SPREAD_SHEET_IMPORT]
       ↓
-[Inventory Module]
+[Staging]
       ↓
-[Accounting Module]
+[Sanitation]
       ↓
-[Journals / AR / AP]
+[Validations]
+      ↓
+[Approval Chain]
+      ↓
+[Posting]
+      ↓
+[ AR / AP / Inventory Transactions and so on]
+      ↓
+[Journals]
+      ↓
+[Accounting Module/Inventory Module]
+      ↓
+[Lineage]
+
 ```
 
 ---
@@ -62,7 +103,11 @@ A modular **Accounting database system** designed to handle inventory, sales, an
 * Financial Data Modeling (ERP-style logic)
 * Query Optimization using Indexes
 * Modular Stored Procedure Design
-
+* Audit Log for Every Table CRUD Operations
+* Recording Data Lineage (From Staging to Production)
+* Idempotency key for tracking
+* Code Hashing Chain
+* Sanitation, Validation and Approval Chain at Staging 
 ---
 
 ## 🛠️ Tech Stack
