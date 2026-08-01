@@ -45,8 +45,15 @@ BEGIN
 
     -- IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
     INSERT INTO Audit.record_lineage (
-            table_name, record_id, client_id, source_type, 
-            source_file, import_session_id, created_by,prev_hash, row_hash
+            table_name, 
+            record_id, 
+            client_id, 
+            source_type, 
+            source_file, 
+            import_session_id, 
+            created_by,
+            prev_hash, 
+            row_hash
         ) VALUES (
             'stg_ar_import', 
             new_ar_staging_id, 
@@ -58,8 +65,8 @@ BEGIN
             new_previous_hash,
             md5(
                 COALESCE(new_previous_hash,'')
-                || p_session_id,
-                || 'stg_ar_import',
+                || p_session_id
+                || 'stg_ar_import'
                 || 'SPREADSHEET_IMPORT'
                 || new_ar_staging_id
                 || current_user
