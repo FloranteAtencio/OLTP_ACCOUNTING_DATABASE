@@ -45,31 +45,31 @@ A modular **Accounting database system** designed to handle inventory, sales, an
 
 * 🫆 **Audit Logs / Extended Audit Logs**
 
- * Audit Hash Code Chain
- * Automatic Recording Every Transaction
- * Summary Import Logs
+  * Audit Hash Code Chain
+  * Automatic Recording Every Transaction
+  * Summary Import Logs
 
 * 📋 **Audit Trail**
  
- * Transaction Life Cycle
- * Import Session
+  * Transaction Life Cycle
+  * Import Session
 
 * 📝 **Compliance**
   
- * Compliance log
- * import compliance log
+  * Compliance log
+  * import compliance log
 
 * 🗂 **Staging**
   
-  * Data Testing
-  * Sanitation
-  * Validation
-  * Approval
+   * Data Testing
+   * Sanitation
+   * Validation
+   * Approval
     
 * 🛡️ **Trigger Guard**
 
-  * Prevent direct operation to table
-  * Need specific setting to perform CRUD Operations
+   * Prevent direct operation to table
+   * Need specific setting to perform CRUD Operations
 
 ---
 
