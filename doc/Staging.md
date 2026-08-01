@@ -1,1 +1,27 @@
-#Staging
+# Staging schema
+
+---
+## Goal Purpose 
+  * Ensure a consistent data and uncorrupted data as possible.
+  * Built for ground testing for data to sanitate validate and seek for approval of the higher positions before posting to production schema. 
+
+---
+## Challenges
+  * A lot of data where bouncing back, corrupted data and inconsistent data.
+  * Not all data are suitable to under go staging they are directly load at production schema.  
+  * Every import Transactions should be log and compliance log should be record (success and fail)
+  * Every stage should be log too
+    
+---
+## Resolve
+  * Create process to catch early inconsistent data to avoid corrupted data before they enter the production schema through sanitation, validation and approval. 
+  * Data source history tracking Capture and log every successful and fail transaction for data tracking.
+  * Data that are not suitable for staging schema will be log at lineage table for tracking (expecting all the data are consistent)
+---
+
+# DISCLAIMER 
+  * In this repo I focus only at Account Receivable only! make sure you have python  and with psycopg2 python extensions installed
+# Location
+  * Staging schema tables and object are at schema/version_1 name with <number>_Staging_<objects>.sql
+  * Python script and sample are at /script/stage
+  * Just run the python script in order from import to sanitation to validation to approval to posting 
