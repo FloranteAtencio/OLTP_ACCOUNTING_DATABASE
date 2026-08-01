@@ -144,68 +144,83 @@ This system simulates a real Accounting backend where:
 
 
 ---
+
 # Auditing And Trigger
 
 ---
-## Purpose
+
+### Purpose
   * Track every changes or before it happened
   * Record Every changes for auditing purposes
   * To prevent directly operation to the table
 
 ---
-## Challenges
+
+### Challenges
   * By passing the process by direct transaction to the table
   * Tracking of who, when, and what operations happened to data
   * History logs data
 
 ---
-## Resolve
+
+### Resolve
   * Core Finance tables are protected against direct data manipulation. Business operations are executed exclusively through stored procedures. Database-level controls ensure that audit logging, lineage recording, compliance validation, and workflow management cannot be bypassed
+
 ---
 
 # Flexible charts
 
 ---
-## Goal
+
+### Goal
   * Purpose is for multiple tenant of clients that has unique set of charts of account. This is will help us to distinct identify each client financial records and their own format of accounts.
 
-
 ---
-## Resolve
+
+### Resolve
   * This update helps me from break my code with different accountcode and account base on our clients norms.With the help of this update we can assign and identify which account has role to use specific use for (Account Receivables, Account Payables Revenue and so on.)
 
 ---
-## Challenges
-  * This update changes 20% of the version 1 and added. Tables added and modify some of tables for clients to be able distinctly identify. Business logic this make multiple changes due inorder to adapt to the new update.
+
+### Challenges
+ * This update changes 20% of the version 1 and added. Tables added and modify some of tables for clients to be able distinctly identify. Business logic this make multiple changes due inorder to adapt to the new update.
+
+---
 
 # Staging 
 
 ---
-## Purpose
+
+### Purpose
   * Ensure a consistent data and uncorrupted data as possible.
   * Built for ground testing of data to sanitate validate and seek for approval of the higher positions before posting to production schema. 
 
 ---
-## Challenges
+
+### Challenges
   * A lot of data where bouncing back, corrupted data and inconsistent data.
   * Not all data are suitable to under go staging they are directly load at production schema.  
   * Every import Transactions should be log and compliance log should be record (success and fail)
   * Every stage should be log too
     
 ---
-## Resolve
+
+### Resolve
   * Create process to catch early inconsistent data to avoid corrupted data before they enter the production schema through sanitation, validation and approval. 
   * Data source file and every data are log for every successful and fail transaction for import session log
   * Data that are not suitable for staging schema will be log at lineage table for tracking (expecting all the data are consistent)
+
 ---
 
-# DISCLAIMER 
+### DISCLAIMER 
   * In this repo I focus only at Account Receivable only! make sure you have python  and with psycopg2 python extensions installed
-# TO Use it
+### TO Use it
   * Staging schema tables and object are at schema/version_1 SQL script with name of 'Staging'
   * Python script and sample Data are at /script/stage
   * Just run the python script in order from import to sanitation to validation to approval to posting 
+
 ---
+
 ## 🚀 Environment Setup (Ubuntu)
 
 ### 🔄 Update System
