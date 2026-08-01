@@ -1,4 +1,4 @@
-Version 2 Flexible charts
+Flexible charts
 
 -- Goal
 Purpose is for multiple tenant of clients that has unique set of charts of account. This is will help us to distinct identify each client financial records and their own format of accounts.
