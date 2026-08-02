@@ -3,53 +3,53 @@
 
 [CSV/ API/ SPREAD_SHEET_IMPORT]
 
-      ↓ -> [log the import details in summary and every succes/fail transaction]
+   ↓ -> [log the import details in summary and every succes/fail transaction]
 
 [Staging] -> [log to import workflows status]
 
-      ↓ -> [update the import workflow status]
+   ↓ -> [update the import workflow status]
 
 [Sanitation] -> [Record Lineage] 
 
-      ↓ -> [update the import workflow status]
+   ↓ -> [update the import workflow status]
 
 [Validations] -> [Record Lineage]
 
-      ↓ -> [update the workflow status]
+   ↓ -> [update the workflow status]
 
 [Approval Chain] -> [Record Lineage]
 
-      ↓ -> [update the workflow status]
+   ↓ -> [update the workflow status]
 
 [Posting] -> [Record Lineage]
 
-      ↓ -> [update the workflow status and import workflow end here]
+   ↓ -> [update the workflow status and import workflow end here]
 
-      ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
+   ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
 
 [ AR / AP / Inventory Transactions and so on] -> [Record Lineage, Audit Log, and transaction lifecycle] 
       
-      ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
+   ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
 
 [Journals] -> [Audit Log/ update transaction life cycle]    
 
-      ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
+   ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
 
 [Accounting Module/Inventory Module] -> [Audit Log]
 
-      ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
+   ↓ -> [Trigger guard work on this part to prevent by passing or cut the process]
 
 [Validations at core production] -> [Record Lineage]
 
-      ↓ -> [update the transaction life cycle status]
+   ↓ -> [update the transaction life cycle status]
 
 [Approval Chain at core production ] -> [Record Lineage]
 
-      ↓ -> [update the transaction life cycle status]
+   ↓ -> [update the transaction life cycle status]
 
 [Transaction business/reports/reconcile]
 
-      ↓
+   ↓
       
 [Archive( 12 months)]
 
