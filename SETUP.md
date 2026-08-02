@@ -176,7 +176,22 @@ sudo ufw allow 22/tcp
 sudo ufw deny 5432
 ```
 ## 🔥1.1 Configure Firewall
-```bash\n# Install UFW\nsudo apt install ufw -y\n\n# Enable firewall\nsudo ufw enable\n\n# Allow SSH (IMPORTANT - don't lock yourself out!)\nsudo ufw allow ssh\n\n# Allow PostgreSQL only from localhost (PRODUCTION SECURITY)\nsudo ufw allow from 127.0.0.1 to any port 5432\n\n# Or allow from specific IP\nsudo ufw allow from 192.168.1.0/24 to any port 5432\n\n# Deny all other traffic to PostgreSQL\nsudo ufw deny 5432\n\n# View rules\nsudo ufw status numbered\n```
+```bash
+# Install UFW
+sudo apt install ufw -y
+# Enable firewall
+sudo ufw enable
+# Allow SSH (IMPORTANT - don't lock yourself out!)
+sudo ufw allow ssh
+# Allow PostgreSQL only from localhost (PRODUCTION SECURITY)
+sudo ufw allow from 127.0.0.1 to any port 5432
+# Or allow from specific IP
+sudo ufw allow from 192.168.1.0/24 to any port 5432
+# Deny all other traffic to PostgreSQL
+sudo ufw deny 5432
+# View rules
+sudo ufw status numbered
+```
 
 ### 2. Configure PostgreSQL for Remote Access (If needed)
 
