@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Finance.coa_templates (
 -- ============================================
 DROP TABLE IF EXISTS Finance.coa_template_teaccounts CASCADE;
 CREATE TABLE IF NOT EXISTS Finance.coa_template_accounts (
-    template_account_Id BIGSERIAL PRIMARY KEY,
+    template_account_id BIGSERIAL PRIMARY KEY,
     template_id INT NOT NULL REFERENCES Finance.coa_templates(template_id) ON DELETE NO ACTION,
     account_code INT NOT NULL,
     account_name VARCHAR(255) NOT NULL,
