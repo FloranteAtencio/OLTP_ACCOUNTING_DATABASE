@@ -77,10 +77,4 @@ crontab -e
 3. Verify data
 4. Restart application
 
----
 
-## 📚 Next Steps
-
-1. **Run Staging Workflow** - Execute scripts/stage/ Python scripts
-2. **Read DEVELOPMENT.md** - Learn how to extend the system
----

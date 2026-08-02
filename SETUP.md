@@ -462,17 +462,6 @@ docker exec -it erp_postgres psql -U erp_admin -d erp_db -f schema/version_1/sta
 # Check for SQL errors
 docker exec -i erp_postgres psql -U erp_admin -d erp_db < schema/version_1/staging.sql 2>&1 | head -50
 ```
-
----
-
-## 📚 Next Steps
-
-1. **Read ARCHITECTURE.md** - Understand the system design
-2. **Read OPERATIONS.md** - Set up backups and monitoring
-3. **Run Staging Workflow** - Execute scripts/stage/ Python scripts
-4. **Read DEVELOPMENT.md** - Learn how to extend the system
----
-
 ## 📞 Support
 
 For issues:

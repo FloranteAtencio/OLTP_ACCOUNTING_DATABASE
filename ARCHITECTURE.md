@@ -145,10 +145,3 @@
 
   * Archival Strategy: Keeps system performant while retaining history.
 ---
-
-## 📚 Next Steps
-
-1. **Read OPERATIONS.md** - Set up backups and monitoring
-2. **Run Staging Workflow** - Execute scripts/stage/ Python scripts
-3. **Read DEVELOPMENT.md** - Learn how to extend the system
----

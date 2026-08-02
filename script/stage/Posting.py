@@ -4,14 +4,22 @@ import csv
 import os
 import sys
 
+from dotenv import load_dotenv
+load_dotenv (dotenv_path='.env.prod')
+
+db_password=os.getenv('POSTGRES_PASSWORD')
+db_name = os.getenv('POSTGRES_DB')
+db_user = os.getenv('POSTGRES_USER')
+
+session_id = 1
+
 conn = psycopg2.connect(
-    host = "localhost",
-    database = "erp_db",
-    user = "erp_admin",
-    password = "p2r0o2d6uction!",
+    host="localhost",
+    database=db_name, 
+    user=db_user, 
+    password=db_password, 
     port=5432
 )
-
 session_id = 1
 
 
