@@ -98,6 +98,46 @@ A modular **Accounting database system** designed to handle inventory, sales, an
 
 ```
 
+## 🏗️ Repository Structure
+
+```
+accounting-database/
+
+├── conf/ ---> Configuration setting of  dev enviroment, prod enviroment, and staging enviroment
+      
+├── doc/ ---> Documentation of feature and command list.
+
+├── docker/ ---> Docker compose configuration files 
+
+├── migration/ ---> List of new Feature script files    
+
+├── schema/ ---> Core Transaction
+
+├── script/ ---> Backup and Python script
+
+├── staging/ ---> Testing and staging script for new feature 
+
+├── tmp/ ---> Sample Data and Sample script files 
+
+├── env.dev ---> dev enviroments credentials 
+
+├── env.prod ---> prod enviroments credentials 
+
+├── env.stagin ---> staging enviroments credentials 
+
+├── ARCHITECTURE.md
+
+├── IMPORT STAGING WORKFLOW.md
+
+├── NAMING AND CODE FORMAT.md
+
+├── OPERATION.md
+
+├── SETUP.md
+
+└── README.md
+
+```
 ---
 
 ## 🧠 Key Concepts Demonstrated
@@ -109,11 +149,13 @@ A modular **Accounting database system** designed to handle inventory, sales, an
 * Financial Data Modeling (ERP-style logic)
 * Query Optimization using Indexes
 * Modular Stored Procedure Design
-* Audit Log for Every Table CRUD Operations
+* Audit Logs for Every success Operations
 * Recording Data Lineage (From Staging to Production)
-* Idempotency key for tracking
-* Code Hashing Chain
+* Idempotency key for avoid duplicate transactions
+* Code Hashing Chain to spot tampering
 * Sanitation, Validation and Approval Chain at Staging 
+* Trigger Guard Prevent bypassing validation and ensures every transaction follow the approved workflow
+
 ---
 
 ## 🛠️ Tech Stack
@@ -132,17 +174,14 @@ This system simulates a real Accounting backend where:
 * Financial reports can be derived from journal entries
 * Record Data Lineage From Staging to Production to Archive
 * Multiple Tenant and custom made Chart of Account
-* Record Operations Logs with Hash Chain
-* Idempotency key to prevent duplicate process
-* Staging area (Sanitation, Validations and Approval) Before posting to productions table
-* Compliance log (for every successful and failure transactions)
-* Import log (Record every successful and failure import transaction)
-* Guard any data from direct transaction to void by passing the process
-* Transaction Lifecycle data tracking inside production schema
+* Logs like Import, Audit, and Compliance
+* Security (Idempotency key, Hash Chain, and Trigger Guard)
+* Staging area (Sanitation, Validations and Approval)
+* Transaction Lifecycle status tracking
   
 ---
 
-## 📌 Future Improvements
+## 📌 Road Map
 
 * High Availability (HA)
 * Disaster Recovery (DR)
@@ -157,4 +196,5 @@ This system simulates a real Accounting backend where:
 * Monitoring with tools like pg_stat_statements
 * Event-driven architectures and messaging
 * Archiving
+
 ---
