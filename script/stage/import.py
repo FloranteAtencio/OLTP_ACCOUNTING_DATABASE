@@ -5,8 +5,10 @@ import os
 import sys
 
 # 1. SETUP CONNECTION (SECURE)
-stg_table = 'stg_ar_imports'
-client_code = 1
+# stg_table = 'stg_ar_imports'
+  client_code = 1
+  source_file = 'data.csv'
+
 # 🛡️ CRITICAL: Use Environment Variables for credentials
 # Run this in your terminal before running the script:
 # export DB_PASSWORD="p2r0o2d6uction!"
@@ -39,7 +41,7 @@ try:
     print(f"✅ Session ID: {session_id}")
     
     cur.execute(f"SET LOCAL app.import_session_id = {session_id}")
-    cur.execute("SET LOCAL app.import_source_file = 'data.csv'")
+    cur.execute(f"SET LOCAL app.import_source_file = {source_file}")
 
 except Exception as e:
     print(f"❌ Failed to start session: {e}")
