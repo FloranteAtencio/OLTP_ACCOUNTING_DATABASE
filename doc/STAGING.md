@@ -19,9 +19,15 @@
   * Data that are not suitable for staging schema will be log at lineage table for tracking (expecting all the data are consistent)
 ---
 
-# DISCLAIMER 
-  * In this repo I focus only at Account Receivable only! make sure you have python  and with psycopg2 python extensions installed
-# TO Use it
-  * Staging schema tables and object are at schema/version_1 SQL script with name of 'Staging'
-  * Python script and sample Data are at /script/stage
-  * Just run the python script in order from import to sanitation to validation to approval to posting 
+Why use Staging?
+
+Reason:
+Production tables should never receive raw imported data.
+
+Trade-offs:
++ Better validation
++ Approval workflow
+- More storage
+- Slightly slower imports
+
+ 
