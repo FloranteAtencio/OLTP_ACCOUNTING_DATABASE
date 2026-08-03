@@ -41,7 +41,7 @@ BEGIN
             r.customer_code::INT,
             r.amount::DECIMAL,
             r.invoice_date::DATE,
-            r.due_date::DECIMAL,
+            r.due_date::DATE,
             r.status::VARCHAR
         );
 
