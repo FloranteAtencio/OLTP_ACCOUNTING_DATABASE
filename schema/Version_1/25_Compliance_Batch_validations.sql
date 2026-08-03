@@ -57,22 +57,22 @@ DECLARE
 BEGIN
     -- Validate amount
     IF p_amount <= 0 THEN
-        v_errors_1 := 'AR amount must be positive';
+        v_errors_amount := 'AR amount must be positive';
     END IF;
     
     -- Validate dates
     IF p_invoice_date > p_due_date THEN
-        v_errors_2 := 'Invoice date cannot be after due date';
+        v_errors_invoice := 'Invoice date cannot be after due date';
     END IF;
     
     -- Validate customer exists
     IF NOT EXISTS (SELECT 1 FROM Finance.customers WHERE customer_id = p_customer_id) THEN
-        v_errors_3 := 'Customer ID does not exist';
+        v_errors_customer := 'Customer ID does not exist';
     END IF;
     
     -- Validate status
     IF p_status NOT IN ('Pending', 'Partial', 'Paid', 'Overdue') THEN
-        v_errors_4 := 'Invalid AR status';
+        v_errors_status := 'Invalid AR status';
     END IF;
     
     RETURN QUERY SELECT
