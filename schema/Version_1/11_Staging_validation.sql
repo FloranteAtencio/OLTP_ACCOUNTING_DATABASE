@@ -54,8 +54,8 @@ BEGIN
                 'Check Amount Value!', r.amount, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Amount Check!', 'Negative amount is not available', 
-                'AMOUNT_CHECK', 'FAIL', 'Kindly check your amount value!'
+                r.client_code::INT, 'Amount Check!'::VARCHAR, 'Negative amount is not available', 
+                'AMOUNT_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your amount value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
@@ -63,8 +63,8 @@ BEGIN
                 'Valid Amount!', r.amount, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Amount Check!', 'Valid AMOUNT!', 
-                'AMOUNT_CHECK', 'PASS', 'Valid Amount!'
+                r.client_code::INT, 'Amount Check!'::VARCHAR, 'Valid AMOUNT!', 
+                'AMOUNT_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Amount!'
             );
         END IF;
 
@@ -78,8 +78,8 @@ BEGIN
                 'Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Invoice Check!', 'Invoice Date should not be ahead of Due Date', 
-                'DATE_CHECK', 'FAIL', 'Kindly check your invoice date value!'
+                r.client_code::INT, 'Invoice Check!'::VARCHAR, 'Invoice Date should not be ahead of Due Date', 
+                'DATE_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your invoice date value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
@@ -87,8 +87,8 @@ BEGIN
                 'Valid Invoice Date!', r.invoice_date, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Date Check!', 'Valid Invoice Date!', 
-                'DATE_CHECK', 'PASS', 'Valid Invoice Date!'
+                r.client_code::INT, 'Date Check!'::VARCHAR, 'Valid Invoice Date!', 
+                'DATE_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Invoice Date!'
             );
         END IF;
 
@@ -102,8 +102,8 @@ BEGIN
                 'Customer not exists!', r.customer_code, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Customer Check!', 'Customer does not exist', 
-                'CUSTOMER_CHECK', 'FAIL', 'Kindly check your customer code value!'
+                r.client_code::INT, 'Customer Check!'::VARCHAR, 'Customer does not exist', 
+                'CUSTOMER_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your customer code value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
@@ -111,8 +111,8 @@ BEGIN
                 'Valid Customer!', r.customer_code, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Customer Check!', 'Valid Customer!', 
-                'CUSTOMER_CHECK', 'PASS', 'Valid Customer code!'
+                r.client_code::INT, 'Customer Check!'::VARCHAR, 'Valid Customer!', 
+                'CUSTOMER_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Customer code!'
             );
         END IF;
 
@@ -127,8 +127,8 @@ BEGIN
             );
             -- Log status fail if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Status Check!', 'Invalid AR status', 
-                'STATUS_CHECK', 'FAIL', 'Kindly check your status value!'
+                r.client_code::INT, 'Status Check!'::VARCHAR, 'Invalid AR status', 
+                'STATUS_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your status value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
@@ -137,8 +137,8 @@ BEGIN
             );
             -- Log status pass if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Status Check!', 'Valid Status!', 
-                'STATUS_CHECK', 'PASS', 'Valid Status!'
+                r.client_code::INT, 'Status Check!'::VARCHAR, 'Valid Status!', 
+                'STATUS_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Status!'
             );
         END IF;
 
