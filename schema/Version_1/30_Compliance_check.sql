@@ -8,8 +8,11 @@ CREATE OR REPLACE FUNCTION Compliance.import_validation(
     p_severity VARCHAR
 )
 RETURNS BIGINT AS $$
-    new_id BIGINT;
 DECLARE
+
+    new_id BIGINT;
+
+BEGIN
 
     INSERT INTO Compliance.import_validation_log(
         session_id
@@ -34,7 +37,6 @@ DECLARE
     RETURNING validation_id INTO new_id;
 
     RETURN new_id;
-BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
