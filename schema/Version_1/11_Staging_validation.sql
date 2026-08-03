@@ -93,9 +93,8 @@ BEGIN
             
             UPDATE Staging.import_workflows 
             SET 
-                new_state = 'VALID'
+                new_state = 'VALID',
                 previous_state = 'PENDING'
-            FROM Staging.stg_ar_imports 
             WHERE Staging.import_workflows.session_id = r.session_id
             AND Staging.import_workflows.staging_record_id = r.staging_record_id;
 
@@ -149,9 +148,8 @@ BEGIN
             
             UPDATE Staging.import_workflows 
             SET 
-                new_state = 'VALID'
+                new_state = 'VALID',
                 previous_state = 'PENDING'
-            FROM Staging.stg_ar_imports 
             WHERE Staging.import_workflows.session_id = r.session_id
             AND Staging.import_workflows.staging_record_id = r.staging_record_id;
 
@@ -204,9 +202,8 @@ BEGIN
             
             UPDATE Staging.import_workflows 
             SET 
-                new_state = 'VALID'
+                new_state = 'VALID',
                 previous_state = 'PENDING'
-            FROM Staging.stg_ar_imports 
             WHERE Staging.import_workflows.session_id = r.session_id
             AND Staging.import_workflows.staging_record_id = r.staging_record_id;
 
@@ -240,9 +237,8 @@ BEGIN
         
             UPDATE Staging.import_workflows 
             SET 
-                new_state = 'VALID'
+                new_state = 'VALID',
                 previous_state = 'PENDING'
-            FROM Staging.stg_ar_imports 
             WHERE Staging.import_workflows.session_id = r.session_id
             AND Staging.import_workflows.staging_record_id = r.staging_record_id;
 
