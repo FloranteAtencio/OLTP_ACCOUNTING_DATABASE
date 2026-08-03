@@ -42,6 +42,6 @@ BEGIN
  -- Ensure we only update records for this session
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging import sanitation failed for session %: %', p_session_id, SQLERRM;
+        RAISE EXCEPTION 'Staging import Main Validations failed for session %: %', p_session_id, SQLERRM;
 END;
 $$;

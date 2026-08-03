@@ -28,7 +28,7 @@ BEGIN
                 , c.field_name
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
-        LEFT JOIN Staging.import_detail_logs c ON c.row_number = b.row_number
+        LEFT JOIN Audit.import_detail_logs c ON c.row_number = b.row_number
         WHERE a.session_id = p_session_id
           AND validation_status = 'VALID'
           AND b.new_state = 'PENDING'
@@ -248,7 +248,7 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging import workflow validation failed: %', SQLERRM;
+        RAISE EXCEPTION 'procedure ar import workflow validation failed: %', SQLERRM;
 END;
 $$;
 
