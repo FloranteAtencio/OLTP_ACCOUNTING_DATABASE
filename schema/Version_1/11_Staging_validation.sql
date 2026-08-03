@@ -54,7 +54,7 @@ BEGIN
                 'Check Amount Value!', r.amount, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Amount Check!', 'Negative amount is not available', 
+                r.client_code::INT, 'Amount Check!', 'Negative amount is not available', 
                 'AMOUNT_CHECK', 'FAIL', 'Kindly check your amount value!'
             );
         ELSE
@@ -63,7 +63,7 @@ BEGIN
                 'Valid Amount!', r.amount, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Amount Check!', 'Valid AMOUNT!', 
+                r.client_code::INT, 'Amount Check!', 'Valid AMOUNT!', 
                 'AMOUNT_CHECK', 'PASS', 'Valid Amount!'
             );
         END IF;
@@ -78,7 +78,7 @@ BEGIN
                 'Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Invoice Check!', 'Invoice Date should not be ahead of Due Date', 
+                r.client_code::INT, 'Invoice Check!', 'Invoice Date should not be ahead of Due Date', 
                 'DATE_CHECK', 'FAIL', 'Kindly check your invoice date value!'
             );
         ELSE
@@ -87,7 +87,7 @@ BEGIN
                 'Valid Invoice Date!', r.invoice_date, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Date Check!', 'Valid Invoice Date!', 
+                r.client_code::INT, 'Date Check!', 'Valid Invoice Date!', 
                 'DATE_CHECK', 'PASS', 'Valid Invoice Date!'
             );
         END IF;
@@ -102,7 +102,7 @@ BEGIN
                 'Customer not exists!', r.customer_code, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Customer Check!', 'Customer does not exist', 
+                r.client_code::INT, 'Customer Check!', 'Customer does not exist', 
                 'CUSTOMER_CHECK', 'FAIL', 'Kindly check your customer code value!'
             );
         ELSE
@@ -111,7 +111,7 @@ BEGIN
                 'Valid Customer!', r.customer_code, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Customer Check!', 'Valid Customer!', 
+                r.client_code::INT, 'Customer Check!', 'Valid Customer!', 
                 'CUSTOMER_CHECK', 'PASS', 'Valid Customer code!'
             );
         END IF;
@@ -127,7 +127,7 @@ BEGIN
             );
             -- Log status fail if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Status Check!', 'Invalid AR status', 
+                r.client_code::INT, 'Status Check!', 'Invalid AR status', 
                 'STATUS_CHECK', 'FAIL', 'Kindly check your status value!'
             );
         ELSE
@@ -137,7 +137,7 @@ BEGIN
             );
             -- Log status pass if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code, 'Status Check!', 'Valid Status!', 
+                r.client_code::INT, 'Status Check!', 'Valid Status!', 
                 'STATUS_CHECK', 'PASS', 'Valid Status!'
             );
         END IF;
