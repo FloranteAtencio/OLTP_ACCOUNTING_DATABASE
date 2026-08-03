@@ -29,7 +29,7 @@ BEGIN
         , p_row_number
         , p_field_name
         , p_validation_rule
-        , actual_value
+        , p_actual_value
         , p_is_valid
         , p_severity
         
