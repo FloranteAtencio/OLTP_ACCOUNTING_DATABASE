@@ -51,7 +51,7 @@ BEGIN
         
         if z.v_errors_amount IS NOT NULL THEN
 
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -61,7 +61,7 @@ BEGIN
                 'ERROR'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Amount Check!'
                 , 'Negative amount is not available'
@@ -72,7 +72,7 @@ BEGIN
 
         ELSE
         
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -82,7 +82,7 @@ BEGIN
                 'INFO'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Amount Check!'
                 , 'Valid AMOUNT!'
@@ -106,7 +106,7 @@ BEGIN
 
         if z.v_errors_invoice IS NOT NULL THEN
             
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -116,7 +116,7 @@ BEGIN
                 'ERROR'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Invoice Check!'
                 , 'Invoice Date should not ahead to Due Date '
@@ -127,7 +127,7 @@ BEGIN
 
         ELSE
             
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -137,7 +137,7 @@ BEGIN
                 'INFO'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Date Check!'
                 , 'Valid Invoice Date!'
@@ -161,7 +161,7 @@ BEGIN
 
         if z.v_errors_customer IS NOT NULL THEN
             
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -171,7 +171,7 @@ BEGIN
                 'ERROR'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Customer Check!'
                 , 'Customer does not exists!'
@@ -181,7 +181,7 @@ BEGIN
             ); 
 
         ELSE
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -191,7 +191,7 @@ BEGIN
                 'INFO'
             );
 
-            PERFORM Audit.log_compliance_check(
+            PERFORM Compliance.log_compliance_check(
                 r.client_code
                 , 'Customer Check!'
                 , 'Valid Customer!'
@@ -214,7 +214,7 @@ BEGIN
 
         if z.v_errors_status IS NOT NULL THEN
             
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 
@@ -225,7 +225,7 @@ BEGIN
             );
 
         ELSE
-            PERFORM Audit.import_validation(
+            PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
                 r.field_name, 

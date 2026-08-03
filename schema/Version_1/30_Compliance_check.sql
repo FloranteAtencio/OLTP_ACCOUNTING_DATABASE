@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION Audit.import_validation(
+CREATE OR REPLACE FUNCTION Compliance.import_validation(
     p_session_id INT,
     p_row_number INT,
     p_field_name VARCHAR,
@@ -8,7 +8,7 @@ CREATE OR REPLACE FUNCTION Audit.import_validation(
     p_severity VARCHAR
 )
 RETURNS BIGINT AS $$
-    new_id int;
+    new_id BIGINT;
 DECLARE
 
     INSERT INTO Compliance.import_validation_log(
@@ -40,7 +40,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Log compliance check
-DROP FUNCTION IF EXISTS Audit.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
 CREATE FUNCTION Audit.log_compliance_check(
     p_client_id INT,
     p_rule_name VARCHAR,
