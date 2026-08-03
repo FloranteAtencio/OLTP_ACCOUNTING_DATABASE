@@ -61,8 +61,8 @@ BEGIN
     FROM Finance.clients c,
         Finance.customers b
     WHERE
-        c.client_id = s.client_code::INT
-    AND b.customer_id = s.customer_code::INT
+       ( c.client_id = s.client_code::INT
+    OR b.customer_id = s.customer_code::INT)
     AND s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 

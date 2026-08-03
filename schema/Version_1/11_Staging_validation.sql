@@ -159,7 +159,7 @@ BEGIN
             WHERE Staging.import_workflows.session_id = r.session_id
               AND Staging.import_workflows.staging_record_id = r.staging_record_id;
         END IF;
-
+    
     END LOOP;    
 
 EXCEPTION
