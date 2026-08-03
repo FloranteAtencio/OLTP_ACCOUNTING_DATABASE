@@ -43,7 +43,7 @@ $$ LANGUAGE plpgsql;
 
 -- Log compliance check
 DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
-CREATE FUNCTION Audit.log_compliance_check(
+CREATE FUNCTION Compliance.log_compliance_check(
     p_client_id INT,
     p_rule_name VARCHAR,
     p_rule_description TEXT,
