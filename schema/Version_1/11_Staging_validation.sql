@@ -7,6 +7,8 @@ LANGUAGE plpgsql as $$
 DECLARE
     table_related VARCHAR;
     new_session_id INT;
+    r RECORD;
+    z RECORD;
 BEGIN
 
     SELECT session_id INTO new_session_id
@@ -25,25 +27,28 @@ BEGIN
     END IF;
 
     PERFORM 1 FROM Audit.import_sessions WHERE session_id = p_session_id;
-    EXECUTE format(
-        '
-        UPDATE Staging.import_workflows a
-        SET
-            new_state = %L,
-            previous_state = %L,
-            notes = %L
-        FROM %s b 
-        WHERE a.session_id = b.session_id
-        AND b.session_id = %L
-        AND b.validation_status = %L;
-        ',
-        'VALID',
-        'PENDING',
-        'PENDING FOR APPROVAL',
-        table_related,
-        new_session_id,
-        'VALID'
+
+    FOR r IN
+        SELECT  a.*
+                , b.row_number
+        FROM Staging.stg_ar_imports a
+        LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
+        LEFT JOIN Staging.import_detail_logs c ON c.row_number = b.row_number
+        WHERE a.session_id = p_session_id
+          AND validation_status = 'VALID'
+          AND b.new_state = 'PENDING'
+    LOOP
+
+        PERFORM Compliance.validate_ar_import(
+            r.row_number::INT,
+            r.customer_code::INT,
+            r.amount::DECIMAL,
+            r.invoice_date::DATE,
+            r.due_date::DECIMAL,
+            r.status::VARCHAR
         );
+
+    END LOOP;    
 
 EXCEPTION
     WHEN OTHERS THEN
