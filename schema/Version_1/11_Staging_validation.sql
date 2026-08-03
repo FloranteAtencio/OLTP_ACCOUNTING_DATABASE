@@ -24,8 +24,8 @@ BEGIN
 
     FOR r IN
         SELECT  a.*
-                , b.row_number
-                , c.field_name
+                , c.row_number
+                , c.table_name
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
         LEFT JOIN Audit.import_detail_logs c ON c.row_number = b.row_number
@@ -54,7 +54,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Check Amount Value!',
                 r.amount,
                 FALSE,
@@ -75,7 +75,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Valid Amount!',
                 r.amount,
                 TRUE,
@@ -109,7 +109,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Check invoice Value!',
                 r.invoice_date,
                 FALSE,
@@ -130,7 +130,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Valid Invoice Date!',
                 r.invoice_date,
                 TRUE,
@@ -164,7 +164,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Customer not exists!',
                 r.invoice_date,
                 FALSE,
@@ -184,7 +184,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Valid Customer!',
                 r.invoice_date,
                 TRUE,
@@ -217,7 +217,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Status Check!',
                 r.invoice_date,
                 FALSE,
@@ -228,7 +228,7 @@ BEGIN
             PERFORM Compliance.import_validation(
                 r.session_id, 
                 r.row_number, 
-                r.field_name, 
+                r.table_name, 
                 'Valid Status!',
                 r.invoice_date,
                 TRUE,
