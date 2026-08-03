@@ -15,10 +15,10 @@ DECLARE
         session_id
         ,row_number
         ,field_name
-        ,validation_rule
-        ,actual_value
-        ,is_valid
-        ,severity
+        ,validation_rule 
+        ,actual_value 
+        ,is_valid 
+        ,severity -- 'ERROR', 'WARNING', 'INFO'
         
     )
     VALUES(
@@ -54,7 +54,12 @@ DECLARE
     v_compliance_id BIGINT;
 BEGIN
     INSERT INTO Compliance.compliance_log (
-        client_id, compliance_rule, rule_description, check_type, status, details
+        client_id, 
+        compliance_rule, 
+        rule_description, 
+        check_type, --'BALANCE_CHECK', 'AMOUNT_CHECK', 'DATE_CHECK', 'CLIENT_CHECK','CUSTOMER_CHECK','DUPLICATE_CHECK', 'THRESHOLD_CHECK', 'RECONCILIATION_CHECK'
+        status, -- 'PASS', 'FAIL', 'WARNING'
+        details -- NOTES
     )
     VALUES (p_client_id, p_rule_name, p_rule_description, p_check_type, p_status, p_details)
     RETURNING compliance_id INTO v_compliance_id;
