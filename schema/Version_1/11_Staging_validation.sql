@@ -28,7 +28,7 @@ BEGIN
                 , c.table_name
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
-        LEFT JOIN Audit.import_detail_logs c ON c.row_number = b.row_number
+        LEFT JOIN Audit.import_detail_logs c ON c.session_id = b.session_id
         WHERE a.session_id = p_session_id
           AND validation_status = 'VALID'
           AND b.new_state = 'PENDING'
