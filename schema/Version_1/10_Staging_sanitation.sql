@@ -31,34 +31,53 @@ $$ LANGUAGE plpgsql;
 -- add more procedure for sanitation for each staging table
 -- =====================================
 
+
 CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
 DECLARE
-
+    collect_errors TEXT[] := ARRAY[]::TEXT[];
+    r RECORD;
 BEGIN
+
+    FOR r IN    
+        SELECT *
+        FROM Staging.stg_ar_imports a
+        WHERE a.session_id = p_session_id;
+    LOOP
+        IF NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT ) THEN 
+            array_append(collect_errors, 'Customer not found');
+        END IF;
+
+        IF NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT )  THEN 
+            array_append(collect_errors, 'Client not found');
+        
+        END IF;
+        
+        IF r.amount !~ '^\.?\d+(\.\d+)?$' THEN 
+            array_append(collect_errors,'Invalid amount format');
+        END IF;
+        
+        IF r.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
+            array_append(collect_errors,'Invalid Date');  
+        END IF;
+        
+        IF s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
+            array_append(collect_errors,'Invalid Date');
+        END IF;
+
+        IF s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 
+            array_append(collect_errors,'INVALID Status');
+        END IF;
+
+    END LOOP;
+
 
     UPDATE Staging.stg_ar_imports s
     SET 
-        validation_status = CASE 
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT ) THEN 'INVALID'
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT ) THEN 'INVALID'
-            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'INVALID'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-            ELSE 'VALID'
-        END,
-        validation_errors = CASE 
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT ) THEN 'Customer not found'
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT )  THEN 'Client not found'
-            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'Invalid amount format'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-            ELSE NULL
-        END
+        validation_status = CASE array_length(collect_errors,1) IS NULL THEN 'VALID' ELSE 'INVALID' END
+        ,validation_errors = CASE array_length(collect_errors,1) IS NOT NULL THEN array_to_string(collect_errors, '; ') ELSE NULL END
     WHERE s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 
