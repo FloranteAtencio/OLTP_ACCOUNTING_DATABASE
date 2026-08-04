@@ -64,11 +64,11 @@ BEGIN
             collect_errors := array_append(collect_errors,'Invalid Date');  
         END IF;
         
-        IF s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
+        IF r.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
             collect_errors := array_append(collect_errors,'Invalid Date');
         END IF;
 
-        IF s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 
+        IF r.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 
             collect_errors := array_append(collect_errors,'INVALID Status');
         END IF;
 
