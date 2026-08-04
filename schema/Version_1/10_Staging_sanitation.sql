@@ -50,8 +50,8 @@ BEGIN
             ELSE 'VALID'
         END,
         validation_errors = CASE 
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT; ) THEN 'Customer not found'
-            WHEN NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT; )  THEN 'Client not found'
+            WHEN NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT ) THEN 'Customer not found'
+            WHEN NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT )  THEN 'Client not found'
             WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'Invalid amount format'
             WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
             WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
