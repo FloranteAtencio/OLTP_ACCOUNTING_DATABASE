@@ -85,10 +85,10 @@ BEGIN
             validation_errors = 
                 CASE 
                 WHEN
-                    array_length(collect_errors,1) IS NOT NULL THEN 
-                        array_to_string(collect_errors, '; ') 
+                    array_length(collect_errors,1) IS NULL THEN 
+                        NULL  
                     ELSE 
-                        NULL 
+                        array_to_string(collect_errors, '; ')
                 END
         WHERE s.session_id = p_session_id
         AND s.validation_status = 'DRAFT'
