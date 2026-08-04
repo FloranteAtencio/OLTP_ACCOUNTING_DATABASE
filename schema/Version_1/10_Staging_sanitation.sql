@@ -48,28 +48,28 @@ BEGIN
     LOOP
 
         IF NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = r.customer_code::INT ) THEN 
-            array_append(collect_errors, 'Customer not found');
+            collect_errors := array_append(collect_errors, 'Customer not found');
         END IF;
 
         IF NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = r.client_code::INT )  THEN 
-            array_append(collect_errors, 'Client not found');
+            collect_errors := array_append(collect_errors, 'Client not found');
         
         END IF;
         
         IF r.amount !~ '^\.?\d+(\.\d+)?$' THEN 
-            array_append(collect_errors,'Invalid amount format');
+            collect_errors := array_append(collect_errors,'Invalid amount format');
         END IF;
         
         IF r.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
-            array_append(collect_errors,'Invalid Date');  
+            collect_errors := array_append(collect_errors,'Invalid Date');  
         END IF;
         
         IF s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
-            array_append(collect_errors,'Invalid Date');
+            collect_errors := array_append(collect_errors,'Invalid Date');
         END IF;
 
         IF s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 
-            array_append(collect_errors,'INVALID Status');
+            collect_errors := array_append(collect_errors,'INVALID Status');
         END IF;
 
     END LOOP;
