@@ -36,6 +36,7 @@ CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
 )
 LANGUAGE plpgsql as $$
 DECLARE
+
 BEGIN
 
     UPDATE Staging.stg_ar_imports s
