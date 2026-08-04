@@ -93,10 +93,10 @@ BEGIN
         WHERE s.session_id = p_session_id
         AND s.validation_status = 'DRAFT'
         AND s.id = r.id;
+        
+        collect_errors TEXT[] := ARRAY[]::TEXT[];
 
     END LOOP;
-
-
 
     UPDATE Staging.import_workflows a
     SET
