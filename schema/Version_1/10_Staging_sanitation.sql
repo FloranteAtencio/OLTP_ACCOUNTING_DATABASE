@@ -72,29 +72,31 @@ BEGIN
             collect_errors := array_append(collect_errors,'INVALID Status');
         END IF;
 
+        UPDATE Staging.stg_ar_imports s
+        SET 
+            validation_status = 
+                CASE 
+                WHEN
+                    array_length(collect_errors,1) IS NULL THEN 
+                        'VALID' 
+                ELSE 
+                        'INVALID' 
+                END ,
+            validation_errors = 
+                CASE 
+                WHEN
+                    array_length(collect_errors,1) IS NOT NULL THEN 
+                        array_to_string(collect_errors, '; ') 
+                    ELSE 
+                        NULL 
+                END
+        WHERE s.session_id = p_session_id
+        AND s.validation_status = 'DRAFT'
+        AND s.id = r.id;
+
     END LOOP;
 
 
-    UPDATE Staging.stg_ar_imports s
-    SET 
-        validation_status = 
-            CASE 
-            WHEN
-                array_length(collect_errors,1) IS NULL THEN 
-                    'VALID' 
-            ELSE 
-                    'INVALID' 
-            END ,
-        validation_errors = 
-            CASE 
-            WHEN
-                array_length(collect_errors,1) IS NOT NULL THEN 
-                    array_to_string(collect_errors, '; ') 
-                ELSE 
-                    NULL 
-            END
-    WHERE s.session_id = p_session_id
-    AND s.validation_status = 'DRAFT';
 
     UPDATE Staging.import_workflows a
     SET
