@@ -77,8 +77,22 @@ BEGIN
 
     UPDATE Staging.stg_ar_imports s
     SET 
-        validation_status = CASE array_length(collect_errors,1) IS NULL THEN 'VALID' ELSE 'INVALID' END
-        ,validation_errors = CASE array_length(collect_errors,1) IS NOT NULL THEN array_to_string(collect_errors, '; ') ELSE NULL END
+        validation_status = 
+            CASE 
+            WHEN
+                array_length(collect_errors,1) IS NULL THEN 
+                    'VALID' 
+            ELSE 
+                    'INVALID' 
+            END ,
+        validation_errors = 
+            CASE 
+            WHEN
+                array_length(collect_errors,1) IS NOT NULL THEN 
+                    array_to_string(collect_errors, '; ') 
+                ELSE 
+                    NULL 
+            END;
     WHERE s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 
