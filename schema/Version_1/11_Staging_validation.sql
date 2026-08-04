@@ -51,19 +51,19 @@ BEGIN
         IF z.amount_error IS NOT NULL THEN
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Check Amount Value!', r.amount, FALSE, 'ERROR'
+                'INVALID: Check Amount Value!', r.amount, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Amount Check!'::VARCHAR, 'Negative amount is not available', 
+                r.client_code::INT, 'INVALID: Amount Check!'::VARCHAR, 'Negative amount is not available', 
                 'AMOUNT_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your amount value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Valid Amount!', r.amount, TRUE, 'INFO'
+                'Valid: Amount!', r.amount, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Amount Check!'::VARCHAR, 'Valid AMOUNT!', 
+                r.client_code::INT, 'VALID: Amount'::VARCHAR, 'Valid AMOUNT!', 
                 'AMOUNT_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Amount!'
             );
         END IF;
@@ -75,19 +75,19 @@ BEGIN
         IF z.Invoice_error IS NOT NULL THEN
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
+                'INVALID: Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Invoice Check!'::VARCHAR, 'Invoice Date should not be ahead of Due Date', 
+                r.client_code::INT, 'INVALID: Invoice Check!'::VARCHAR, 'Invoice Date should not be ahead of Due Date', 
                 'DATE_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your invoice date value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Valid Invoice Date!', r.invoice_date, TRUE, 'INFO'
+                'VALID: Invoice Date!', r.invoice_date, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Date Check!'::VARCHAR, 'Valid Invoice Date!', 
+                r.client_code::INT, 'VALID: Date Check!'::VARCHAR, 'Valid Invoice Date!', 
                 'DATE_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Invoice Date!'
             );
         END IF;
@@ -99,19 +99,19 @@ BEGIN
         IF z.customer_error IS NOT NULL THEN
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Customer not exists!', r.customer_code, FALSE, 'ERROR'
+                'INVALID: Customer not exists!', r.customer_code, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Customer Check!'::VARCHAR, 'Customer does not exist', 
+                r.client_code::INT, 'INVALID: Customer Check!'::VARCHAR, 'Customer does not exist', 
                 'CUSTOMER_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your customer code value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Valid Customer!', r.customer_code, TRUE, 'INFO'
+                'VALID: Customer!', r.customer_code, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Customer Check!'::VARCHAR, 'Valid Customer!', 
+                r.client_code::INT, 'VALID: Customer Check!'::VARCHAR, 'Valid Customer!', 
                 'CUSTOMER_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Customer code!'
             );
         END IF;
@@ -123,21 +123,21 @@ BEGIN
         IF z.status_error IS NOT NULL THEN
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Status Check!', r.status, FALSE, 'ERROR'
+                'INVALID: Status Check!', r.status, FALSE, 'ERROR'
             );
             -- Log status fail if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Status Check!'::VARCHAR, 'Invalid AR status', 
+                r.client_code::INT, 'INVALID: Status Check!'::VARCHAR, 'Invalid AR status', 
                 'STATUS_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your status value!'
             );
         ELSE
             PERFORM Compliance.import_validation(
                 r.session_id, r.row_number, r.table_name, 
-                'Valid Status!', r.status, TRUE, 'INFO'
+                'Valid: Status!', r.status, TRUE, 'INFO'
             );
             -- Log status pass if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'Status Check!'::VARCHAR, 'Valid Status!', 
+                r.client_code::INT, 'VALID: Status Check!'::VARCHAR, 'Valid Status!', 
                 'STATUS_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Status!'
             );
         END IF;
@@ -155,7 +155,8 @@ BEGIN
             UPDATE Staging.import_workflows 
             SET 
                 new_state = 'VALID',
-                previous_state = 'PENDING'
+                previous_state = 'PENDING',
+                notes = 'PENDING FOR VALIDATION'
             WHERE Staging.import_workflows.session_id = r.session_id
               AND Staging.import_workflows.staging_record_id = r.id;
         END IF;

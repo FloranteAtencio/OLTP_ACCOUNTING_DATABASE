@@ -66,12 +66,12 @@ BEGIN
     END IF;
     
     -- Validate customer exists
-    IF NOT EXISTS (SELECT 1 FROM Finance.customers WHERE customer_id = p_customer_id) THEN
+    IF NOT EXISTS (SELECT 1 FROM Finance.customers z WHERE z.customer_id = p_customer_id) THEN
         v_errors_customer := 'Customer ID does not exist';
     END IF;
     
     -- Validate status
-    IF p_status NOT IN ('Pending', 'Partial', 'Paid', 'Overdue') THEN
+    IF p_status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN
         v_errors_status := 'Invalid AR status';
     END IF;
     
