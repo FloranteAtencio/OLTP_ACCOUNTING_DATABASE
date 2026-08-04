@@ -1,5 +1,11 @@
 BEGIN;
 
+-- =============================================================
+-- Staging validations imoprt 
+-- may add more future staging table here 
+-- =============================================================
+
+
 CREATE OR REPLACE PROCEDURE Staging.ar_import_workflow_validation(
     IN p_session_id INT
 )
@@ -49,7 +55,7 @@ BEGIN
         -- ========================================================
         -- FIX: Use z.amount_error instead of z.v_errors_amount
         IF z.amount_error IS NOT NULL THEN
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'INVALID: Check Amount Value!', r.amount, FALSE, 'ERROR'
             );
@@ -58,7 +64,7 @@ BEGIN
                 'AMOUNT_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your amount value!'
             );
         ELSE
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'Valid: Amount!', r.amount, TRUE, 'INFO'
             );
@@ -73,7 +79,7 @@ BEGIN
         -- ========================================================
         -- FIX: Use z.Invoice_error instead of z.v_errors_invoice
         IF z.Invoice_error IS NOT NULL THEN
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'INVALID: Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
             );
@@ -82,7 +88,7 @@ BEGIN
                 'DATE_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your invoice date value!'
             );
         ELSE
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'VALID: Invoice Date!', r.invoice_date, TRUE, 'INFO'
             );
@@ -97,7 +103,7 @@ BEGIN
         -- ========================================================
         -- FIX: Use z.customer_error instead of z.v_errors_customer
         IF z.customer_error IS NOT NULL THEN
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'INVALID: Customer not exists!', r.customer_code, FALSE, 'ERROR'
             );
@@ -106,7 +112,7 @@ BEGIN
                 'CUSTOMER_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your customer code value!'
             );
         ELSE
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'VALID: Customer!', r.customer_code, TRUE, 'INFO'
             );
@@ -121,7 +127,7 @@ BEGIN
         -- ========================================================
         -- FIX: Use z.status_error instead of z.v_errors_status
         IF z.status_error IS NOT NULL THEN
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'INVALID: Status Check!', r.status, FALSE, 'ERROR'
             );
@@ -131,7 +137,7 @@ BEGIN
                 'STATUS_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your status value!'
             );
         ELSE
-            PERFORM Compliance.import_validation(
+            PERFORM Audit.import_validation(
                 r.session_id, r.row_number, r.table_name, 
                 'Valid: Status!', r.status, TRUE, 'INFO'
             );

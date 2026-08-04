@@ -4,19 +4,8 @@ CREATE SCHEMA Compliance;
 -- ============================================================
 -- compliance schema log
 -- ============================================================
-DROP TABLE IF EXISTS Compliance.import_validation_log CASCADE;
-CREATE TABLE Compliance.import_validation_log (
-    validation_id BIGSERIAL PRIMARY KEY,
-    session_id INT REFERENCES Audit.import_sessions(session_id) ON DELETE NO ACTION,
-    row_number INT NOT NULL,
-    field_name VARCHAR(255) NOT NULL,
-    validation_rule VARCHAR(255) NOT NULL,
-    expected_value TEXT,
-    actual_value TEXT,
-    is_valid BOOLEAN NOT NULL,
-    severity VARCHAR(20) DEFAULT 'ERROR' CHECK (severity IN ('ERROR', 'WARNING', 'INFO')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
+
 -- ========================================
 -- compliance schema Trails
 -- =========================================
