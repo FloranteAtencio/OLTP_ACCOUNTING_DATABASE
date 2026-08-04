@@ -44,13 +44,14 @@ BEGIN
     FOR r IN    
         SELECT *
         FROM Staging.stg_ar_imports a
-        WHERE a.session_id = p_session_id;
+        WHERE a.session_id = p_session_id
     LOOP
-        IF NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = s.customer_code::INT ) THEN 
+
+        IF NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = r.customer_code::INT ) THEN 
             array_append(collect_errors, 'Customer not found');
         END IF;
 
-        IF NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = s.client_code::INT )  THEN 
+        IF NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = r.client_code::INT )  THEN 
             array_append(collect_errors, 'Client not found');
         
         END IF;
