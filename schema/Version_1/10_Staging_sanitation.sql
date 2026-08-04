@@ -92,7 +92,7 @@ BEGIN
                     array_to_string(collect_errors, '; ') 
                 ELSE 
                     NULL 
-            END;
+            END
     WHERE s.session_id = p_session_id
     AND s.validation_status = 'DRAFT';
 
