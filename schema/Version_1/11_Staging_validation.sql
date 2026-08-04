@@ -24,7 +24,7 @@ BEGIN
         SELECT 
             a.*, 
             c.row_number, 
-            c.table_name
+            c.table_name,
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
         LEFT JOIN Audit.import_detail_logs c ON a.id = c.created_record_id
@@ -157,7 +157,7 @@ BEGIN
                 new_state = 'VALID',
                 previous_state = 'PENDING'
             WHERE Staging.import_workflows.session_id = r.session_id
-              AND Staging.import_workflows.staging_record_id = r.staging_record_id;
+              AND Staging.import_workflows.staging_record_id = r.id;
         END IF;
     
     END LOOP;    
