@@ -156,7 +156,7 @@ BEGIN
             SET 
                 new_state = 'VALID',
                 previous_state = 'PENDING',
-                notes = 'PENDING FOR VALIDATION'
+                notes = 'PENDING FOR APPROVAL'
             WHERE Staging.import_workflows.session_id = r.session_id
               AND Staging.import_workflows.staging_record_id = r.id;
         END IF;
