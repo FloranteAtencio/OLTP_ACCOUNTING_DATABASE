@@ -94,7 +94,7 @@ BEGIN
         AND s.validation_status = 'DRAFT'
         AND s.id = r.id;
         
-        collect_errors TEXT[] := ARRAY[]::TEXT[];
+        collect_errors := ARRAY[]::TEXT[];
 
     END LOOP;
 
