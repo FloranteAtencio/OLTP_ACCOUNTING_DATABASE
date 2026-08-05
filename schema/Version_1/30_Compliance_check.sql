@@ -36,7 +36,7 @@ BEGIN
         p_status,
         p_resolution_status,
         p_notes)
-    RETURNING compliance_id INTO v_compliance_id;
+    RETURNING log_id INTO v_compliance_id;
     
     RETURN v_compliance_id;
 END;
