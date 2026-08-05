@@ -353,10 +353,9 @@ CREATE TRIGGER charts_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.charts
 FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
 
--- CREATE TRIGGER ar_import_changes
--- AFTER INSERT ON Staging.stg_ar_imports
--- FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
-
+CREATE TRIGGER ar_import_changes
+AFTER UPDATE OR DELETE ON Staging.stg_ar_imports
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
 
 COMMIT;
 

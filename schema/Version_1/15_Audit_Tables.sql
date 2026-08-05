@@ -162,7 +162,6 @@ CREATE TABLE Audit.record_lineage (
     is_original BOOLEAN DEFAULT TRUE
 );
 
-
 COMMIT;
 
 SELECT '15 Audit Schema Tables Complete' as Status;
