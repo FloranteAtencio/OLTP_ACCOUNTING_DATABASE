@@ -30,8 +30,7 @@ BEGIN
         SELECT 
             a.*, 
             c.row_number, 
-            c.table_name,
-            b.staging_table
+            c.table_name
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
         LEFT JOIN Audit.import_detail_logs c ON a.id = c.created_record_id
@@ -65,8 +64,8 @@ BEGIN
                 , 1
                 , r.session_id
                 , r.id
-                , NULL,
-                r.table_related
+                , NULL
+                , r.table_name
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -82,7 +81,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -104,7 +103,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -120,7 +119,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -142,7 +141,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -158,7 +157,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -181,7 +180,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -198,7 +197,7 @@ BEGIN
                 , r.session_id
                 , r.id
                 , NULL,
-                r.table_related
+                r.table_name
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
