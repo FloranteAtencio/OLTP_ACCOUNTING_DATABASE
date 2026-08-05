@@ -26,6 +26,7 @@ BEGIN
           AND validation_status = 'VALID'
           AND b.new_state = 'APPROVE_L3'
     LOOP
+        
         CALL Finance.ar_transaction(
             r.client_code::INT,
             r.customer_code::INT,
@@ -35,36 +36,39 @@ BEGIN
             r.status::VARCHAR,
             gen_random_uuid()::TEXT
         );
-    
-        INSERT INTO Audit.record_lineage (
-            table_name, 
-            record_id, 
-            client_id, 
-            source_type, 
-            source_file, 
-            import_session_id, 
-            created_by,
-            prev_hash, 
-            row_hash
-        ) VALUES (
-            'stg_ar_import', 
-            r.id, 
-            r.client_code::INT, 
-            'SPREADSHEET_IMPORT',
-            current_setting('app.import_source_file', TRUE),
-            p_session_id::INT,
-            current_user,
-            new_previous_hash,
-            md5(
-                COALESCE(new_previous_hash,'')
-                || p_session_id
-                || 'stg_ar_import'
-                || 'SPREADSHEET_IMPORT'
-                || r.id
-                || current_user
-            )
-        );
-    -- END IF;
+
+        IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN    
+            INSERT INTO Audit.record_lineage (
+                table_name, 
+                record_id, 
+                client_id, 
+                source_type, 
+                source_file, 
+                import_session_id, 
+                created_by,
+                prev_hash, 
+                row_hash
+            ) VALUES (
+                'stg_ar_import', 
+                r.id, 
+                r.client_code::INT, 
+                'SPREADSHEET_IMPORT',
+                current_setting('app.import_source_file', TRUE),
+                p_session_id::INT,
+                current_user,
+                new_previous_hash,
+                md5(
+                    COALESCE(new_previous_hash,'')
+                    || p_session_id
+                    || 'stg_ar_import'
+                    || 'SPREADSHEET_IMPORT'
+                    || r.id
+                    || current_user
+                )
+            );
+        ELSE
+            RAISE EXCEPTION 'Data Source File is missing!'
+    END IF;
 
     END LOOP;
         
