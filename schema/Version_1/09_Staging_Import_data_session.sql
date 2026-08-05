@@ -80,4 +80,4 @@ $$ LANGUAGE plpgsql;
 
 COMMIT;
 
-SELECT 'Staging Schema import data session complete' as Status;
+SELECT '09 Staging Schema import data session complete' as Status;

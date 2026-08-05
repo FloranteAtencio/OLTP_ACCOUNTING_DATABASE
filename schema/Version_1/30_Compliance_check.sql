@@ -1,3 +1,5 @@
+BEGIN;
+
 -- Log compliance check
 -- DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
 CREATE OR REPLACE FUNCTION Compliance.log_compliance_check(
@@ -41,3 +43,7 @@ BEGIN
     RETURN v_compliance_id;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT;
+
+SELECT '30 Compliance check' AS STATUS;

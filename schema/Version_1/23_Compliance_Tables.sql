@@ -72,4 +72,4 @@ CREATE INDEX idx_compliance_logs_record ON Compliance.compliance_logs(staging_re
 CREATE INDEX idx_compliance_logs_rule ON Compliance.compliance_logs(rule_id);
 COMMIT;
 
-SELECT 'Compliance Schema Tables complete!' AS STATUS;
+SELECT '23 Compliance Schema Tables complete!' AS STATUS;

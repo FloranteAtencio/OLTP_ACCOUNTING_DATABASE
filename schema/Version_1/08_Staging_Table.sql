@@ -47,4 +47,4 @@ CREATE TABLE IF NOT EXISTS Staging.import_approvals (
 
 COMMIT;
 
-SELECT 'Staging table schema complete!' as  Status;
+SELECT '08 Staging table schema complete!' as  Status;

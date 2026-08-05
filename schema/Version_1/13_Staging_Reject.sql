@@ -33,4 +33,4 @@ $$;
 
 COMMIT;
 
-SELECT 'Staging Schema import data reject complete' as Status;
+SELECT '13 Staging Schema import data reject complete' as Status;

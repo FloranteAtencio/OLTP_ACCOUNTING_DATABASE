@@ -165,4 +165,4 @@ CREATE TABLE Audit.record_lineage (
 
 COMMIT;
 
-SELECT 'Audit Schema Tables Complete' as Status;
+SELECT '15 Audit Schema Tables Complete' as Status;

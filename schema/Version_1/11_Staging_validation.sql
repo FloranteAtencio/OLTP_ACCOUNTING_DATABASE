@@ -5,6 +5,10 @@ BEGIN;
 -- may add more future staging table here 
 -- =============================================================
 
+-- =============================================================
+-- Staging validations 
+-- Account Receivables Procedure
+-- =============================================================
 
 CREATE OR REPLACE PROCEDURE Staging.ar_import_workflow_validation(
     IN p_session_id INT
@@ -231,6 +235,12 @@ EXCEPTION
 END;
 $$;
 
+-- =============================================================
+-- Staging validations END
+-- Account Receivables Procedure
+-- =============================================================
+
+
 COMMIT;
 
-SELECT 'Staging Schema import data validations complete' as Status;
+SELECT '11 Staging Schema import data validations complete' as Status;

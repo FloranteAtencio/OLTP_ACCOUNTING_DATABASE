@@ -5,6 +5,7 @@ BEGIN;
     -- ============================================
     -- 04. Index ADD PERFORMANCE INDEXES
     -- ============================================
+    
     CREATE INDEX IF NOT EXISTS idx_journals_date ON Finance.journals(date);
 
     CREATE INDEX IF NOT EXISTS idx_charts_client ON Finance.charts(client_id);
@@ -47,11 +48,6 @@ BEGIN;
     CREATE INDEX IF NOT EXISTS idx_inventory_audits_product ON Finance.inventory_audits(product_id);
     CREATE INDEX IF NOT EXISTS idx_inventory_audits_warehouse ON Finance.inventory_audits(warehouse_id);
 
-    -- Audit indexes
-    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON Finance.audit_logs(log_time);
-    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_table ON Finance.audit_logs(table_name);
-    -- CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON Finance.audit_logs(changed_by);
-
     -- Event log indexes
     CREATE INDEX IF NOT EXISTS idx_event_log_type ON Finance.event_log(event_type);
     CREATE INDEX IF NOT EXISTS idx_event_log_status ON Finance.event_log(status);
@@ -59,4 +55,4 @@ BEGIN;
 
 COMMIT;
 
-SELECT 'Finance Schema Index Complete!' as  Status;
+SELECT '06 Finance Schema Index Complete!' as  Status;

@@ -1,3 +1,4 @@
+BEGIN;
 
 -- Get compliance violations
 DROP FUNCTION IF EXISTS Compliance.get_compliance_violations(INT, INT) CASCADE;
@@ -31,3 +32,7 @@ BEGIN
     ORDER BY cl.checked_at DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT;
+
+SELECT '29 Compliance violations log' AS STATUS;

@@ -165,4 +165,4 @@ END;
 $$;
 
 COMMIT;
-SELECT 'Staging Schema data sanitation complete' as Status;
+SELECT '10 Staging Schema data sanitation complete' as Status;

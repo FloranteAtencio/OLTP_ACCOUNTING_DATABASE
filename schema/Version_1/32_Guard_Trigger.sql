@@ -101,4 +101,4 @@ FOR EACH ROW EXECUTE FUNCTION Audit.Guard_trigger();--chart_id);
 
 COMMIT;
 
-SELECT 'Guard Triggers Complete' AS STATUS;
+SELECT '32 Guard Triggers Complete' AS STATUS;

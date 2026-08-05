@@ -1,3 +1,5 @@
+BEGIN;
+
 -- ============================================
 -- 7. COMPLETE AUDIT QUERY FUNCTIONS
 -- ============================================
@@ -114,3 +116,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMIT;
+
+SELECT '21 Audit trail output' AS STATUS;

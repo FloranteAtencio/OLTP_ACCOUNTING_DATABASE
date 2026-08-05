@@ -15,6 +15,13 @@ BEGIN
     FROM Staging.import_workflows a
     WHERE a.session_id = p_session_id
     LIMIT 1;
+
+    SELECT row_hash
+    INTO new_previous_hash
+    FROM Audit.record_lineage
+    ORDER BY lineage_id DESC
+    LIMIT 1
+    FOR UPDATE;
     
     FOR r IN
         SELECT a.*
@@ -33,8 +40,42 @@ BEGIN
             r.status::VARCHAR,
             gen_random_uuid()::TEXT
         );
-    END LOOP;
     
+        INSERT INTO Audit.record_lineage (
+            table_name, 
+            record_id, 
+            client_id, 
+            source_type, 
+            source_file, 
+            import_session_id, 
+            created_by,
+            prev_hash, 
+            row_hash
+        ) VALUES (
+            'stg_ar_import', 
+            r.staging_record_id, 
+            r.client_code::INT, 
+            'SPREADSHEET_IMPORT',
+            current_setting('app.import_source_file', TRUE),
+            p_session_id::INT,
+            current_user,
+            new_previous_hash,
+            md5(
+                COALESCE(new_previous_hash,'')
+                || p_session_id
+                || 'stg_ar_import'
+                || 'SPREADSHEET_IMPORT'
+                || new_ar_staging_id
+                || current_user
+            )
+        );
+    -- END IF;
+
+    END LOOP;
+        
+    -- IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
+
+
     UPDATE Staging.import_workflows
     SET new_state = 'POSTED',
         previous_state = new_previous_state
@@ -42,7 +83,7 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging post for ar import failed : % ', SQLERRM;
+        RAISE EXCEPTION 'Staging post_ar_import failed : % ', SQLERRM;
 
 END;
 $$;
@@ -79,10 +120,10 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging main post transaction failed : % ', SQLERRM;
+        RAISE EXCEPTION 'Staging.import_workflow_posting failed : % ', SQLERRM;
 
 END;
 $$;
 COMMIT;
 
-SELECT 'Staging Schema import data posting complete' as Status;
+SELECT '14 Staging Schema import data posting complete' as Status;

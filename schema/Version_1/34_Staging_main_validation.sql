@@ -1,3 +1,5 @@
+BEGIN;
+
 -- =====================================
 -- the main staging work flow santation
 -- =====================================
@@ -45,3 +47,7 @@ EXCEPTION
         RAISE EXCEPTION 'Staging import Main Validations failed for session %: %', p_session_id, SQLERRM;
 END;
 $$;
+
+COMMIT;
+
+SELECT '34 STAGING MAIN VALIDATION' AS STATUS;

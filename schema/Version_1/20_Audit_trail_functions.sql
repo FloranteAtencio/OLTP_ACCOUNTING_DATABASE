@@ -1,3 +1,5 @@
+BEGIN;
+
 -- ============================================
 -- 6. AUDIT TRAIL FUNCTIONS
 -- ============================================
@@ -93,3 +95,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMIT;
+
+SELECT '20 Audit trail functions' AS STATUS;

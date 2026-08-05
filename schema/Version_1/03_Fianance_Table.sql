@@ -295,4 +295,4 @@ CREATE TABLE IF NOT EXISTS Finance.event_log (
 
 COMMIT;
 
-SELECT 'Finance Schema Table Complete!' as  Status;
+SELECT '03 Finance Schema Table Complete!' as  Status;

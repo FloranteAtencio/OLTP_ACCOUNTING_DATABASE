@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE OR REPLACE PROCEDURE Finance.assign_account_role(
     IN p_account_description TEXT,
     IN p_role_name TEXT
@@ -62,3 +64,7 @@ EXCEPTION
         RAISE EXCEPTION 'COA Transaction Failed to apply template: %', SQLERRM;
 END;
 $$;
+
+COMMIT;
+
+SELECT '31 COA ROLE ACCOUNT' AS STATUS;

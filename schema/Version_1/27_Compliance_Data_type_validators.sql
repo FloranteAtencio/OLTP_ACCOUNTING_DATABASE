@@ -91,3 +91,4 @@ END;
 $$ LANGUAGE plpgsql;
 
 COMMIT;
+SELECT '27 Compliance data type validators' AS STATUS;

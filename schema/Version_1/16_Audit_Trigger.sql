@@ -360,4 +360,4 @@ FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
 
 COMMIT;
 
-SELECT 'Audit Schema Trigger complete!' AS Status;
+SELECT '16 Audit Schema Trigger complete!' AS Status;

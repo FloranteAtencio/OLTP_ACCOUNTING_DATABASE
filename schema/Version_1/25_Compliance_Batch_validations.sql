@@ -1,4 +1,7 @@
+BEGIN;
+
 -- Validate entire transaction
+
 DROP FUNCTION IF EXISTS Compliance.validate_transaction_import(INT, INT, DECIMAL, DATE) CASCADE;
 CREATE FUNCTION Compliance.validate_transaction_import(
     p_transaction_id INT,
@@ -167,6 +170,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+COMMIT;
+
+SELECT '25 Compliance batch validations ' AS STATUS;
 
 -- =====================================================================================
 -- Validate entire transaction PRESEVERVING CODE FOR FUTURE REFERENCE

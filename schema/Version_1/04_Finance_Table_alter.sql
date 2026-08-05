@@ -23,4 +23,4 @@ ALTER TABLE Finance.clients
 
 COMMIT;
 
-SELECT 'Finance Schema Table alter complete!' as  Status;
+SELECT '04 Finance Schema Table alter complete!' as  Status;

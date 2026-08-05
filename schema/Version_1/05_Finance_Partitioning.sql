@@ -17,7 +17,7 @@ BEGIN
 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE EXCEPTION 'Transaction failed: %', SQLERRM;
+            RAISE EXCEPTION 'Partitioning weekly basis Transaction failed: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -38,10 +38,10 @@ BEGIN
 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE EXCEPTION 'Transaction failed: %', SQLERRM;
+            RAISE EXCEPTION 'Partition Monthly Transaction failed: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
 
 COMMIT;
 
-SELECT 'Finance Schema Partitioning Complete!' as  Status;
+SELECT '05 Finance Schema Partitioning Complete!' as  Status;

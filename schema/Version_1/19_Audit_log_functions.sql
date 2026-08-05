@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE OR REPLACE FUNCTION Audit.import_validation(
     p_session_id INT,
     p_row_number INT,
@@ -113,3 +115,7 @@ BEGIN
     WHERE session_id = p_session_id;
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT;
+
+SELECT '19 Audit log functions' as STATUS;
