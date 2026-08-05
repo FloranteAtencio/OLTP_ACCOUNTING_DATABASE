@@ -65,7 +65,7 @@ BEGIN
                 || p_session_id
                 || 'stg_ar_import'
                 || 'SPREADSHEET_IMPORT'
-                || new_ar_staging_id
+                || r.id
                 || current_user
             )
         );
