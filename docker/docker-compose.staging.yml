@@ -8,6 +8,7 @@ services:
     ports:
       - "5432:5432"   # 🔒 LOCAL ONLY
     volumes:
+      - ../schema/Version_1:/docker-entrypoint-initdb.d
       - staging_pgdata:/var/lib/postgresql/data
       - ../conf/postgres.conf.stagin:/etc/postgresql/postgresql.conf
       - ../conf/pg_hba.conf.stagin:/etc/postgresql/pg_hba.conf
