@@ -63,7 +63,7 @@ BEGIN
                 r.client_code::INT
                 , 1::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'FAIL'
@@ -79,7 +79,7 @@ BEGIN
                 r.client_code::INT
                 , 1::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'PASS'
@@ -101,7 +101,7 @@ BEGIN
                 r.client_code::INT
                 , 2::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'FAIL'
@@ -117,7 +117,7 @@ BEGIN
                 r.client_code::INT
                 , 2::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'PASS'
@@ -139,7 +139,7 @@ BEGIN
                 r.client_code::INT
                 , 3::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'FAIL'
@@ -155,7 +155,7 @@ BEGIN
                 r.client_code::INT
                 , 3::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'PASS'
@@ -178,7 +178,7 @@ BEGIN
                r.client_code::INT
                 , 4::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'FAIL'
@@ -195,7 +195,7 @@ BEGIN
                r.client_code::INT
                 , 4::INT
                 , r.session_id::INT
-                , r.id::BIGINT
+                , r.id::INT
                 , NULL
                 , r.table_name::VARCHAR
                 , 'PASS'

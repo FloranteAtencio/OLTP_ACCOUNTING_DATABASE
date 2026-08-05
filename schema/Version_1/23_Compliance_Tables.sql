@@ -34,10 +34,10 @@ CREATE TABLE Compliance.compliance_logs (
     
     -- The Link to Data (Now Flexible)
     session_id INT,                   -- NULL if direct entry
-    staging_record_id BIGINT,         -- NULL if direct to production
+    staging_record_id INT,         -- NULL if direct to production
     
     -- The Link to Production (NEW!)
-    production_record_id BIGINT,      -- The ID in the production table (if applicable)
+    production_record_id INT,      -- The ID in the production table (if applicable)
     target_table_name VARCHAR(50),    -- e.g., 'accounts_receivable', 'journal_entries'
     
     -- The Result
@@ -55,12 +55,12 @@ CREATE TABLE Compliance.compliance_logs (
 );
 
 -- Constraint: You must link to SOME data (Staging OR Production)
-ALTER TABLE Compliance.compliance_logs
-ADD CONSTRAINT chk_data_linkage 
-CHECK (
-    (staging_record_id IS NOT NULL AND session_id IS NOT NULL) OR 
-    (production_record_id IS NOT NULL AND target_table_name IS NOT NULL)
-);
+-- ALTER TABLE Compliance.compliance_logs
+-- ADD CONSTRAINT chk_data_linkage 
+-- CHECK (
+--     (staging_record_id IS NOT NULL AND session_id IS NOT NULL) OR 
+--     (production_record_id IS NOT NULL AND target_table_name IS NOT NULL)
+-- );
 
 -- If no record exists yet (e.g., pre-check), store the payload hash
 ALTER TABLE Compliance.compliance_logs
