@@ -6,7 +6,7 @@ AS $$
 DECLARE
     r RECORD;
     new_previous_state VARCHAR(50);
-
+    new_previous_hash VARCHAR(50);
 BEGIN    
 
     SET LOCAL app.allow_direct_insert = 'true';
