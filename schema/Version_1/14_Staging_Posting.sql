@@ -11,13 +11,6 @@ BEGIN
 
     SET LOCAL app.allow_direct_insert = 'true';
     
-    SELECT row_hash
-    INTO new_previous_hash
-    FROM Audit.record_lineage
-    ORDER BY lineage_id DESC
-    LIMIT 1
-    FOR UPDATE;
-    
     FOR r IN
         SELECT a.*
         FROM Staging.stg_ar_imports a
@@ -36,7 +29,14 @@ BEGIN
             r.status::VARCHAR,
             gen_random_uuid()::TEXT
         );
-
+    
+        SELECT row_hash
+        INTO new_previous_hash
+        FROM Audit.record_lineage
+        ORDER BY lineage_id DESC
+        LIMIT 1
+        FOR UPDATE;
+        
         INSERT INTO Audit.record_lineage (
             table_name, 
             record_id, 
