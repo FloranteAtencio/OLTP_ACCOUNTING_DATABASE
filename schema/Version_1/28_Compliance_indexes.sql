@@ -4,4 +4,4 @@ CREATE INDEX idx_import_validation_field ON Audit.import_validation_log(field_na
 
 CREATE INDEX idx_compliance_client ON Compliance.compliance_logs(client_id);
 CREATE INDEX idx_compliance_status ON Compliance.compliance_logs(status);
-CREATE INDEX idx_compliance_rule ON Compliance.compliance_logs(compliance_rule);
+-- CREATE INDEX idx_compliance_rule ON Compliance.compliance_logs(compliance_rule);
