@@ -23,7 +23,7 @@ BEGIN
     SET
         new_state = 'REJECT',
         previous_state = 'DRAFT'
-    WHERE a.session_id = new_session_id;
+    WHERE a.session_id = new_session_id AND new_state = 'DRAFT' AND previous_state = NULL;
 
 EXCEPTION
     WHEN OTHERS THEN
