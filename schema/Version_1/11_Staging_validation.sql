@@ -61,11 +61,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 1
-                , r.session_id
-                , r.id
+                , 1::INT
+                , r.session_id::INT
+                , r.id::BIGINT
                 , NULL
-                , r.table_name
+                , r.table_name::VARCHAR
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -77,11 +77,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 1
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+                , 1::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -99,11 +99,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 2
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+                , 2::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -115,11 +115,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 2
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+                , 2::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -137,11 +137,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 3
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+                , 3::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -153,11 +153,11 @@ BEGIN
             );
             PERFORM Compliance.log_compliance_check(
                 r.client_code::INT
-                , 3
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+                , 3::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
@@ -175,12 +175,12 @@ BEGIN
             );
             -- Log status fail if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT
-                , 4
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+               r.client_code::INT
+                , 4::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'FAIL'
                 , 'UNRESOLVED'
                 , NULL
@@ -192,12 +192,12 @@ BEGIN
             );
             -- Log status pass if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT
-                , 4
-                , r.session_id
-                , r.id
-                , NULL,
-                r.table_name
+               r.client_code::INT
+                , 4::INT
+                , r.session_id::INT
+                , r.id::BIGINT
+                , NULL
+                , r.table_name::VARCHAR
                 , 'PASS'
                 , 'RESOLVED'
                 , NULL
