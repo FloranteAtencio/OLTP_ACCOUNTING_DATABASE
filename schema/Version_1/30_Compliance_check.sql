@@ -1,6 +1,6 @@
 -- Log compliance check
-DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
-CREATE FUNCTION Compliance.log_compliance_check(
+-- DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
+CREATE OR REPLACE FUNCTION Compliance.log_compliance_check(
     p_client_id INT,
     p_rule_id INT,
     p_session_id INT,
