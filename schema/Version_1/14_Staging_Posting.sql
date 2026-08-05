@@ -67,7 +67,7 @@ BEGIN
                 )
             );
         ELSE
-            RAISE EXCEPTION 'Data Source File is missing!'
+            RAISE EXCEPTION 'Data Source File is missing!';
     END IF;
 
     END LOOP;
