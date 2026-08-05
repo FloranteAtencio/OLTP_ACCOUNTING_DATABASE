@@ -20,8 +20,8 @@ CREATE TABLE Compliance.compliance_rules (
 INSERT INTO Compliance.compliance_rules (rule_id, rule_name, check_type, description) VALUES
 (1, 'Positive Amount Rule', 'AMOUNT_CHECK', 'Ensures AR amount is strictly positive'),
 (2, 'Valid Date Range', 'DATE_CHECK', 'Invoice date must be before due date'),
-(3, 'Customer Existence', 'CUSTOMER_CHECK', 'Customer ID must exist in Finance.customers');
-(4, 'Status Existence', 'STATUS_CHECK', 'Status should be at the given list')
+(3, 'Customer Existence', 'CUSTOMER_CHECK', 'Customer ID must exist in Finance.customers'),
+(4, 'Status Existence', 'STATUS_CHECK', 'Status should be at the given list');
 
 -- ========================================
 -- compliance schema Trails

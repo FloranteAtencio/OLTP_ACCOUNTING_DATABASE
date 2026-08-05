@@ -2,11 +2,11 @@
 DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
 CREATE FUNCTION Compliance.log_compliance_check(
     p_client_id INT,
-    p_rule_id VARCHAR,
-    p_session_id TEXT,
-    p_staging_record_id VARCHAR,
-    p_production_record_id VARCHAR,
-    p_target_table_name TEXT DEFAULT NULL,
+    p_rule_id INT,
+    p_session_id INT,
+    p_staging_record_id INT,
+    p_production_record_id INT,
+    p_target_table_name VARCHAR,
     p_status VARCHAR,
     p_resolution_status VARCHAR,
     p_notes TEXT
