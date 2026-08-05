@@ -5,7 +5,6 @@
 
 BEGIN;
 
-
 -- Customer exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_customer_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_customer_exists(p_customer_id INT)
@@ -125,3 +124,8 @@ BEGIN
     RETURN p_due_date < CURRENT_DATE;
 END;
 $$ LANGUAGE plpgsql;
+
+
+COMMIT;
+
+SELECT '24 Compliance business logic validation' AS STATUS;

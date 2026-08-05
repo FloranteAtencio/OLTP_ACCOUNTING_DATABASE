@@ -1,3 +1,4 @@
+BEGIN;
 
 -- ============================================
 -- 6. JOURNAL ENTRY PROCEDURE
@@ -215,3 +216,7 @@ BEGIN
     END LOOP;
 END;
 $$;
+
+COMMIT;
+
+SELECT '32 AR BUSINESS LOGIC' AS STATUS;

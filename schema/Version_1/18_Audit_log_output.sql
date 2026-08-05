@@ -105,4 +105,4 @@ $$ LANGUAGE plpgsql;
 
 COMMIT;
 
-SELECT 'Audit Schema get report complete' as STATUS;
+SELECT '18 Audit Schema get report complete' as STATUS;
