@@ -54,13 +54,13 @@ CREATE TABLE Compliance.compliance_logs (
     --actor_id VARCHAR(100)
 );
 
--- Constraint: You must link to SOME data (Staging OR Production)
--- ALTER TABLE Compliance.compliance_logs
--- ADD CONSTRAINT chk_data_linkage 
--- CHECK (
---     (staging_record_id IS NOT NULL AND session_id IS NOT NULL) OR 
---     (production_record_id IS NOT NULL AND target_table_name IS NOT NULL)
--- );
+Constraint: You must link to SOME data (Staging OR Production)
+ALTER TABLE Compliance.compliance_logs
+ADD CONSTRAINT chk_data_linkage 
+CHECK (
+    (staging_record_id IS NOT NULL AND session_id IS NOT NULL) OR 
+    (production_record_id IS NOT NULL AND target_table_name IS NOT NULL)
+);
 
 -- If no record exists yet (e.g., pre-check), store the payload hash
 ALTER TABLE Compliance.compliance_logs

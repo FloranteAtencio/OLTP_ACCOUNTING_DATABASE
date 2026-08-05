@@ -17,10 +17,10 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflows a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
+    -- SELECT new_state INTO new_previous_state
+    -- FROM Staging.import_workflows a
+    -- WHERE a.session_id = p_session_id
+    -- LIMIT 1;
     
     IF new_session_id IS NULL THEN
         RAISE EXCEPTION 'Please Check Session_id provided!';
@@ -43,7 +43,7 @@ BEGIN
 
     UPDATE Staging.import_workflows
     SET new_state = 'APPROVE_L1',
-        previous_state = new_previous_state
+        previous_state = 'VALID'
     WHERE session_id = new_session_id AND new_state = 'VALID';
 
 EXCEPTION
@@ -69,10 +69,10 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflows a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
+    -- SELECT new_state INTO new_previous_state
+    -- FROM Staging.import_workflows a
+    -- WHERE a.session_id = p_session_id
+    -- LIMIT 1;
     
     IF new_session_id IS NULL THEN
         RAISE EXCEPTION 'Please Check Session_id provided!';
@@ -102,7 +102,7 @@ BEGIN
 
     UPDATE Staging.import_workflows
     SET new_state = 'APPROVE_L2',
-        previous_state = new_previous_state
+        previous_state = 'APPROVE_L1'
     WHERE session_id = new_session_id AND new_state = 'APPROVE_L1';
 
 EXCEPTION
@@ -128,10 +128,10 @@ BEGIN
     WHERE a.session_id = p_session_id
     LIMIT 1;
 
-    SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflows a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
+    -- SELECT new_state INTO new_previous_state
+    -- FROM Staging.import_workflows a
+    -- WHERE a.session_id = p_session_id
+    -- LIMIT 1;
     
     IF new_session_id IS NULL THEN
         RAISE EXCEPTION 'Please Check Session_id provided!';
@@ -161,7 +161,7 @@ BEGIN
 
     UPDATE Staging.import_workflows
     SET new_state = 'APPROVE_L3',
-        previous_state = new_previous_state
+        previous_state = 'APPROVE_L2'
     WHERE session_id = new_session_id AND new_state = 'APPROVE_L2';
 
 EXCEPTION
