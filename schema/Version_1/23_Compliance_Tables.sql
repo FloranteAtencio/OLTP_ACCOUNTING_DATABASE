@@ -54,7 +54,7 @@ CREATE TABLE Compliance.compliance_logs (
     --actor_id VARCHAR(100)
 );
 
-Constraint: You must link to SOME data (Staging OR Production)
+--Constraint: You must link to SOME data (Staging OR Production)
 ALTER TABLE Compliance.compliance_logs
 ADD CONSTRAINT chk_data_linkage 
 CHECK (
