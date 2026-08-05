@@ -53,7 +53,7 @@ BEGIN
             row_hash
         ) VALUES (
             'stg_ar_import', 
-            r.staging_record_id, 
+            r.id, 
             r.client_code::INT, 
             'SPREADSHEET_IMPORT',
             current_setting('app.import_source_file', TRUE),
