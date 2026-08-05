@@ -37,7 +37,7 @@ BEGIN
             gen_random_uuid()::TEXT
         );
 
-        IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN    
+        IF current_setting('app.import_source_file', TRUE) IS NOT NULL THEN    
             INSERT INTO Audit.record_lineage (
                 table_name, 
                 record_id, 
