@@ -24,7 +24,7 @@ BEGIN
         cl.details::TEXT,
         cl.checked_at,
         COALESCE(cl.resolution_status, 'UNRESOLVED')::VARCHAR
-    FROM Compliance.compliance_log cl
+    FROM Compliance.compliance_logs cl
     WHERE cl.client_id = p_client_id
         AND cl.status != 'PASS'
         AND cl.checked_at >= CURRENT_TIMESTAMP - (p_days || ' days')::INTERVAL

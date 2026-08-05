@@ -30,7 +30,8 @@ BEGIN
         SELECT 
             a.*, 
             c.row_number, 
-            c.table_name
+            c.table_name,
+            b.table_related
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
         LEFT JOIN Audit.import_detail_logs c ON a.id = c.created_record_id
@@ -51,7 +52,7 @@ BEGIN
         );
 
         -- ========================================================
-        -- Amount Check
+        -- Amount Check 1
         -- ========================================================
         -- FIX: Use z.amount_error instead of z.v_errors_amount
         IF z.amount_error IS NOT NULL THEN
@@ -60,8 +61,15 @@ BEGIN
                 'INVALID: Check Amount Value!', r.amount, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'INVALID: Amount Check!'::VARCHAR, 'Negative amount is not available', 
-                'AMOUNT_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your amount value!'
+                r.client_code::INT
+                , 1
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'FAIL'
+                , 'UNRESOLVED'
+                , NULL
             );
         ELSE
             PERFORM Audit.import_validation(
@@ -69,13 +77,20 @@ BEGIN
                 'Valid: Amount!', r.amount, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'VALID: Amount'::VARCHAR, 'Valid AMOUNT!', 
-                'AMOUNT_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Amount!'
+                r.client_code::INT
+                , 1
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'PASS'
+                , 'RESOLVED'
+                , NULL
             );
         END IF;
 
         -- ========================================================
-        -- Invoice Date Check
+        -- Invoice Date Check 2
         -- ========================================================
         -- FIX: Use z.Invoice_error instead of z.v_errors_invoice
         IF z.Invoice_error IS NOT NULL THEN
@@ -84,8 +99,15 @@ BEGIN
                 'INVALID: Check Invoice Value!', r.invoice_date, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'INVALID: Invoice Check!'::VARCHAR, 'Invoice Date should not be ahead of Due Date', 
-                'DATE_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your invoice date value!'
+                r.client_code::INT
+                , 2
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'FAIL'
+                , 'UNRESOLVED'
+                , NULL
             );
         ELSE
             PERFORM Audit.import_validation(
@@ -93,13 +115,20 @@ BEGIN
                 'VALID: Invoice Date!', r.invoice_date, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'VALID: Date Check!'::VARCHAR, 'Valid Invoice Date!', 
-                'DATE_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Invoice Date!'
+                r.client_code::INT
+                , 2
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'PASS'
+                , 'RESOLVED'
+                , NULL
             );
         END IF;
 
         -- ========================================================
-        -- Customer Check
+        -- Customer Check 3
         -- ========================================================
         -- FIX: Use z.customer_error instead of z.v_errors_customer
         IF z.customer_error IS NOT NULL THEN
@@ -108,8 +137,15 @@ BEGIN
                 'INVALID: Customer not exists!', r.customer_code, FALSE, 'ERROR'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'INVALID: Customer Check!'::VARCHAR, 'Customer does not exist', 
-                'CUSTOMER_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your customer code value!'
+                r.client_code::INT
+                , 3
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'FAIL'
+                , 'UNRESOLVED'
+                , NULL
             );
         ELSE
             PERFORM Audit.import_validation(
@@ -117,13 +153,20 @@ BEGIN
                 'VALID: Customer!', r.customer_code, TRUE, 'INFO'
             );
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'VALID: Customer Check!'::VARCHAR, 'Valid Customer!', 
-                'CUSTOMER_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Customer code!'
+                r.client_code::INT
+                , 3
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'PASS'
+                , 'RESOLVED'
+                , NULL
             );
         END IF;
 
         -- ========================================================
-        -- Status Check
+        -- Status Check 4
         -- ========================================================
         -- FIX: Use z.status_error instead of z.v_errors_status
         IF z.status_error IS NOT NULL THEN
@@ -133,8 +176,15 @@ BEGIN
             );
             -- Log status fail if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'INVALID: Status Check!'::VARCHAR, 'Invalid AR status', 
-                'STATUS_CHECK'::VARCHAR, 'FAIL'::VARCHAR, 'Kindly check your status value!'
+                r.client_code::INT
+                , 4
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'FAIL'
+                , 'UNRESOLVED'
+                , NULL
             );
         ELSE
             PERFORM Audit.import_validation(
@@ -143,8 +193,15 @@ BEGIN
             );
             -- Log status pass if needed
             PERFORM Compliance.log_compliance_check(
-                r.client_code::INT, 'VALID: Status Check!'::VARCHAR, 'Valid Status!', 
-                'STATUS_CHECK'::VARCHAR, 'PASS'::VARCHAR, 'Valid Status!'
+                r.client_code::INT
+                , 4
+                , r.session_id
+                , r.id
+                , NULL,
+                r.table_related
+                , 'PASS'
+                , 'RESOLVED'
+                , NULL
             );
         END IF;
 

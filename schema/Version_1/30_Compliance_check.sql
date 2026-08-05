@@ -2,25 +2,40 @@
 DROP FUNCTION IF EXISTS Compliance.log_compliance_check(INT, VARCHAR, TEXT, VARCHAR, VARCHAR, TEXT) CASCADE;
 CREATE FUNCTION Compliance.log_compliance_check(
     p_client_id INT,
-    p_rule_name VARCHAR,
-    p_rule_description TEXT,
-    p_check_type VARCHAR,
+    p_rule_id VARCHAR,
+    p_session_id TEXT,
+    p_staging_record_id VARCHAR,
+    p_production_record_id VARCHAR,
+    p_target_table_name TEXT DEFAULT NULL,
     p_status VARCHAR,
-    p_details TEXT DEFAULT NULL
+    p_resolution_status VARCHAR,
+    p_notes TEXT
 )
 RETURNS BIGINT AS $$
 DECLARE
     v_compliance_id BIGINT;
 BEGIN
-    INSERT INTO Compliance.compliance_log (
+    INSERT INTO Compliance.compliance_logs (
         client_id, 
-        compliance_rule, 
-        rule_description, 
-        check_type, --'BALANCE_CHECK', 'AMOUNT_CHECK', 'DATE_CHECK', 'CLIENT_CHECK','CUSTOMER_CHECK','DUPLICATE_CHECK', 'THRESHOLD_CHECK', 'RECONCILIATION_CHECK'
-        status, -- 'PASS', 'FAIL', 'WARNING'
-        details -- NOTES
+        rule_id, 
+        session_id, 
+        staging_record_id, --'BALANCE_CHECK', 'AMOUNT_CHECK', 'DATE_CHECK', 'CLIENT_CHECK','CUSTOMER_CHECK','DUPLICATE_CHECK', 'THRESHOLD_CHECK', 'RECONCILIATION_CHECK'
+        production_record_id, -- 'PASS', 'FAIL', 'WARNING'
+        target_table_name, -- NOTES
+        status,
+        resolution_status,
+        notes
     )
-    VALUES (p_client_id, p_rule_name, p_rule_description, p_check_type, p_status, p_details)
+    VALUES (
+        p_client_id, 
+        p_rule_id, 
+        p_session_id, 
+        p_staging_record_id, 
+        p_production_record_id, 
+        p_target_table_name,
+        p_status,
+        p_resolution_status,
+        p_notes)
     RETURNING compliance_id INTO v_compliance_id;
     
     RETURN v_compliance_id;
