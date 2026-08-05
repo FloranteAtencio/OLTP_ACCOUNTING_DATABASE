@@ -11,11 +11,6 @@ BEGIN
 
     SET LOCAL app.allow_direct_insert = 'true';
     
-    SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflows a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
-
     SELECT row_hash
     INTO new_previous_hash
     FROM Audit.record_lineage
@@ -78,7 +73,7 @@ BEGIN
 
     UPDATE Staging.import_workflows
     SET new_state = 'POSTED',
-        previous_state = new_previous_state
+        previous_state = 'APPROVE_L3'
     WHERE session_id = p_session_id AND new_state = 'APPROVE_L3';
 
 EXCEPTION
