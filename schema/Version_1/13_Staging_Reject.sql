@@ -21,9 +21,9 @@ BEGIN
 
     UPDATE Staging.import_workflows a
     SET
-        new_state = 'REJECT',
-        previous_state = 'DRAFT'
-    WHERE a.session_id = new_session_id AND new_state = 'DRAFT' AND previous_state = NULL;
+        a.new_state = 'REJECT',
+        a.previous_state = 'DRAFT'
+    WHERE a.session_id = new_session_id AND a.new_state = 'DRAFT' AND a.previous_state IS NULL;
 
 EXCEPTION
     WHEN OTHERS THEN
