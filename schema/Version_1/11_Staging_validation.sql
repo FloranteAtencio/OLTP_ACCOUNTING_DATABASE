@@ -31,7 +31,7 @@ BEGIN
             a.*, 
             c.row_number, 
             c.table_name,
-            b.table_related
+            b.staging_table
         FROM Staging.stg_ar_imports a
         LEFT JOIN Staging.import_workflows b ON a.id = b.staging_record_id 
         LEFT JOIN Audit.import_detail_logs c ON a.id = c.created_record_id
