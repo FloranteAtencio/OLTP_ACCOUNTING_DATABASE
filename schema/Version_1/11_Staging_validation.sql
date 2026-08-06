@@ -14,8 +14,6 @@ CREATE OR REPLACE PROCEDURE Staging.ar_import_workflow_validation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     r RECORD;
@@ -235,7 +233,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Procedure ar_import_workflow_validation failed: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- =============================================================
 -- Staging validations END

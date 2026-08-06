@@ -15,8 +15,6 @@ RETURNS TABLE (
     checked_at TIMESTAMP,
     resolution_status VARCHAR
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -33,7 +31,7 @@ BEGIN
         AND cl.checked_at >= CURRENT_TIMESTAMP - (p_days || ' days')::INTERVAL
     ORDER BY cl.checked_at DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 

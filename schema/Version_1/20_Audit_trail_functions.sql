@@ -15,8 +15,6 @@ CREATE FUNCTION Audit.record_state_change(
     p_notes VARCHAR DEFAULT NULL
 )
 RETURNS BIGINT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_previous_state VARCHAR;
     v_lifecycle_id BIGINT;
@@ -39,7 +37,7 @@ BEGIN
     
     RETURN v_lifecycle_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Record approval
 DROP FUNCTION IF EXISTS Audit.record_approval(INT, INT, INT, VARCHAR, VARCHAR, VARCHAR, TEXT) CASCADE;
@@ -53,8 +51,6 @@ CREATE FUNCTION Audit.record_approval(
     p_comment TEXT DEFAULT NULL
 )
 RETURNS BIGINT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_approval_id BIGINT;
 BEGIN
@@ -69,7 +65,7 @@ BEGIN
     
     RETURN v_approval_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Record lineage
 DROP FUNCTION IF EXISTS Audit.record_lineage_entry(VARCHAR, INT, INT, VARCHAR, VARCHAR, INT, INT, VARCHAR) CASCADE;
@@ -84,8 +80,6 @@ CREATE FUNCTION Audit.record_lineage_entry(
     p_source_file VARCHAR DEFAULT NULL
 )
 RETURNS BIGINT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_lineage_id BIGINT;
 BEGIN
@@ -99,7 +93,7 @@ BEGIN
     
     RETURN v_lineage_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 

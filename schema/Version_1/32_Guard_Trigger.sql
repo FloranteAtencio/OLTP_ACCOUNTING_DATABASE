@@ -4,8 +4,6 @@ CREATE OR REPLACE FUNCTION Audit.Guard_trigger()
 RETURNS TRIGGER 
 LANGUAGE plpgsql
 AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     -- Only block direct INSERTs if the setting is not enabled
     IF current_setting('app.allow_direct_insert', true) IS NULL THEN
@@ -19,7 +17,8 @@ BEGIN
     END IF;
     
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+;
 -- 1
 CREATE TRIGGER Guard_audit_transactions
 BEFORE INSERT OR UPDATE OR DELETE ON Finance.transactions

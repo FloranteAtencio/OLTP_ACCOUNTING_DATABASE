@@ -10,8 +10,6 @@ CREATE OR REPLACE FUNCTION Audit.import_validation(
     p_severity VARCHAR
 )
 RETURNS BIGINT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
 
     new_id BIGINT;
@@ -43,7 +41,7 @@ BEGIN
     RETURN new_id;
 
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Function to start an import session
 -- This is the very first function needed to call
@@ -55,8 +53,6 @@ CREATE FUNCTION Audit.start_import_session(
     p_source_file VARCHAR DEFAULT NULL
 )
 RETURNS INT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_session_id INT;
 BEGIN
@@ -66,7 +62,7 @@ BEGIN
     
     RETURN v_session_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Function to log an import record
 -- This is the function where you need to call after the after the process in the main schema table related.
@@ -81,8 +77,6 @@ CREATE FUNCTION Audit.log_import_record(
     p_created_record_id INT DEFAULT NULL
 )
 RETURNS BIGINT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_detail_id BIGINT;
 BEGIN
@@ -103,7 +97,7 @@ BEGIN
     
     RETURN v_detail_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Function to complete an import session
 DROP FUNCTION IF EXISTS Audit.complete_import_session(INT, VARCHAR, TEXT) CASCADE;
@@ -113,8 +107,6 @@ CREATE FUNCTION Audit.complete_import_session(
     p_error_summary TEXT DEFAULT NULL
 )
 RETURNS VOID AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     UPDATE Audit.import_sessions
     SET status = p_final_status,
@@ -122,7 +114,7 @@ BEGIN
         error_summary = p_error_summary
     WHERE session_id = p_session_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 

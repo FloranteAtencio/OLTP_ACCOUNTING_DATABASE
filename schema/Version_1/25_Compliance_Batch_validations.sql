@@ -10,8 +10,6 @@ CREATE FUNCTION Compliance.validate_transaction_import(
     p_date DATE
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN
@@ -39,7 +37,8 @@ BEGIN
         CASE WHEN array_length(v_errors, 1) IS NULL THEN TRUE ELSE FALSE END,
         array_to_string(v_errors, '; ');
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Validate AR import
 DROP FUNCTION IF EXISTS Compliance.validate_ar_import(INT, INT, DECIMAL, DATE, DATE, VARCHAR) CASCADE;
@@ -52,8 +51,6 @@ CREATE FUNCTION Compliance.validate_ar_import(
     p_status VARCHAR
 )
 RETURNS TABLE (amount_error TEXT, Invoice_error TEXT, customer_error TEXT, status_error TEXT) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
 
     v_errors_amount TEXT;
@@ -88,7 +85,8 @@ BEGIN
         v_errors_customer,
         v_errors_status;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Validate AP import
 DROP FUNCTION IF EXISTS Compliance.validate_ap_import(INT, INT, DECIMAL, DATE, DATE, VARCHAR) CASCADE;
@@ -101,8 +99,6 @@ CREATE FUNCTION Compliance.validate_ap_import(
     p_status VARCHAR
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN
@@ -130,7 +126,8 @@ BEGIN
         CASE WHEN array_length(v_errors, 1) IS NULL THEN TRUE ELSE FALSE END,
         array_to_string(v_errors, '; ');
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Validate inventory import
 DROP FUNCTION IF EXISTS Compliance.validate_inventory_import(INT, INT, INT, INT, VARCHAR) CASCADE;
@@ -142,8 +139,6 @@ CREATE FUNCTION Compliance.validate_inventory_import(
     p_action_type VARCHAR
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN
@@ -176,7 +171,8 @@ BEGIN
         CASE WHEN array_length(v_errors, 1) IS NULL THEN TRUE ELSE FALSE END,
         array_to_string(v_errors, '; ');
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 

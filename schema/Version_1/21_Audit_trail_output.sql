@@ -14,8 +14,6 @@ RETURNS TABLE (
     changed_by VARCHAR,
     status VARCHAR
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     -- State changes
@@ -54,7 +52,8 @@ BEGIN
     
     ORDER BY event_time DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Get reconciliation report
 DROP FUNCTION IF EXISTS Finance.get_reconciliation_report(INT, DATE, DATE) CASCADE;
@@ -72,8 +71,6 @@ RETURNS TABLE (
     discrepancy_amount DECIMAL,
     status VARCHAR
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -90,7 +87,8 @@ BEGIN
         AND rt.reconciliation_date BETWEEN p_from_date AND p_to_date
     ORDER BY rt.reconciliation_date DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Get record lineage
 DROP FUNCTION IF EXISTS Finance.get_record_lineage(VARCHAR, INT) CASCADE;
@@ -106,8 +104,6 @@ RETURNS TABLE (
     last_modified_by VARCHAR,
     last_modified_at TIMESTAMP
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -120,7 +116,8 @@ BEGIN
     FROM Finance.record_lineage rl
     WHERE rl.table_name = p_table_name AND rl.record_id = p_record_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 

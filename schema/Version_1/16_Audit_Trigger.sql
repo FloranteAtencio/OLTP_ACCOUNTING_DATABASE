@@ -14,8 +14,6 @@ CREATE OR REPLACE FUNCTION Audit.create_audit_log(
 RETURNS INT
 LANGUAGE plpgsql
 AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_audit_id INT;
     v_prev_hash TEXT;
@@ -55,7 +53,8 @@ BEGIN
     RETURN v_audit_id;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- ============================================
 -- Seperated Functions
@@ -78,8 +77,6 @@ CREATE OR REPLACE FUNCTION Audit.write_extended_audit(
 RETURNS VOID
 LANGUAGE plpgsql
 AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
 
     INSERT INTO Audit.audit_logs_extended(
@@ -108,7 +105,8 @@ BEGIN
     );
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- ============================================
 -- Seperated Functions
@@ -118,8 +116,6 @@ CREATE OR REPLACE FUNCTION Audit.fn_extended_audit_trigger()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_client_id INT;
     v_record_text TEXT;
@@ -277,7 +273,8 @@ BEGIN
 
     END IF;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 -- 1
 CREATE TRIGGER audit_transactions
 AFTER INSERT OR UPDATE OR DELETE ON Finance.transactions

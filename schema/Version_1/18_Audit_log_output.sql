@@ -18,8 +18,6 @@ RETURNS TABLE (
     failed_records INT,
     success_rate NUMERIC
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -40,7 +38,8 @@ BEGIN
     ORDER BY s.started_at DESC
     LIMIT p_limit;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Function to get failed imports
 DROP FUNCTION IF EXISTS Audit.get_failed_imports(INT, INT) CASCADE;
@@ -56,8 +55,6 @@ RETURNS TABLE (
     error_message TEXT,
     failed_at TIMESTAMP
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -73,7 +70,7 @@ BEGIN
     ORDER BY idl.created_at DESC
     LIMIT p_limit;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Function to get user audit trail
 DROP FUNCTION IF EXISTS Audit.get_user_audit_trail(VARCHAR, INT) CASCADE;
@@ -90,8 +87,6 @@ RETURNS TABLE (
     new_value TEXT,
     changed_at TIMESTAMP
 ) AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -107,7 +102,7 @@ BEGIN
         AND ale.changed_at >= CURRENT_TIMESTAMP - (p_days || ' days')::INTERVAL
     ORDER BY ale.changed_at DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 

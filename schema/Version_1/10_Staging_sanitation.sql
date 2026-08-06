@@ -124,8 +124,6 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     table_related VARCHAR;
     new_session_id INT;
@@ -164,7 +162,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import sanitation failed for session %: %', p_session_id, SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 SELECT '10 Staging Schema data sanitation complete' as Status;

@@ -5,8 +5,6 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L1(
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);
@@ -41,15 +39,14 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import approval_l1 failed: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L2(
     IN p_session_id INT,
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);
@@ -82,15 +79,14 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import approval_l2 failed: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L3(
     IN p_session_id INT,
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);
@@ -123,7 +119,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import approval_l3 failed : %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 

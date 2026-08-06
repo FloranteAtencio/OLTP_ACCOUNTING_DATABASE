@@ -8,8 +8,6 @@ CREATE OR REPLACE PROCEDURE Staging.main_import_workflow_validation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     table_related VARCHAR;
     new_session_id INT;
@@ -48,7 +46,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import Main Validations failed for session %: %', p_session_id, SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 
