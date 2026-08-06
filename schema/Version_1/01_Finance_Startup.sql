@@ -54,26 +54,26 @@ GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
 
--- -- Set defaults for future objects (for dev_user)
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Finance
--- GRANT ALL ON TABLES TO dev_role;
+-- Set defaults for future objects (for dev_user)
+ALTER DEFAULT PRIVILEGES
+FOR ROLE dev_user
+IN SCHEMA Finance
+GRANT ALL ON TABLES TO dev_role;
 
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Staging
--- GRANT ALL ON TABLES TO dev_role;
+ALTER DEFAULT PRIVILEGES
+FOR ROLE dev_user
+IN SCHEMA Staging
+GRANT ALL ON TABLES TO dev_role;
 
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Audit
--- GRANT ALL ON TABLES TO dev_role;
+ALTER DEFAULT PRIVILEGES
+FOR ROLE dev_user
+IN SCHEMA Audit
+GRANT ALL ON TABLES TO dev_role;
 
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Compliance
--- GRANT ALL ON TABLES TO dev_role;
+ALTER DEFAULT PRIVILEGES
+FOR ROLE dev_user
+IN SCHEMA Compliance
+GRANT ALL ON TABLES TO dev_role;
 
 
 -- Finance team: read-only
@@ -113,6 +113,10 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
+-- Run this as dev_user or a superuser
+ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance GRANT ALL ON TABLES TO admin_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance GRANT ALL ON SEQUENCES TO admin_role;
+GRANT USAGE ON SCHEMA Finance TO admin_role;
 
 -- app: Access
 GRANT CONNECT ON DATABASE erp_db TO erp_app;
