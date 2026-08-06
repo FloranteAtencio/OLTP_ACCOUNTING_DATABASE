@@ -7,19 +7,19 @@
 BEGIN;
 
 -- Enable RLS enforcement on core tables
-ALTER TABLE Finance.clients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.charts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.journals ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_receivables ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_payables ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.ar_ext ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.ap_ext ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.customers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.vendors ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.inventory_audits ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_roles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_properties ENABLE ROW LEVEL SECURITY;
+ALTER TABLE Finance.clients FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.charts FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.transactions FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.journals FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_receivables FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_payables FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.ar_ext FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.ap_ext FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.customers FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.vendors FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.inventory_audits FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_roles FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_properties FORCE ROW LEVEL SECURITY;
 
 -- Enable RLS on audit tables
 ALTER TABLE Audit.audit_logs ENABLE ROW LEVEL SECURITY;
@@ -35,6 +35,9 @@ BEGIN
         RAISE EXCEPTION
             'Client context not set';
     END IF;
+
+    RETURN current_setting('app.current_client_id')::INT;
+
 END;
 $$ LANGUAGE plpgsql STABLE;
 
@@ -516,36 +519,36 @@ CREATE POLICY inventory_audits_delete_own_client ON Finance.inventory_audits
         )
     );
 
--- ============================================
--- MISSING: Tax table policies
--- ============================================
+-- -- ============================================
+-- -- MISSING: Tax table policies
+-- -- ============================================
 
-CREATE POLICY tax_types_update_own_client ON Finance.tax_types
-    FOR UPDATE
-    USING (client_id = Finance.get_current_client_id())
-    WITH CHECK (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_types_update_own_client ON Finance.tax_types
+--     FOR UPDATE
+--     USING (client_id = Finance.get_current_client_id())
+--     WITH CHECK (client_id = Finance.get_current_client_id());
 
-CREATE POLICY tax_types_delete_own_client ON Finance.tax_types
-    FOR DELETE
-    USING (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_types_delete_own_client ON Finance.tax_types
+--     FOR DELETE
+--     USING (client_id = Finance.get_current_client_id());
 
-CREATE POLICY tax_calculations_update_own_client ON Finance.tax_calculations
-    FOR UPDATE
-    USING (client_id = Finance.get_current_client_id())
-    WITH CHECK (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_calculations_update_own_client ON Finance.tax_calculations
+--     FOR UPDATE
+--     USING (client_id = Finance.get_current_client_id())
+--     WITH CHECK (client_id = Finance.get_current_client_id());
 
-CREATE POLICY tax_calculations_delete_own_client ON Finance.tax_calculations
-    FOR DELETE
-    USING (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_calculations_delete_own_client ON Finance.tax_calculations
+--     FOR DELETE
+--     USING (client_id = Finance.get_current_client_id());
 
-CREATE POLICY tax_liabilities_update_own_client ON Finance.tax_liabilities
-    FOR UPDATE
-    USING (client_id = Finance.get_current_client_id())
-    WITH CHECK (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_liabilities_update_own_client ON Finance.tax_liabilities
+--     FOR UPDATE
+--     USING (client_id = Finance.get_current_client_id())
+--     WITH CHECK (client_id = Finance.get_current_client_id());
 
-CREATE POLICY tax_liabilities_delete_own_client ON Finance.tax_liabilities
-    FOR DELETE
-    USING (client_id = Finance.get_current_client_id());
+-- CREATE POLICY tax_liabilities_delete_own_client ON Finance.tax_liabilities
+--     FOR DELETE
+--     USING (client_id = Finance.get_current_client_id());
 
 
 

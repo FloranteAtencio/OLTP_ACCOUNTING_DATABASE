@@ -4,6 +4,8 @@ BEGIN;
     RETURNS TRIGGER
     LANGUAGE plpgsql
     AS $$
+    SECURITY DEFINER
+    SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
     BEGIN
         
         RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';

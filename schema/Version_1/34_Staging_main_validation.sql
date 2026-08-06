@@ -8,6 +8,8 @@ CREATE OR REPLACE PROCEDURE Staging.main_import_workflow_validation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     table_related VARCHAR;
     new_session_id INT;

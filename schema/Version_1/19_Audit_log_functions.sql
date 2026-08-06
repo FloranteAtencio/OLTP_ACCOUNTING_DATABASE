@@ -10,6 +10,8 @@ CREATE OR REPLACE FUNCTION Audit.import_validation(
     p_severity VARCHAR
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
 
     new_id BIGINT;
@@ -53,6 +55,8 @@ CREATE FUNCTION Audit.start_import_session(
     p_source_file VARCHAR DEFAULT NULL
 )
 RETURNS INT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_session_id INT;
 BEGIN
@@ -77,6 +81,8 @@ CREATE FUNCTION Audit.log_import_record(
     p_created_record_id INT DEFAULT NULL
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_detail_id BIGINT;
 BEGIN
@@ -107,6 +113,8 @@ CREATE FUNCTION Audit.complete_import_session(
     p_error_summary TEXT DEFAULT NULL
 )
 RETURNS VOID AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     UPDATE Audit.import_sessions
     SET status = p_final_status,

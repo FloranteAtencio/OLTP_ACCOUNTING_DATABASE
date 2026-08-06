@@ -15,6 +15,8 @@ RETURNS TABLE (
     checked_at TIMESTAMP,
     resolution_status VARCHAR
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 

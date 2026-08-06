@@ -5,6 +5,8 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L1(
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);
@@ -46,6 +48,8 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L2(
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);
@@ -85,6 +89,8 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_approval_L3(
     IN p_approve_by VARCHAR(20) -- MANAGER, BOOKKEEPER, ACCOUNTANT
 )
 LANGUAGE plpgsql as $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     new_previous_state VARCHAR(50);

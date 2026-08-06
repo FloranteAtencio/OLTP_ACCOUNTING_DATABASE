@@ -15,12 +15,17 @@ CREATE ROLE finance_readonly;
 CREATE ROLE dev_role;
 CREATE ROLE admin_role;
 CREATE ROLE audit_role;
+CREATE ROLE erp_app;
 
 -- Users (use secure password management in real deployment)
 CREATE USER analyst WITH PASSWORD 'finance123';
 CREATE USER dev_user WITH PASSWORD 'devpass123';
 CREATE USER admin_user WITH PASSWORD 'adminpass123';
 CREATE USER audit_user WITH PASSWORD 'auditpass123;'
+
+-- PUBLIC REVOKE
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
 -- Grant roles
 GRANT finance_readonly TO analyst;
@@ -96,6 +101,15 @@ GRANT ALL PRIVILEGES ON SCHEMA Staging TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Compliance TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Security TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Audit TO admin_role;
+
+-- app: Access
+GRANT CONNECT ON DATABASE erp_db TO erp_app;
+GRANT USAGE ON SCHEMA Finance TO erp_app;
+GRANT USAGE ON SCHEMA Staging TO erp_app;
+GRANT USAGE ON SCHEMA Audit TO erp_app;
+GRANT USAGE ON SCHEMA Compliance TO erp_app;
+
+
 
 \c erp_db
 

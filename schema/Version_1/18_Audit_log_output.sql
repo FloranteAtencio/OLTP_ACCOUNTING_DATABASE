@@ -18,6 +18,8 @@ RETURNS TABLE (
     failed_records INT,
     success_rate NUMERIC
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -54,6 +56,8 @@ RETURNS TABLE (
     error_message TEXT,
     failed_at TIMESTAMP
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -86,6 +90,8 @@ RETURNS TABLE (
     new_value TEXT,
     changed_at TIMESTAMP
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 

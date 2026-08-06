@@ -14,6 +14,8 @@ CREATE OR REPLACE FUNCTION Compliance.log_compliance_check(
     p_notes TEXT
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_compliance_id BIGINT;
 BEGIN

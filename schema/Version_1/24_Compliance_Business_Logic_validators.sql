@@ -9,6 +9,8 @@ BEGIN;
 DROP FUNCTION IF EXISTS Compliance.validate_customer_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_customer_exists(p_customer_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF EXISTS (SELECT 1 FROM Finance.customers WHERE customer_id = p_customer_id) THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
@@ -22,6 +24,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_vendor_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_vendor_exists(p_vendor_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF EXISTS (SELECT 1 FROM Finance.vendors WHERE vendor_id = p_vendor_id) THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
@@ -35,6 +39,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_product_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_product_exists(p_product_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF EXISTS (SELECT 1 FROM Finance.products WHERE product_id = p_product_id) THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
@@ -48,6 +54,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_warehouse_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_warehouse_exists(p_warehouse_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF EXISTS (SELECT 1 FROM Finance.warehouses WHERE warehouse_id = p_warehouse_id) THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
@@ -61,6 +69,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_account_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_account_exists(p_chart_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF EXISTS (SELECT 1 FROM Finance.charts WHERE chart_id = p_chart_id AND is_active = TRUE) THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
@@ -74,6 +84,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_transaction_balance(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_transaction_balance(p_transaction_id INT)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT, debit_total DECIMAL, credit_total DECIMAL) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_debit DECIMAL;
     v_credit DECIMAL;
@@ -98,6 +110,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_invoice_due_dates(DATE, DATE) CASCADE;
 CREATE FUNCTION Compliance.validate_invoice_due_dates(p_invoice_date DATE, p_due_date DATE)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF p_invoice_date > p_due_date THEN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Invoice date cannot be after due date'::TEXT;
@@ -120,6 +134,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.is_payable_overdue(DATE) CASCADE;
 CREATE FUNCTION Compliance.is_payable_overdue(p_due_date DATE)
 RETURNS BOOLEAN AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN p_due_date < CURRENT_DATE;
 END;

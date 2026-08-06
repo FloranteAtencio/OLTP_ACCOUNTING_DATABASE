@@ -3,6 +3,8 @@ BEGIN;
 CREATE OR REPLACE PROCEDURE Staging.post_ar_import( IN p_session_id INT)
 LANGUAGE plpgsql
 AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     r RECORD;
     new_previous_state VARCHAR(50);
@@ -87,6 +89,8 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_posting(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
     table_related VARCHAR;

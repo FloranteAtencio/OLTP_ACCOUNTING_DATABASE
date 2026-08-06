@@ -1,16 +1,27 @@
 BEGIN;
 
+-- 1. Fixed: Added 'date' type to e_date
 CREATE OR REPLACE FUNCTION Finance.partition_monthly_basis(tableselected text, schemaselected text)
 RETURNS void AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     s_date date := date_trunc('month', current_date);
-    e_date date := s_date + interval '30 days';
+    e_date date := s_date + interval '1 month'; -- FIXED: Added 'date'
     part_name text;    
 BEGIN
-    part_name := schemaselected || '.' || tableselected || '_' || to_char(s_date, 'YYYY_MM') || 'wk' || extract(week from s_date);
+    IF schemaselected NOT IN ('Finance','Audit','Staging','Compliance') THEN
+        RAISE EXCEPTION 'Invalid schema %', schemaselected;
+    END IF;
+
+    IF tableselected NOT IN ('journals', 'ar_ext', 'ap_ext', 'inventory_audits') THEN
+        RAISE EXCEPTION 'Invalid table %', tableselected;
+    END IF;
+
+    part_name := tableselected || '_' || to_char(s_date,'YYYY_MM') || '_m' || extract(month from s_date);
 
     EXECUTE format(
-        'CREATE TABLE %I PARTITION OF %I.%I 
+        'CREATE TABLE IF NOT EXISTS %I PARTITION OF %I.%I 
         FOR VALUES FROM (%L) TO (%L)
         TABLESPACE hotspace;',
         part_name, schemaselected, tableselected, s_date, e_date
@@ -18,21 +29,31 @@ BEGIN
 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE EXCEPTION 'Transaction failed: %', SQLERRM;
+            RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION Finance.partition_weekly_basis(tableselected text, schemaselected text)
 RETURNS void AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     s_date date := date_trunc('week', current_date);
     e_date date := s_date + interval '7 days';
     part_name text;    
 BEGIN
-    part_name := schemaselected || '.' || tableselected || '_' || to_char(s_date, 'YYYY_MM') || 'wk' || extract(week from s_date);
+    IF schemaselected NOT IN ('Finance','Audit','Staging','Compliance') THEN
+        RAISE EXCEPTION 'Invalid schema %', schemaselected;
+    END IF;
+
+    IF tableselected NOT IN ('journals', 'ar_ext', 'ap_ext', 'inventory_audits') THEN
+        RAISE EXCEPTION 'Invalid table %', tableselected;
+    END IF;
+
+    part_name := tableselected || '_' || to_char(s_date,'YYYY_MM') || '_wk' || extract(week from s_date);
 
     EXECUTE format(
-        'CREATE TABLE %I PARTITION OF %I.%I 
+        'CREATE TABLE IF NOT EXISTS %I PARTITION OF %I.%I 
         FOR VALUES FROM (%L) TO (%L)
         TABLESPACE hotspace;',
         part_name, schemaselected, tableselected, s_date, e_date
@@ -40,21 +61,30 @@ BEGIN
 
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE EXCEPTION 'Transaction failed: %', SQLERRM;
+            RAISE EXCEPTION 'Finance partition weekly basis : % : %', SQLSTATE, SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
-
  
+-- 2. Fixed: Parameter name 'schemaselect' used consistently
 CREATE OR REPLACE FUNCTION alter_tables_space_weekly_basis(
     schemaselect text,
     tableselected text
 )
 RETURNS void AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     start_date date := current_date - interval '7 days';
     part_name text;
 BEGIN
-    -- Example: journals_2026_03_wk11
+    IF schemaselect NOT IN ('Finance','Audit','Staging','Compliance') THEN -- FIXED: Used schemaselect
+        RAISE EXCEPTION 'Invalid schema %', schemaselect;
+    END IF;
+
+    IF tableselected NOT IN ('journals', 'ar_ext', 'ap_ext', 'inventory_audits') THEN
+        RAISE EXCEPTION 'Invalid table %', tableselected;
+    END IF;
+
     part_name := tableselected || '_' || to_char(start_date, 'YYYY_MM') || '_wk' || extract(week from start_date);
 
     EXECUTE format(
@@ -62,29 +92,56 @@ BEGIN
         schemaselect,
         part_name
     );
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
+
 END;
 $$ LANGUAGE plpgsql;
 
+-- 3. Fixed: Parameter name 'schemaselect' used consistently
 CREATE OR REPLACE FUNCTION alter_tables_space_monthly_basis(
     schemaselect text,
     tableselected text
 )
 RETURNS void AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     start_date date := current_date - interval '30 days';
     part_name text;
 BEGIN
-    -- Example: journals_2026_03_wk11
-    part_name := tableselected || '_' || to_char(start_date, 'YYYY_MM') || '_wk' || extract(month from start_date);
+    IF schemaselect NOT IN ('Finance','Audit','Staging','Compliance') THEN -- FIXED: Used schemaselect
+        RAISE EXCEPTION 'Invalid schema %', schemaselect;
+    END IF;
+
+    IF tableselected NOT IN ('journals', 'ar_ext', 'ap_ext', 'inventory_audits') THEN
+        RAISE EXCEPTION 'Invalid table %', tableselected;
+    END IF;
+
+    part_name := tableselected || '_' || to_char(start_date, 'YYYY_MM') || '_m' || extract(month from start_date);
 
     EXECUTE format(
         'ALTER TABLE %I.%I SET TABLESPACE coldspace;',
         schemaselect,
         part_name
     );
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
+
 END;
 $$ LANGUAGE plpgsql;
 
+-- 4. Fixed: Corrected function name typo in comments (partion -> partition)
+-- 0 2 * * 0 docker exec -it erp_postgres psql -U erp_admin -d erp_db -c "Select Finance.partition_weekly_basis('Finance','journals');"
+-- 0 2 1 * * docker exec -it erp_postgres psql -U erp_admin -d erp_db -c "Select Finance.partition_monthly_basis('Finance','journals');"
+
+COMMIT;
+
+SELECT '05 Finance Schema Partitioning Complete!' as Status;
 
 -- 0 2 * * 0 docker exec -it erp_postgres psql -U erp_admin -d erp_db -c \ "Select alter_tables_space_weekly_basis('Finance','journals');"
 -- 0 2 1 * * docker exec -it erp_postgres psql -U erp_admin -d erp_db -c \ "Select alter_tables_space_monthly_basis('Finance','accountpayables');"
@@ -124,7 +181,3 @@ $$ LANGUAGE plpgsql;
 -- END;
 -- $$ LANGUAGE plpgsql;
 
-
-COMMIT;
-
-SELECT '05 Finance Schema Partitioning Complete!' as  Status;

@@ -4,6 +4,8 @@ CREATE OR REPLACE  PROCEDURE Staging.import_workflow_reject(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_session_id INT;
 BEGIN

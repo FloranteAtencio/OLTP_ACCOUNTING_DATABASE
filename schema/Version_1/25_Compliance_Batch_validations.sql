@@ -10,6 +10,8 @@ CREATE FUNCTION Compliance.validate_transaction_import(
     p_date DATE
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN
@@ -50,6 +52,8 @@ CREATE FUNCTION Compliance.validate_ar_import(
     p_status VARCHAR
 )
 RETURNS TABLE (amount_error TEXT, Invoice_error TEXT, customer_error TEXT, status_error TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
 
     v_errors_amount TEXT;
@@ -97,6 +101,8 @@ CREATE FUNCTION Compliance.validate_ap_import(
     p_status VARCHAR
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN
@@ -136,6 +142,8 @@ CREATE FUNCTION Compliance.validate_inventory_import(
     p_action_type VARCHAR
 )
 RETURNS TABLE (is_valid BOOLEAN, errors TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_errors TEXT[] := ARRAY[]::TEXT[];
 BEGIN

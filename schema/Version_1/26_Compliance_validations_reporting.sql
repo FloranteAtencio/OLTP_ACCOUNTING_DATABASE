@@ -14,6 +14,8 @@ RETURNS TABLE (
     warning_rows INT,
     validation_pass_rate NUMERIC
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 

@@ -5,6 +5,8 @@ CREATE OR REPLACE PROCEDURE Finance.assign_account_role(
     IN p_role_name TEXT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_rows_affected INT;
 BEGIN
@@ -38,6 +40,8 @@ CREATE OR REPLACE PROCEDURE Finance.apply_coa_template(
     IN p_template_id INT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     SET LOCAL app.allow_direct_insert = 'true';
     PERFORM 1

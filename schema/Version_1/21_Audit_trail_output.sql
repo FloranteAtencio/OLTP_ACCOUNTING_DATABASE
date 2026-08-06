@@ -14,6 +14,8 @@ RETURNS TABLE (
     changed_by VARCHAR,
     status VARCHAR
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     -- State changes
@@ -70,6 +72,8 @@ RETURNS TABLE (
     discrepancy_amount DECIMAL,
     status VARCHAR
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 
@@ -102,6 +106,8 @@ RETURNS TABLE (
     last_modified_by VARCHAR,
     last_modified_at TIMESTAMP
 ) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     RETURN QUERY
     SELECT 

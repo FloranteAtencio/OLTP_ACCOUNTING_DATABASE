@@ -15,6 +15,8 @@ CREATE FUNCTION Audit.record_state_change(
     p_notes VARCHAR DEFAULT NULL
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_previous_state VARCHAR;
     v_lifecycle_id BIGINT;
@@ -51,6 +53,8 @@ CREATE FUNCTION Audit.record_approval(
     p_comment TEXT DEFAULT NULL
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_approval_id BIGINT;
 BEGIN
@@ -80,6 +84,8 @@ CREATE FUNCTION Audit.record_lineage_entry(
     p_source_file VARCHAR DEFAULT NULL
 )
 RETURNS BIGINT AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_lineage_id BIGINT;
 BEGIN

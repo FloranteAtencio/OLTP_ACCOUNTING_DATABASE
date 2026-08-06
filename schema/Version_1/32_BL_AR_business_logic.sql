@@ -12,6 +12,8 @@ CREATE OR REPLACE PROCEDURE Finance.insert_journal(
     IN p_date DATE
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_chart_id INT;
 BEGIN
@@ -49,6 +51,8 @@ CREATE OR REPLACE PROCEDURE Finance.ar_transaction(
     IN p_idempotency_key VARCHAR
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     client_check INT;
     customer_check INT; -- Fixed typo: was cusotmer_check

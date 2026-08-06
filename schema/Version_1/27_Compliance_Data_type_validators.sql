@@ -4,6 +4,8 @@ BEGIN;
 DROP FUNCTION IF EXISTS Compliance.validate_email(VARCHAR) CASCADE;
 CREATE FUNCTION Compliance.validate_email(p_email VARCHAR)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF p_email IS NULL OR p_email = '' THEN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Email cannot be empty'::TEXT;
@@ -19,6 +21,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_phone(VARCHAR) CASCADE;
 CREATE FUNCTION Compliance.validate_phone(p_phone VARCHAR)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 BEGIN
     IF p_phone IS NULL OR p_phone = '' THEN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;  -- Phone can be empty
@@ -34,6 +38,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_decimal_amount(VARCHAR) CASCADE;
 CREATE FUNCTION Compliance.validate_decimal_amount(p_amount VARCHAR)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT, parsed_value DECIMAL) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_parsed DECIMAL;
 BEGIN
@@ -54,6 +60,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_integer_quantity(VARCHAR) CASCADE;
 CREATE FUNCTION Compliance.validate_integer_quantity(p_quantity VARCHAR)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT, parsed_value INT) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_parsed INT;
 BEGIN
@@ -74,6 +82,8 @@ $$ LANGUAGE plpgsql;
 DROP FUNCTION IF EXISTS Compliance.validate_date(VARCHAR) CASCADE;
 CREATE FUNCTION Compliance.validate_date(p_date VARCHAR)
 RETURNS TABLE (is_valid BOOLEAN, error_msg TEXT, parsed_value DATE) AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_parsed DATE;
 BEGIN

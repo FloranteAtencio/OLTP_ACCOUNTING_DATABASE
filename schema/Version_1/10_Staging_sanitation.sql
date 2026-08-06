@@ -7,6 +7,8 @@ BEGIN;
 DROP FUNCTION IF EXISTS Staging.table_verification(INT);
 CREATE FUNCTION Staging.table_verification(p_session_id INT)
 RETURNS VARCHAR AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_table_name VARCHAR;
 BEGIN
@@ -36,6 +38,8 @@ CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     collect_errors TEXT[] := ARRAY[]::TEXT[];
     r RECORD;
@@ -124,6 +128,8 @@ CREATE OR REPLACE PROCEDURE Staging.import_workflow_sanitation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql AS $$
+SECURITY DEFINER
+SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     table_related VARCHAR;
     new_session_id INT;
