@@ -31,12 +31,12 @@ ALTER TABLE Audit.record_lineage ENABLE ROW LEVEL SECURITY;
 CREATE OR REPLACE FUNCTION Finance.get_current_client_id()
 RETURNS INT AS $$
 BEGIN
-    RETURN COALESCE(
-        (current_setting('app.current_client_id', true))::INT,
-        1  -- Default to client 1 if not set
-    );
+    IF current_setting('app.current_client_id', true) IS NULL THEN
+        RAISE EXCEPTION
+            'Client context not set';
+    END IF;
 END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+$$ LANGUAGE plpgsql STABLE;
 
 -- Policy 1: Clients can only SELECT their own record
 CREATE POLICY clients_select_own ON Finance.clients
