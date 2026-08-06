@@ -6,7 +6,6 @@ CREATE OR REPLACE PROCEDURE Finance.sample_data(
 LANGUAGE plpgsql AS $$
 DECLARE
     new_client_id INT;
-    new_template_id INT;
 BEGIN
 
     SET LOCAL app.allow_direct_insert = 'true';
@@ -18,93 +17,93 @@ BEGIN
 
     -- Insert template header first
     INSERT INTO Finance.coa_templates (template_name, description)
-    VALUES ('Default Accounts', 'Standard COA for small businesses')
-    RETURNING template_id INTO new_template_id;
+    VALUES ('Default Accounts', 'Standard COA for small businesses');
+    --RETURNING templateid;
     -- Returns template_id = 1
 
     -- Then insert template accounts
     INSERT INTO Finance.coa_template_accounts (template_id, account_code, account_name, account_type)
     VALUES
     -- Assets
-    --(new_template_id, 1000, 'Cash on Hand', 'Asset'),
-    (new_template_id, 1010, 'Cash on Hand', 'Asset'),
-    (new_template_id, 1020, 'Cash in Bank', 'Asset'),
-    (new_template_id, 1030, 'Petty Cash', 'Asset'),
-    (new_template_id, 1100, 'Accounts Receivable', 'Asset'),
-    (new_template_id, 1110, 'Allowance for Doubtful Accounts', 'Asset'),
-    (new_template_id, 1200, 'Prepaid Expenses', 'Asset'),
-    (new_template_id, 1210, 'Prepaid Insurance', 'Asset'),
-    (new_template_id, 1220, 'Prepaid Rent', 'Asset'),
-    (new_template_id, 1300, 'Office Supplies', 'Asset'),
-    (new_template_id, 1400, 'Equipment', 'Asset'),
-    (new_template_id, 1410, 'Accumulated Depreciation - Equipment', 'Asset'),
-    (new_template_id, 1500, 'Furniture & Fixtures', 'Asset'),
-    (new_template_id, 1510, 'Accumulated Depreciation - Furniture', 'Asset'),
-    (new_template_id, 1600, 'Vehicles', 'Asset'),
-    (new_template_id, 1610, 'Accumulated Depreciation - Vehicles', 'Asset'),
-    (new_template_id, 1620, 'Iventory','Asset'),
+    --(1, 1000, 'Cash on Hand', 'Asset'),
+    (1, 1010, 'Cash on Hand', 'Asset'),
+    (1, 1020, 'Cash in Bank', 'Asset'),
+    (1, 1030, 'Petty Cash', 'Asset'),
+    (1, 1100, 'Accounts Receivable', 'Asset'),
+    (1, 1110, 'Allowance for Doubtful Accounts', 'Asset'),
+    (1, 1200, 'Prepaid Expenses', 'Asset'),
+    (1, 1210, 'Prepaid Insurance', 'Asset'),
+    (1, 1220, 'Prepaid Rent', 'Asset'),
+    (1, 1300, 'Office Supplies', 'Asset'),
+    (1, 1400, 'Equipment', 'Asset'),
+    (1, 1410, 'Accumulated Depreciation - Equipment', 'Asset'),
+    (1, 1500, 'Furniture & Fixtures', 'Asset'),
+    (1, 1510, 'Accumulated Depreciation - Furniture', 'Asset'),
+    (1, 1600, 'Vehicles', 'Asset'),
+    (1, 1610, 'Accumulated Depreciation - Vehicles', 'Asset'),
+    (1, 1620, 'Iventory','Asset'),
     -- Liabilities
-    (new_template_id, 2000, 'Accounts Payable', 'Liability'),
-    (new_template_id, 2010, 'Accrued Expenses', 'Liability'),
-    (new_template_id, 2020, 'Accrued Salaries', 'Liability'),
-    (new_template_id, 2030, 'Accrued Interest', 'Liability'),
-    (new_template_id, 2100, 'VAT Payable', 'Liability'),
-    (new_template_id, 2110, 'Income Tax Payable', 'Liability'),
-    (new_template_id, 2120, 'Withholding Tax Payable', 'Liability'),
-    (new_template_id, 2200, 'Short Term Loans', 'Liability'),
-    (new_template_id, 2300, 'Long Term Loans', 'Liability'),
-    (new_template_id, 2310, 'Mortgage Payable', 'Liability'),
-    (new_template_id, 2400, 'Unearned Revenue', 'Liability'),
+    (1, 2000, 'Accounts Payable', 'Liability'),
+    (1, 2010, 'Accrued Expenses', 'Liability'),
+    (1, 2020, 'Accrued Salaries', 'Liability'),
+    (1, 2030, 'Accrued Interest', 'Liability'),
+    (1, 2100, 'VAT Payable', 'Liability'),
+    (1, 2110, 'Income Tax Payable', 'Liability'),
+    (1, 2120, 'Withholding Tax Payable', 'Liability'),
+    (1, 2200, 'Short Term Loans', 'Liability'),
+    (1, 2300, 'Long Term Loans', 'Liability'),
+    (1, 2310, 'Mortgage Payable', 'Liability'),
+    (1, 2400, 'Unearned Revenue', 'Liability'),
     -- Equity
-    (new_template_id, 3000, 'Owner''s Capital', 'Equity'),
-    (new_template_id, 3010, 'Owner''s Drawing', 'Equity'),
-    (new_template_id, 3100, 'Retained Earnings', 'Equity'),
+    (1, 3000, 'Owner''s Capital', 'Equity'),
+    (1, 3010, 'Owner''s Drawing', 'Equity'),
+    (1, 3100, 'Retained Earnings', 'Equity'),
     -- Revenue
-    (new_template_id, 4000, 'Sales Revenue', 'Revenue'),
-    (new_template_id, 4010, 'Service Revenue', 'Revenue'),
-    (new_template_id, 4020, 'Sales Returns & Allowances', 'Revenue'),
-    (new_template_id, 4030, 'Sales Discounts', 'Revenue'),
-    (new_template_id, 4100, 'Interest Income', 'Revenue'),
-    (new_template_id, 4110, 'Rental Income', 'Revenue'),
-    (new_template_id, 4120, 'Commission Income', 'Revenue'),
-    (new_template_id, 4200, 'Other Income', 'Revenue'),
-    (new_template_id, 4300, 'Service Revenue', 'Revenue'),
-    (new_template_id, 4400, 'Consulting Revenue', 'Revenue'),
-    (new_template_id, 4500, 'Professional Fees', 'Revenue'),
-    (new_template_id, 4600, 'Interest Income', 'Revenue'),
-    (new_template_id, 4700, 'Rental Income', 'Revenue'),
-    (new_template_id, 4800, 'Other Income', 'Revenue'),
-    --(new_template_id, 4900, 'Sales Revenue', 'Revenue'),
+    (1, 4000, 'Sales Revenue', 'Revenue'),
+    (1, 4010, 'Service Revenue', 'Revenue'),
+    (1, 4020, 'Sales Returns & Allowances', 'Revenue'),
+    (1, 4030, 'Sales Discounts', 'Revenue'),
+    (1, 4100, 'Interest Income', 'Revenue'),
+    (1, 4110, 'Rental Income', 'Revenue'),
+    (1, 4120, 'Commission Income', 'Revenue'),
+    (1, 4200, 'Other Income', 'Revenue'),
+    (1, 4300, 'Service Revenue', 'Revenue'),
+    (1, 4400, 'Consulting Revenue', 'Revenue'),
+    (1, 4500, 'Professional Fees', 'Revenue'),
+    (1, 4600, 'Interest Income', 'Revenue'),
+    (1, 4700, 'Rental Income', 'Revenue'),
+    (1, 4800, 'Other Income', 'Revenue'),
+    --(1, 4900, 'Sales Revenue', 'Revenue'),
     -- Cost of Goods Sold
-    (new_template_id, 5000, 'Cost of Goods Sold', 'Expense'),
-    (new_template_id, 5010, 'Purchase Returns & Allowances', 'Expense'),
-    (new_template_id, 5020, 'Purchase Discounts', 'Expense'),
-    (new_template_id, 5030, 'Freight In', 'Expense'),
+    (1, 5000, 'Cost of Goods Sold', 'Expense'),
+    (1, 5010, 'Purchase Returns & Allowances', 'Expense'),
+    (1, 5020, 'Purchase Discounts', 'Expense'),
+    (1, 5030, 'Freight In', 'Expense'),
     -- Expenses
-    (new_template_id, 6000, 'Salaries & Wages', 'Expense'),
-    (new_template_id, 6010, 'Employee Benefits', 'Expense'),
-    (new_template_id, 6020, 'SSS/PhilHealth/Pag-IBIG', 'Expense'),
-    (new_template_id, 6100, 'Rent Expense', 'Expense'),
-    (new_template_id, 6110, 'Utilities Expense', 'Expense'),
-    (new_template_id, 6120, 'Internet & Phone Expense', 'Expense'),
-    (new_template_id, 6200, 'Office Supplies Expense', 'Expense'),
-    (new_template_id, 6210, 'Printing & Stationery', 'Expense'),
-    (new_template_id, 6300, 'Depreciation Expense', 'Expense'),
-    (new_template_id, 6400, 'Insurance Expense', 'Expense'),
-    (new_template_id, 6500, 'Repairs & Maintenance', 'Expense'),
-    (new_template_id, 6600, 'Advertising & Marketing', 'Expense'),
-    (new_template_id, 6700, 'Transportation Expense', 'Expense'),
-    (new_template_id, 6800, 'Professional Fees - Expense', 'Expense'),
-    (new_template_id, 6810, 'Accounting Fees', 'Expense'),
-    (new_template_id, 6820, 'Legal Fees', 'Expense'),
-    (new_template_id, 6900, 'Bank Charges', 'Expense'),
-    (new_template_id, 6910, 'Interest Expense', 'Expense'),
-    (new_template_id, 7000, 'Bad Debts Expense', 'Expense'),
-    (new_template_id, 7100, 'Taxes & Licenses', 'Expense'),
-    (new_template_id, 7200, 'Miscellaneous Expense', 'Expense'),
-    (new_template_id, 7300, 'Inventory Expense','Expense');
+    (1, 6000, 'Salaries & Wages', 'Expense'),
+    (1, 6010, 'Employee Benefits', 'Expense'),
+    (1, 6020, 'SSS/PhilHealth/Pag-IBIG', 'Expense'),
+    (1, 6100, 'Rent Expense', 'Expense'),
+    (1, 6110, 'Utilities Expense', 'Expense'),
+    (1, 6120, 'Internet & Phone Expense', 'Expense'),
+    (1, 6200, 'Office Supplies Expense', 'Expense'),
+    (1, 6210, 'Printing & Stationery', 'Expense'),
+    (1, 6300, 'Depreciation Expense', 'Expense'),
+    (1, 6400, 'Insurance Expense', 'Expense'),
+    (1, 6500, 'Repairs & Maintenance', 'Expense'),
+    (1, 6600, 'Advertising & Marketing', 'Expense'),
+    (1, 6700, 'Transportation Expense', 'Expense'),
+    (1, 6800, 'Professional Fees - Expense', 'Expense'),
+    (1, 6810, 'Accounting Fees', 'Expense'),
+    (1, 6820, 'Legal Fees', 'Expense'),
+    (1, 6900, 'Bank Charges', 'Expense'),
+    (1, 6910, 'Interest Expense', 'Expense'),
+    (1, 7000, 'Bad Debts Expense', 'Expense'),
+    (1, 7100, 'Taxes & Licenses', 'Expense'),
+    (1, 7200, 'Miscellaneous Expense', 'Expense'),
+    (1, 7300, 'Inventory Expense','Expense');
 
-    call finance.apply_coa_template (new_template_id,new_client_id);
+    call finance.apply_coa_template (1,1);
     call finance.assign_account_role ('Cash on Hand','cash_account_ar');
     call finance.assign_account_role ('Accounts Receivable','ar_account');
     call finance.assign_account_role ('Accounts Payable','ap_account');
