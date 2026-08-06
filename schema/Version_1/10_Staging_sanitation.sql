@@ -7,8 +7,6 @@ BEGIN;
 DROP FUNCTION IF EXISTS Staging.table_verification(INT);
 CREATE FUNCTION Staging.table_verification(p_session_id INT)
 RETURNS VARCHAR AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     v_table_name VARCHAR;
 BEGIN
@@ -27,19 +25,16 @@ BEGIN
         WHEN OTHERS THEN
             RAISE EXCEPTION 'Table verifications failed : %', SQLERRM;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- =====================================
 -- add more procedure for sanitation for each staging table
 -- =====================================
 
-
 CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
     IN p_session_id INT
 )
 LANGUAGE plpgsql as $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     collect_errors TEXT[] := ARRAY[]::TEXT[];
     r RECORD;
@@ -118,7 +113,8 @@ EXCEPTION
         RAISE EXCEPTION 'Account Receivables Sanitations Failed: %', SQLERRM;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- =====================================
 -- the main staging work flow santation

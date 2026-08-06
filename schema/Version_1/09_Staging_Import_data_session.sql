@@ -11,8 +11,6 @@ CREATE FUNCTION Staging.ar_import_data(
     p_status TEXT
 )
 RETURNS INT AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     new_previous_hash TEXT;
     new_ar_staging_id INT;
@@ -77,7 +75,7 @@ BEGIN
 
     RETURN new_ar_staging_id;
 END; 
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 

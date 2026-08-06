@@ -21,7 +21,7 @@ CREATE ROLE erp_app;
 CREATE USER analyst WITH PASSWORD 'finance123';
 CREATE USER dev_user WITH PASSWORD 'devpass123';
 CREATE USER admin_user WITH PASSWORD 'adminpass123';
-CREATE USER audit_user WITH PASSWORD 'auditpass123;'
+CREATE USER audit_user WITH PASSWORD 'auditpass123';
 
 -- PUBLIC REVOKE
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -31,7 +31,7 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT finance_readonly TO analyst;
 GRANT dev_role TO dev_user;
 GRANT admin_role TO admin_user;
-GRANT audit_role TO audit_user
+GRANT audit_role TO audit_user;
 
 -- Developer privileges
 GRANT CONNECT ON DATABASE erp_db TO dev_role;
@@ -108,8 +108,6 @@ GRANT USAGE ON SCHEMA Finance TO erp_app;
 GRANT USAGE ON SCHEMA Staging TO erp_app;
 GRANT USAGE ON SCHEMA Audit TO erp_app;
 GRANT USAGE ON SCHEMA Compliance TO erp_app;
-
-
 
 \c erp_db
 

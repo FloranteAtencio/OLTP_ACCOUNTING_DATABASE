@@ -3,13 +3,15 @@
 -- 
 -- ======================
 BEGIN;
-
-ALTER TABLE Finance.warehouses ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
-ALTER TABLE Finance.operations ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
-ALTER TABLE Finance.vendors ALTER COLUMN client_id SET NOT NULL;
-ALTER TABLE Finance.customers ALTER COLUMN client_id SET NOT NULL;
-ALTER TABLE Finance.inventory_audits ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.vendors ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+ALTER TABLE Finance.customers ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
 ALTER TABLE Finance.products ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+ALTER TABLE Finance.warehouses ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+
+ALTER TABLE Finance.customers ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.vendors ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.products ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.Warehouses ALTER COLUMN client_id SET NOT NULL;
 
 -- Add created_at timestamps
 ALTER TABLE Finance.customers ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;

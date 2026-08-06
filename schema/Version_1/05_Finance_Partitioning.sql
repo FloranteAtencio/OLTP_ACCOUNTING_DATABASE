@@ -3,8 +3,6 @@ BEGIN;
 -- 1. Fixed: Added 'date' type to e_date
 CREATE OR REPLACE FUNCTION Finance.partition_monthly_basis(tableselected text, schemaselected text)
 RETURNS void AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     s_date date := date_trunc('month', current_date);
     e_date date := s_date + interval '1 month'; -- FIXED: Added 'date'
@@ -31,12 +29,11 @@ BEGIN
         WHEN OTHERS THEN
             RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 CREATE OR REPLACE FUNCTION Finance.partition_weekly_basis(tableselected text, schemaselected text)
 RETURNS void AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     s_date date := date_trunc('week', current_date);
     e_date date := s_date + interval '7 days';
@@ -63,7 +60,8 @@ BEGIN
         WHEN OTHERS THEN
             RAISE EXCEPTION 'Finance partition weekly basis : % : %', SQLSTATE, SQLERRM;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
  
 -- 2. Fixed: Parameter name 'schemaselect' used consistently
 CREATE OR REPLACE FUNCTION alter_tables_space_weekly_basis(
@@ -71,8 +69,6 @@ CREATE OR REPLACE FUNCTION alter_tables_space_weekly_basis(
     tableselected text
 )
 RETURNS void AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     start_date date := current_date - interval '7 days';
     part_name text;
@@ -98,7 +94,8 @@ BEGIN
             RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
 
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- 3. Fixed: Parameter name 'schemaselect' used consistently
 CREATE OR REPLACE FUNCTION alter_tables_space_monthly_basis(
@@ -106,8 +103,6 @@ CREATE OR REPLACE FUNCTION alter_tables_space_monthly_basis(
     tableselected text
 )
 RETURNS void AS $$
-SECURITY DEFINER
-SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 DECLARE
     start_date date := current_date - interval '30 days';
     part_name text;
@@ -133,7 +128,8 @@ BEGIN
             RAISE EXCEPTION 'Finance partition monthly basis : % : %', SQLSTATE, SQLERRM;
 
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- 4. Fixed: Corrected function name typo in comments (partion -> partition)
 -- 0 2 * * 0 docker exec -it erp_postgres psql -U erp_admin -d erp_db -c "Select Finance.partition_weekly_basis('Finance','journals');"
