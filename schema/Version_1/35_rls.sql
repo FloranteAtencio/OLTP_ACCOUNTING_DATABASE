@@ -4,7 +4,6 @@
 -- Purpose: Ensure users only see data for their client/organization
 -- ============================================
 
-
 BEGIN;
 
 -- Enable RLS enforcement on core tables
@@ -263,6 +262,292 @@ CREATE POLICY record_lineage_select_by_client ON Audit.record_lineage
     USING (
         COALESCE(client_id, Finance.get_current_client_id()) = Finance.get_current_client_id()
     );
+
+-- ============================================
+-- MISSING: INSERT, UPDATE, DELETE for ar_ext
+-- ============================================
+
+CREATE POLICY ar_ext_insert_for_client ON Finance.ar_ext
+    FOR INSERT
+    WITH CHECK (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.account_receivables ar
+            WHERE ar.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY ar_ext_update_own_client ON Finance.ar_ext
+    FOR UPDATE
+    USING (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.account_receivables ar
+            WHERE ar.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    )
+    WITH CHECK (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.account_receivables ar
+            WHERE ar.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY ar_ext_delete_own_client ON Finance.ar_ext
+    FOR DELETE
+    USING (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.account_receivables ar
+            WHERE ar.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+-- ============================================
+-- MISSING: INSERT, UPDATE, DELETE for ap_ext
+-- ============================================
+
+CREATE POLICY ap_ext_insert_for_client ON Finance.ap_ext
+    FOR INSERT
+    WITH CHECK (
+        payable_id IN (
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY ap_ext_update_own_client ON Finance.ap_ext
+    FOR UPDATE
+    USING (
+        payable_id IN (
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    )
+    WITH CHECK (
+        payable_id IN (
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY ap_ext_delete_own_client ON Finance.ap_ext
+    FOR DELETE
+    USING (
+        payable_id IN (
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for journals
+-- ============================================
+
+CREATE POLICY journals_update_own_client ON Finance.journals
+    FOR UPDATE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    )
+    WITH CHECK (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+CREATE POLICY journals_delete_own_client ON Finance.journals
+    FOR DELETE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for account_receivables
+-- ============================================
+
+CREATE POLICY ar_update_own_client ON Finance.account_receivables
+    FOR UPDATE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    )
+    WITH CHECK (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+CREATE POLICY ar_delete_own_client ON Finance.account_receivables
+    FOR DELETE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for account_payables
+-- ============================================
+
+CREATE POLICY ap_update_own_client ON Finance.account_payables
+    FOR UPDATE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    )
+    WITH CHECK (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+CREATE POLICY ap_delete_own_client ON Finance.account_payables
+    FOR DELETE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for customers
+-- ============================================
+
+CREATE POLICY customers_update_own_client ON Finance.customers
+    FOR UPDATE
+    USING (client_id = Finance.get_current_client_id())
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY customers_delete_own_client ON Finance.customers
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for vendors
+-- ============================================
+
+CREATE POLICY vendors_update_own_client ON Finance.vendors
+    FOR UPDATE
+    USING (client_id = Finance.get_current_client_id())
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY vendors_delete_own_client ON Finance.vendors
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+-- ============================================
+-- MISSING: UPDATE, DELETE for clients
+-- ============================================
+
+CREATE POLICY clients_delete_own ON Finance.clients
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+-- ============================================
+-- MISSING: INSERT, UPDATE, DELETE for inventory_audits
+-- ============================================
+
+CREATE POLICY inventory_audits_insert_for_client ON Finance.inventory_audits
+    FOR INSERT
+    WITH CHECK (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+CREATE POLICY inventory_audits_update_own_client ON Finance.inventory_audits
+    FOR UPDATE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    )
+    WITH CHECK (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+CREATE POLICY inventory_audits_delete_own_client ON Finance.inventory_audits
+    FOR DELETE
+    USING (
+        transaction_id IN (
+            SELECT transaction_id FROM Finance.transactions 
+            WHERE client_id = Finance.get_current_client_id()
+        )
+    );
+
+-- ============================================
+-- MISSING: Tax table policies
+-- ============================================
+
+CREATE POLICY tax_types_update_own_client ON Finance.tax_types
+    FOR UPDATE
+    USING (client_id = Finance.get_current_client_id())
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY tax_types_delete_own_client ON Finance.tax_types
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+CREATE POLICY tax_calculations_update_own_client ON Finance.tax_calculations
+    FOR UPDATE
+    USING (client_id = Finance.get_current_client_id())
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY tax_calculations_delete_own_client ON Finance.tax_calculations
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+CREATE POLICY tax_liabilities_update_own_client ON Finance.tax_liabilities
+    FOR UPDATE
+    USING (client_id = Finance.get_current_client_id())
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY tax_liabilities_delete_own_client ON Finance.tax_liabilities
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
+
 
 COMMIT;    
 -- -- ============================================
