@@ -122,11 +122,11 @@ GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
 
 -- Run this as dev_user or a superuser
 -- 1. If YOU (the superuser) create the tables:
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
-GRANT ALL ON TABLES TO admin_role;
+-- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- GRANT ALL ON TABLES TO admin_role;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
-GRANT ALL ON SEQUENCES TO admin_role;
+-- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- GRANT ALL ON SEQUENCES TO admin_role;
 
 -- 2. If you plan to use 'dev_user' to create tables in the future:
 ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
