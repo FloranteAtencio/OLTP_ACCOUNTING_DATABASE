@@ -574,32 +574,32 @@ CREATE POLICY operation_update_products ON Finance.operations
         USING(
             product_id IN (
                 SELECT product_id FROM Finance.products
-                WHERE client_id = get_current_client_id()
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
         WITH CHECK(
             product_id IN (
                 SELECT product_id FROM Finance.products
-                WHERE client_id = get_current_client_id()
+                WHERE client_id = Finance.get_current_client_id()
             )
         );
 
 CREATE POLICY warehouses_select_policy ON Finance.warehouses
     FOR SELECT
-        USING(client_id = get_current_client_id());
+        USING(client_id = Finance.get_current_client_id());
 
 CREATE POLICY warehouses_insert_policy ON Finance.warehouses
     FOR INSERT
-        WITH CHECK (client_id = get_current_client_id());
+        WITH CHECK (client_id = Finance.get_current_client_id());
 
 CREATE POLICY warehouses_delete_policy ON Finance.warehouses
     FOR DELETE
-        USING(client_id = get_current_client_id());
+        USING(client_id = Finance.get_current_client_id());
 
 CREATE POLICY warehouses_update_policy ON Finance.warehouses
     FOR UPDATE
-        USING(client_id = get_current_client_id())
-        WITH CHECK(client_id = get_current_client_id());            
+        USING(client_id = Finance.get_current_client_id())
+        WITH CHECK(client_id = Finance.get_current_client_id());            
 -- -- ============================================
 -- -- MISSING: Tax table policies
 -- -- ============================================
