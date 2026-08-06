@@ -5,9 +5,115 @@ CREATE OR REPLACE PROCEDURE Finance.sample_data(
 )
 LANGUAGE plpgsql AS $$
 DECLARE
+    new_client_id INT;
 BEGIN
 
     SET LOCAL app.allow_direct_insert = 'true';
+    
+    INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Default')) RETURNING client_id INTO new_client_id;
+    INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Ezra'));
+
+    SET LOCAL app.current_client_id = new_client_id;
+
+    -- Insert template header first
+    INSERT INTO Finance.coa_templates (template_name, description)
+    VALUES ('Default Accounts', 'Standard COA for small businesses');
+    --RETURNING templateid;
+    -- Returns template_id = 1
+
+    -- Then insert template accounts
+    INSERT INTO Finance.coa_template_accounts (template_id, account_code, account_name, account_type)
+    VALUES
+    -- Assets
+    --(1, 1000, 'Cash on Hand', 'Asset'),
+    (1, 1010, 'Cash on Hand', 'Asset'),
+    (1, 1020, 'Cash in Bank', 'Asset'),
+    (1, 1030, 'Petty Cash', 'Asset'),
+    (1, 1100, 'Accounts Receivable', 'Asset'),
+    (1, 1110, 'Allowance for Doubtful Accounts', 'Asset'),
+    (1, 1200, 'Prepaid Expenses', 'Asset'),
+    (1, 1210, 'Prepaid Insurance', 'Asset'),
+    (1, 1220, 'Prepaid Rent', 'Asset'),
+    (1, 1300, 'Office Supplies', 'Asset'),
+    (1, 1400, 'Equipment', 'Asset'),
+    (1, 1410, 'Accumulated Depreciation - Equipment', 'Asset'),
+    (1, 1500, 'Furniture & Fixtures', 'Asset'),
+    (1, 1510, 'Accumulated Depreciation - Furniture', 'Asset'),
+    (1, 1600, 'Vehicles', 'Asset'),
+    (1, 1610, 'Accumulated Depreciation - Vehicles', 'Asset'),
+    (1, 1620, 'Iventory','Asset'),
+    -- Liabilities
+    (1, 2000, 'Accounts Payable', 'Liability'),
+    (1, 2010, 'Accrued Expenses', 'Liability'),
+    (1, 2020, 'Accrued Salaries', 'Liability'),
+    (1, 2030, 'Accrued Interest', 'Liability'),
+    (1, 2100, 'VAT Payable', 'Liability'),
+    (1, 2110, 'Income Tax Payable', 'Liability'),
+    (1, 2120, 'Withholding Tax Payable', 'Liability'),
+    (1, 2200, 'Short Term Loans', 'Liability'),
+    (1, 2300, 'Long Term Loans', 'Liability'),
+    (1, 2310, 'Mortgage Payable', 'Liability'),
+    (1, 2400, 'Unearned Revenue', 'Liability'),
+    -- Equity
+    (1, 3000, 'Owner''s Capital', 'Equity'),
+    (1, 3010, 'Owner''s Drawing', 'Equity'),
+    (1, 3100, 'Retained Earnings', 'Equity'),
+    -- Revenue
+    (1, 4000, 'Sales Revenue', 'Revenue'),
+    (1, 4010, 'Service Revenue', 'Revenue'),
+    (1, 4020, 'Sales Returns & Allowances', 'Revenue'),
+    (1, 4030, 'Sales Discounts', 'Revenue'),
+    (1, 4100, 'Interest Income', 'Revenue'),
+    (1, 4110, 'Rental Income', 'Revenue'),
+    (1, 4120, 'Commission Income', 'Revenue'),
+    (1, 4200, 'Other Income', 'Revenue'),
+    (1, 4300, 'Service Revenue', 'Revenue'),
+    (1, 4400, 'Consulting Revenue', 'Revenue'),
+    (1, 4500, 'Professional Fees', 'Revenue'),
+    (1, 4600, 'Interest Income', 'Revenue'),
+    (1, 4700, 'Rental Income', 'Revenue'),
+    (1, 4800, 'Other Income', 'Revenue'),
+    --(1, 4900, 'Sales Revenue', 'Revenue'),
+    -- Cost of Goods Sold
+    (1, 5000, 'Cost of Goods Sold', 'Expense'),
+    (1, 5010, 'Purchase Returns & Allowances', 'Expense'),
+    (1, 5020, 'Purchase Discounts', 'Expense'),
+    (1, 5030, 'Freight In', 'Expense'),
+    -- Expenses
+    (1, 6000, 'Salaries & Wages', 'Expense'),
+    (1, 6010, 'Employee Benefits', 'Expense'),
+    (1, 6020, 'SSS/PhilHealth/Pag-IBIG', 'Expense'),
+    (1, 6100, 'Rent Expense', 'Expense'),
+    (1, 6110, 'Utilities Expense', 'Expense'),
+    (1, 6120, 'Internet & Phone Expense', 'Expense'),
+    (1, 6200, 'Office Supplies Expense', 'Expense'),
+    (1, 6210, 'Printing & Stationery', 'Expense'),
+    (1, 6300, 'Depreciation Expense', 'Expense'),
+    (1, 6400, 'Insurance Expense', 'Expense'),
+    (1, 6500, 'Repairs & Maintenance', 'Expense'),
+    (1, 6600, 'Advertising & Marketing', 'Expense'),
+    (1, 6700, 'Transportation Expense', 'Expense'),
+    (1, 6800, 'Professional Fees - Expense', 'Expense'),
+    (1, 6810, 'Accounting Fees', 'Expense'),
+    (1, 6820, 'Legal Fees', 'Expense'),
+    (1, 6900, 'Bank Charges', 'Expense'),
+    (1, 6910, 'Interest Expense', 'Expense'),
+    (1, 7000, 'Bad Debts Expense', 'Expense'),
+    (1, 7100, 'Taxes & Licenses', 'Expense'),
+    (1, 7200, 'Miscellaneous Expense', 'Expense'),
+    (1, 7300, 'Inventory Expense','Expense');
+
+    call finance.apply_coa_template (1,1);
+    call finance.assign_account_role ('Cash on Hand','cash_account_ar');
+    call finance.assign_account_role ('Accounts Receivable','ar_account');
+    call finance.assign_account_role ('Accounts Payable','ap_account');
+    call finance.assign_account_role ('Sales Revenue','revenue_account');
+    call finance.assign_account_role ('Inventory Expense','expense_account');
+    call finance.assign_account_role ('Cash in Bank','cash_account_ap');
+    call finance.assign_account_role ('Inventory','inventory_account');
+    CALL Finance.assign_account_role ('Cost of Goods Sold','COGS');
+    CALL Finance.assign_account_role ('Sales Returns & Allowances','SR&Allowances');
+    CALL Finance.assign_account_role ('Purchase Returns & Allowances','PR&Allowances');
     
     INSERT INTO Finance.products (product_id, product_name, description, product_unit,client_id) VALUES (1000, 'organization', 'Indicate address reality happen kid factor.', 'unit',1);
     INSERT INTO Finance.operations (product_id, quantity, product_cost, product_price, purchase_date) VALUES (1000, 33,31,60,'2025-08-11'); 
@@ -2160,8 +2266,6 @@ BEGIN
     INSERT INTO Finance.vendors (vendor_name, contact_info, email, address) VALUES ('Williams-Roberts', '355.879.7381x', 'brownbrett@example.com', '816 Sabrina Center Stephaniemouth, AZ 69361',1);
     INSERT INTO Finance.vendors (vendor_name, contact_info, email, address) VALUES ('Stevens, Mccarty and Ward', '(410)207-1814', 'kyledonaldson@example.com', '37319 Mark Rapid South Sara, KS 57624',1);
 
-    INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Default'));
-    INSERT INTO Finance.clients(INFO) VALUES (jsonb_build_object('Name','Ezra'));
     -- INSERT INTO Finance.products (product_name, Description, product_unit)
     -- VALUES  ('Laptop', 'High-performance laptop', 'Unit'),
     -- ('Smartphone', 'Latest model smartphone', 'Unit'),
@@ -2173,105 +2277,6 @@ BEGIN
     ('Secondary Warehouse', '456 Side St, Townsville', 1),
     ('Third Warehouse', '88 Metro St, Metroville',1);
 
-    -- Insert template header first
-    INSERT INTO Finance.coa_templates (template_name, description)
-    VALUES ('Default Accounts', 'Standard COA for small businesses');
-    --RETURNING templateid;
-    -- Returns template_id = 1
-
-    -- Then insert template accounts
-    INSERT INTO Finance.coa_template_accounts (template_id, account_code, account_name, account_type)
-    VALUES
-    -- Assets
-    --(1, 1000, 'Cash on Hand', 'Asset'),
-    (1, 1010, 'Cash on Hand', 'Asset'),
-    (1, 1020, 'Cash in Bank', 'Asset'),
-    (1, 1030, 'Petty Cash', 'Asset'),
-    (1, 1100, 'Accounts Receivable', 'Asset'),
-    (1, 1110, 'Allowance for Doubtful Accounts', 'Asset'),
-    (1, 1200, 'Prepaid Expenses', 'Asset'),
-    (1, 1210, 'Prepaid Insurance', 'Asset'),
-    (1, 1220, 'Prepaid Rent', 'Asset'),
-    (1, 1300, 'Office Supplies', 'Asset'),
-    (1, 1400, 'Equipment', 'Asset'),
-    (1, 1410, 'Accumulated Depreciation - Equipment', 'Asset'),
-    (1, 1500, 'Furniture & Fixtures', 'Asset'),
-    (1, 1510, 'Accumulated Depreciation - Furniture', 'Asset'),
-    (1, 1600, 'Vehicles', 'Asset'),
-    (1, 1610, 'Accumulated Depreciation - Vehicles', 'Asset'),
-    (1, 1620, 'Iventory','Asset'),
-    -- Liabilities
-    (1, 2000, 'Accounts Payable', 'Liability'),
-    (1, 2010, 'Accrued Expenses', 'Liability'),
-    (1, 2020, 'Accrued Salaries', 'Liability'),
-    (1, 2030, 'Accrued Interest', 'Liability'),
-    (1, 2100, 'VAT Payable', 'Liability'),
-    (1, 2110, 'Income Tax Payable', 'Liability'),
-    (1, 2120, 'Withholding Tax Payable', 'Liability'),
-    (1, 2200, 'Short Term Loans', 'Liability'),
-    (1, 2300, 'Long Term Loans', 'Liability'),
-    (1, 2310, 'Mortgage Payable', 'Liability'),
-    (1, 2400, 'Unearned Revenue', 'Liability'),
-    -- Equity
-    (1, 3000, 'Owner''s Capital', 'Equity'),
-    (1, 3010, 'Owner''s Drawing', 'Equity'),
-    (1, 3100, 'Retained Earnings', 'Equity'),
-    -- Revenue
-    (1, 4000, 'Sales Revenue', 'Revenue'),
-    (1, 4010, 'Service Revenue', 'Revenue'),
-    (1, 4020, 'Sales Returns & Allowances', 'Revenue'),
-    (1, 4030, 'Sales Discounts', 'Revenue'),
-    (1, 4100, 'Interest Income', 'Revenue'),
-    (1, 4110, 'Rental Income', 'Revenue'),
-    (1, 4120, 'Commission Income', 'Revenue'),
-    (1, 4200, 'Other Income', 'Revenue'),
-    (1, 4300, 'Service Revenue', 'Revenue'),
-    (1, 4400, 'Consulting Revenue', 'Revenue'),
-    (1, 4500, 'Professional Fees', 'Revenue'),
-    (1, 4600, 'Interest Income', 'Revenue'),
-    (1, 4700, 'Rental Income', 'Revenue'),
-    (1, 4800, 'Other Income', 'Revenue'),
-    --(1, 4900, 'Sales Revenue', 'Revenue'),
-    -- Cost of Goods Sold
-    (1, 5000, 'Cost of Goods Sold', 'Expense'),
-    (1, 5010, 'Purchase Returns & Allowances', 'Expense'),
-    (1, 5020, 'Purchase Discounts', 'Expense'),
-    (1, 5030, 'Freight In', 'Expense'),
-    -- Expenses
-    (1, 6000, 'Salaries & Wages', 'Expense'),
-    (1, 6010, 'Employee Benefits', 'Expense'),
-    (1, 6020, 'SSS/PhilHealth/Pag-IBIG', 'Expense'),
-    (1, 6100, 'Rent Expense', 'Expense'),
-    (1, 6110, 'Utilities Expense', 'Expense'),
-    (1, 6120, 'Internet & Phone Expense', 'Expense'),
-    (1, 6200, 'Office Supplies Expense', 'Expense'),
-    (1, 6210, 'Printing & Stationery', 'Expense'),
-    (1, 6300, 'Depreciation Expense', 'Expense'),
-    (1, 6400, 'Insurance Expense', 'Expense'),
-    (1, 6500, 'Repairs & Maintenance', 'Expense'),
-    (1, 6600, 'Advertising & Marketing', 'Expense'),
-    (1, 6700, 'Transportation Expense', 'Expense'),
-    (1, 6800, 'Professional Fees - Expense', 'Expense'),
-    (1, 6810, 'Accounting Fees', 'Expense'),
-    (1, 6820, 'Legal Fees', 'Expense'),
-    (1, 6900, 'Bank Charges', 'Expense'),
-    (1, 6910, 'Interest Expense', 'Expense'),
-    (1, 7000, 'Bad Debts Expense', 'Expense'),
-    (1, 7100, 'Taxes & Licenses', 'Expense'),
-    (1, 7200, 'Miscellaneous Expense', 'Expense'),
-    (1, 7300, 'Inventory Expense','Expense');
-
-    call finance.apply_coa_template (1,1);
-    call finance.assign_account_role ('Cash on Hand','cash_account_ar');
-    call finance.assign_account_role ('Accounts Receivable','ar_account');
-    call finance.assign_account_role ('Accounts Payable','ap_account');
-    call finance.assign_account_role ('Sales Revenue','revenue_account');
-    call finance.assign_account_role ('Inventory Expense','expense_account');
-    call finance.assign_account_role ('Cash in Bank','cash_account_ap');
-    call finance.assign_account_role ('Inventory','inventory_account');
-    CALL Finance.assign_account_role ('Cost of Goods Sold','COGS');
-    CALL Finance.assign_account_role ('Sales Returns & Allowances','SR&Allowances');
-    CALL Finance.assign_account_role ('Purchase Returns & Allowances','PR&Allowances');
 
     -- CALL Finance.ar_transaction(
     --     1,                              -- clientId
