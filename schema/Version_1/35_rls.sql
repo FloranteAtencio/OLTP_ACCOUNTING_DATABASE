@@ -7,7 +7,7 @@
 BEGIN;
 
 -- Enable RLS enforcement on core tables
-ALTER TABLE Finance.clients FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE Finance.charts FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.transactions FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.journals FORCE ROW LEVEL SECURITY;
