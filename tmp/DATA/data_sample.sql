@@ -2168,10 +2168,10 @@ BEGIN
     -- ('Headphones', 'Noise-cancelling headphones', 'Unit'),
     -- ('Monitor', '24-inch LED monitor', 'Unit'),
     -- ('Keyboard', 'Mechanical keyboard', 'Unit');
-    INSERT INTO Finance.warehouses (warehouse_name, location)
-    VALUES ('Main Warehouse', '123 Main St, Cityville'),
-    ('Secondary Warehouse', '456 Side St, Townsville'),
-    ('Third Warehouse', '88 Metro St, Metroville');
+    INSERT INTO Finance.warehouses (warehouse_name, location, client_id)
+    VALUES ('Main Warehouse', '123 Main St, Cityville', 1),
+    ('Secondary Warehouse', '456 Side St, Townsville', 1),
+    ('Third Warehouse', '88 Metro St, Metroville',1);
 
     -- Insert template header first
     INSERT INTO Finance.coa_templates (template_name, description)
