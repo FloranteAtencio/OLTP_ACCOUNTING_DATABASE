@@ -565,7 +565,7 @@ CREATE POLICY operation_delete_products ON Finance.operations
         USING(
             product_id IN (
                 SELECT product_id FROM Finance.products 
-                WHERE client_id = client_id = Finance.get_current_client_id()
+                WHERE client_id = Finance.get_current_client_id()
             )
         );
 
