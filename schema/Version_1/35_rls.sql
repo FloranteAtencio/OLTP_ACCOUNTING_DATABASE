@@ -523,6 +523,7 @@ CREATE POLICY inventory_audits_delete_own_client ON Finance.inventory_audits
 -- Products Insert, update and delete policy
 -- ==============================================================
 
+
 CREATE POLICY products_SELECT_policy ON Finance.products
     FOR SELECT
         USING(client_id = Finance.get_current_client_id());
@@ -532,17 +533,17 @@ CREATE POLICY products_INSERT_policy ON Finance.products
         WITH CHECK(client_id = Finance.get_current_client_id()
         );
     
-CREATE POLICY products_UPDATE_policy ON Finance.products
-    FOR DELETE 
-        WITH CHECK (client_id = Finance.get_current_client_id());
-
 CREATE POLICY products_DELETE_policy ON Finance.products
+    FOR DELETE 
+        USING (client_id = Finance.get_current_client_id());
+
+CREATE POLICY products_UPDATE_policy ON Finance.products
     FOR UPDATE
         USING(client_id = Finance.get_current_client_id())
         WITH CHECK (client_id = Finance.get_current_client_id());
 
 CREATE POLICY operation_select_products ON Finance.operations 
-    FOR INSERT
+    FOR SELECT
         USING (
             product_id IN (
                 SELECT product_id FROM Finance.products 
@@ -560,8 +561,8 @@ CREATE POLICY operation_insert_products ON Finance.operations
         );
 
 CREATE POLICY operation_delete_products ON Finance.operations 
-    FOR INSERT
-        WITH CHECK(
+    FOR DELETE
+        USING(
             product_id IN (
                 SELECT product_id FROM Finance.products 
                 WHERE client_id = client_id = Finance.get_current_client_id()
@@ -586,12 +587,15 @@ CREATE POLICY operation_update_products ON Finance.operations
 CREATE POLICY warehouses_select_policy ON Finance.warehouses
     FOR SELECT
         USING(client_id = get_current_client_id());
+
 CREATE POLICY warehouses_insert_policy ON Finance.warehouses
     FOR INSERT
         WITH CHECK (client_id = get_current_client_id());
+
 CREATE POLICY warehouses_delete_policy ON Finance.warehouses
     FOR DELETE
-        WITH CHECK(client_id = get_current_client_id());
+        USING(client_id = get_current_client_id());
+
 CREATE POLICY warehouses_update_policy ON Finance.warehouses
     FOR UPDATE
         USING(client_id = get_current_client_id())
