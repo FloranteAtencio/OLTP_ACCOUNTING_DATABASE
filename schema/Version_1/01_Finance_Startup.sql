@@ -32,7 +32,6 @@ REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT ALL PRIVILEGES ON DATABASE erp_db TO admin_role;
 
 GRANT ALL PRIVILEGES ON SCHEMA Finance TO admin_role;
-
 GRANT ALL PRIVILEGES ON SCHEMA Staging TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Compliance TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Security TO admin_role;
@@ -72,6 +71,8 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO admin_ro
 
 GRANT admin_role TO admin_user;
 
+-- optional
+-- ALTER ROLE admin_user BYPASSRLS;
 
 -- GRANT finance_readonly TO analyst;
 -- GRANT dev_role TO dev_user;

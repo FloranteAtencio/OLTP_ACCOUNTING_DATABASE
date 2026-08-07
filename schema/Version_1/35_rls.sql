@@ -46,11 +46,21 @@ CREATE POLICY clients_select_own ON Finance.clients
     FOR SELECT
     USING (client_id = Finance.get_current_client_id());
 
+CREATE POLICY clients_delete_own ON Finance.clients
+    FOR DELETE
+    USING (client_id = Finance.get_current_client_id());
+
 -- Policy 2: Clients can only UPDATE their own record
 CREATE POLICY clients_update_own ON Finance.clients
     FOR UPDATE
     USING (client_id = Finance.get_current_client_id())
     WITH CHECK (client_id = Finance.get_current_client_id());
+
+-- optional
+CREATE POLICY admin_insert_all ON Finance.clients
+    FOR INSERT
+    TO admin_role
+    WITH CHECK (true); -- Allows admin to insert any row
 
 -- SELECT only charts for current client
 CREATE POLICY charts_select_by_client ON Finance.charts
@@ -478,9 +488,6 @@ CREATE POLICY vendors_delete_own_client ON Finance.vendors
 -- MISSING: UPDATE, DELETE for clients
 -- ============================================
 
-CREATE POLICY clients_delete_own ON Finance.clients
-    FOR DELETE
-    USING (client_id = Finance.get_current_client_id());
 
 -- ============================================
 -- MISSING: INSERT, UPDATE, DELETE for inventory_audits
