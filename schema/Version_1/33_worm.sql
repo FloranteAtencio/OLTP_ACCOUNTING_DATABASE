@@ -6,13 +6,8 @@ BEGIN;
     AS $$
     BEGIN
 
-        IF current_setting('app.get_permission_to_update', true) IS NULL THEN
-        
-            RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';
-        
-        END IF;
+    RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';
 
-        
     IF TG_OP = 'DELETE' THEN   
         RETURN OLD;
     ELSE
@@ -21,7 +16,6 @@ BEGIN;
 
     END;
     $$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
-
 
     CREATE TRIGGER Guard_worms
     BEFORE UPDATE OR DELETE ON Audit.record_lineage
@@ -60,14 +54,37 @@ BEGIN;
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE TRIGGER Guar_worms_import_validation_log
-    BEFORE UPDATE OR DELETE ON Audit.import_validation_log
+    BEFORE DELETE ON Audit.import_validation_log
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE TRIGGER Guard_worms_import_session
     BEFORE UPDATE OR DELETE ON Audit.import_sessions
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
+    CREATE OR REPLACE FUNCTION Audit.WORM_exceptions()
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
 
+        IF current_setting('app.get_permission_to_update', true) IS NULL THEN
+        
+            RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';
+        
+        END IF;
+
+    IF TG_OP = 'DELETE' THEN   
+        RETURN OLD;
+    ELSE
+        RETURN NEW;
+    END IF;
+
+    END;
+    $$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+    CREATE TRIGGER Guar_worms_import_validation_log
+    BEFORE UPDATE ON Audit.import_validation_log
+    FOR EACH ROW EXECUTE FUNCTION Audit.WORM_exceptions();
 
 COMMIT;
 
