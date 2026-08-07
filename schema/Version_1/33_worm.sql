@@ -5,9 +5,14 @@ BEGIN;
     LANGUAGE plpgsql
     AS $$
     BEGIN
-        
-        RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';
 
+        IF current_setting('app.get_permission_to_update', true) IS NULL THEN
+        
+            RAISE EXCEPTION 'Direct Operation of Update and Delete is Prohibited';
+        
+        END IF;
+
+        
     IF TG_OP = 'DELETE' THEN   
         RETURN OLD;
     ELSE
