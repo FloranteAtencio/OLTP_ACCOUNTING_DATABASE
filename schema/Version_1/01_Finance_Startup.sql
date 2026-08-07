@@ -71,7 +71,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO admin_ro
 
 GRANT admin_role TO admin_user;
 
--- optional
+-- optional but this big no no!
 -- ALTER ROLE admin_user BYPASSRLS;
 
 -- GRANT finance_readonly TO analyst;
