@@ -54,7 +54,7 @@ BEGIN;
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE TRIGGER Guar_worms_import_validation_log
-    BEFORE DELETE ON Audit.import_validation_log
+    BEFORE UPDATE OR DELETE ON Audit.import_validation_log
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE TRIGGER Guard_worms_import_session
@@ -83,7 +83,7 @@ BEGIN;
     $$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
     CREATE TRIGGER Guar_worms_import_validation_log_exceptions
-    BEFORE UPDATE ON Audit.import_validation_log
+    BEFORE UPDATE ON Audit.import_sessions
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM_exceptions();
 
 COMMIT;
