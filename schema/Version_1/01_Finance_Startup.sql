@@ -12,17 +12,14 @@ CREATE SCHEMA Staging;
 CREATE SCHEMA Security;
 
 -- Roles
-CREATE ROLE finance_readonly;
-CREATE ROLE dev_role;
+CREATE ROLE readonly_role;
 CREATE ROLE admin_role;
-CREATE ROLE audit_role;
-CREATE ROLE erp_app;
+CREATE ROLE app_role;
 
 -- Users (use secure password management in real deployment)
 CREATE USER analyst WITH PASSWORD 'finance123';
-CREATE USER dev_user WITH PASSWORD 'devpass123';
 CREATE USER admin_user WITH PASSWORD 'adminpass123';
-CREATE USER audit_user WITH PASSWORD 'auditpass123';
+CREATE USER app_user WITH PASSWORD 'appuser123'
 
 -- PUBLIC REVOKE
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
@@ -55,271 +52,123 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
-
 ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON TABLES TO admin_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON SEQUENCES TO admin_role;
-
--- Repeat for other schemas as needed
 ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON TABLES TO admin_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON SEQUENCES TO admin_role;
-
 ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON TABLES TO admin_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON SEQUENCES TO admin_role;
-
 ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON TABLES TO admin_role;
 ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO admin_role;
 
+-- =============================================================================================
+-- Application user privileges
+-- =============================================================================================
+
+GRANT CONNECT ON DATABASE erp_db TO app_role;
+
+GRANT USAGE ON SCHEMA Finance TO app_role;
+GRANT USAGE ON SCHEMA Audit TO app_role;
+GRANT USAGE ON SCHEMA compliance TO app_role;
+GRANT USAGE ON SCHEMA Staging TO app_role;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA Audit TO app_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA Compliance TO app_role;
+GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA Staging TO app_role;
+GRANT SELECT, UPDATE, DELETE, INSERT ON ALL TABLES IN SCHEMA Finance TO app_role;
+
+GRANT ALL ON ALL SEQUENCES IN SCHEMA Finance TO app_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA Audit TO app_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA Staging TO app_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA Compliance TO app_role;
+
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Finance TO app_role;
+GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Finance TO app_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Staging TO app_role;
+GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Staging TO app_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO app_role;
+GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO app_role;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO app_role;
+GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO app_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON TABLES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON TABLES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON TABLES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON TABLES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO app_role;
+
+-- =============================================================================================
+-- Application user privileges
+-- =============================================================================================
+GRANT CONNECT ON DATABASE erp_db TO readonly_role;
+
+GRANT USEAGE ON SCHEMA Finance TO readonly_role;
+GRANT USEAGE ON SCHEMA Audit TO readonly_role;
+GRANT USEAGE ON SCHEMA Compliance TO readonly_role;
+GRANT USEAGE ON SCHEMA Staging TO readonly_role;
+
+GRANT SELECT ON ALL TABLES IN SCHEMA Finance TO readonly_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA Audit TO readonly_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA Compliance TO readonly_role;
+GRANT SELECT ON ALL TABLES IN SCHEMA Staging TO readonly_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON TABLES TO app_role;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON TABLES TO app_role;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON TABLES TO app_role;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON SEQUENCES TO app_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON TABLES TO app_role;
+-- ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO app_role;
+
 GRANT admin_role TO admin_user;
-
--- optional but this big no no!
--- ALTER ROLE admin_user BYPASSRLS;
-
--- GRANT finance_readonly TO analyst;
--- GRANT dev_role TO dev_user;
--- GRANT admin_role TO admin_user;
--- GRANT audit_role TO audit_user;
-
--- -- Grant roles
--- GRANT finance_readonly TO analyst;
--- GRANT dev_role TO dev_user;
--- GRANT admin_role TO admin_user;
--- GRANT audit_role TO audit_user;
-
--- -- Developer privileges
--- GRANT CONNECT ON DATABASE erp_db TO dev_role;
--- GRANT USAGE, CREATE ON SCHEMA Finance TO dev_role;
--- GRANT USAGE, CREATE ON SCHEMA Staging TO dev_role;
--- GRANT USAGE, CREATE ON SCHEMA Audit TO dev_role;
--- GRANT USAGE, CREATE ON SCHEMA Compliance TO dev_role;
-
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO dev_role;
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Audit TO dev_role;
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Staging TO dev_role;
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Compliance TO dev_role;
-
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Finance TO dev_role;
--- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Finance TO dev_role;
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Staging TO dev_role;
--- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Staging TO dev_role;
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO dev_role;
--- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
--- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
-
--- -- Set defaults for future objects (for dev_user)
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Finance
--- GRANT ALL ON TABLES TO dev_role;
-
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Staging
--- GRANT ALL ON TABLES TO dev_role;
-
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Audit
--- GRANT ALL ON TABLES TO dev_role;
-
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE dev_user
--- IN SCHEMA Compliance
--- GRANT ALL ON TABLES TO dev_role;
-
-
--- -- Finance team: read-only
--- GRANT CONNECT ON DATABASE erp_db TO finance_readonly;
--- GRANT USAGE ON SCHEMA Finance TO finance_readonly;
--- GRANT SELECT ON ALL TABLES IN SCHEMA Finance TO finance_readonly;
-
--- -- Set defaults for future objects (for finance_readonly)
--- ALTER DEFAULT PRIVILEGES
--- FOR ROLE finance_readonly
--- IN SCHEMA Finance
--- GRANT SELECT ON TABLES TO finance_readonly;
-
--- -- Audit: read-only
--- GRANT CONNECT ON DATABASE erp_db TO audit_role;
--- GRANT USAGE ON SCHEMA Finance to audit_role;
--- GRANT USAGE ON SCHEMA Audit to audit_role;
--- GRANT SELECT ON ALL TABLES IN SCHEMA Finance to audit_role;
--- GRANT SELECT ON ALL TABLES IN SCHEMA Audit to audit_role;
-
-
-
--- -- Run this as dev_user or a superuser
--- -- 1. If YOU (the superuser) create the tables:
--- -- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
--- -- GRANT ALL ON TABLES TO admin_role;
-
--- -- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
--- -- GRANT ALL ON SEQUENCES TO admin_role;
-
--- -- 2. If you plan to use 'dev_user' to create tables in the future:
--- ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
--- GRANT ALL ON TABLES TO admin_role;
-
--- ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
--- GRANT ALL ON SEQUENCES TO admin_role;
-
--- -- app: Access
--- GRANT CONNECT ON DATABASE erp_db TO erp_app;
--- GRANT USAGE ON SCHEMA Finance TO erp_app;
--- GRANT USAGE ON SCHEMA Staging TO erp_app;
--- GRANT USAGE ON SCHEMA Audit TO erp_app;
--- GRANT USAGE ON SCHEMA Compliance TO erp_app;
-
-\c erp_db
-
--- CREATE DATABASE erp_db;
--- -- ================================================================================
--- -- SCHEMA CREATE
--- -- ================================================================================
--- CREATE SCHEMA Finance;
-
--- -- ================================================================================
--- -- ROLE CREATE
--- -- ================================================================================
-
--- -- Finance team: read-only access
--- CREATE ROLE finance_readonly;
-
--- -- Developers: full access to schema
--- CREATE ROLE dev_role;
-
--- -- Admins: elevated privileges
--- CREATE ROLE admin_role;
-
-
--- -- ================================================================================
--- -- USER CREATE
--- -- ================================================================================
-
--- -- Finance analyst
--- CREATE USER analyst WITH PASSWORD 'finance123';
-
--- -- Developer
--- CREATE USER dev_user WITH PASSWORD 'devpass123';
-
--- -- Admin
--- CREATE USER admin_user WITH PASSWORD 'adminpass123';
-
--- -- ================================================================================
--- -- GRANTING ROLE TO USER
--- -- ================================================================================
-
--- GRANT finance_readonly TO analyst;
--- GRANT dev_role TO dev_user;
--- GRANT admin_role TO admin_user;
-
-
--- -- ================================================================================
--- -- PRIVILIGES GRANT TO ROLE
--- -- ================================================================================
-
--- -- Developers: full privileges on 
--- ---Database
--- GRANT CONNECT ON DATABASE erp_db TO dev_role;
--- --Schema privileges
--- GRANT USAGE CREATE ON SCHEMA Finance TO dev_role;
-
--- --Table privileges
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO dev_role;
-
--- GRANT EXECUTE
--- ON ALL FUNCTIONS IN SCHEMA Finance
--- TO dev_role;
-
--- GRANT EXECUTE
--- ON ALL PROCEDURES IN SCHEMA Finance
--- TO dev_role;
-
--- ALTER DEFAULT PRIVILEGES
--- IN SCHEMA Finance
--- GRANT ALL
--- ON TABLES
--- TO dev_role;
-
--- --sequnce or objects
--- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA Finance TO dev_role;
-
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA Finance TO dev_role;
-
-
--- -- Finance team: can only read data
--- --database privileges
--- GRANT CONNECT ON DATABASE erp_db TO finance_readonly;
--- --schema privileges
--- GRANT USAGE ON SCHEMA Finance TO finance_readonly;
--- --table privileges
--- GRANT SELECT ON ALL TABLES IN SCHEMA Finance TO finance_readonly;
-
-
--- ALTER DEFAULT PRIVILEGES
--- IN SCHEMA Finance
--- GRANT SELECT
--- ON TABLES
--- TO finance_readonly;
-
--- -- Admins: manage everything
--- --database privileges
--- GRANT CONNECT ON DATABASE erp_db TO admin_role;
--- GRANT ALL PRIVILEGES ON DATABASE erp_db TO admin_role;
--- --schema privileges
--- GRANT ALL PRIVILEGES ON SCHEMA Finance TO admin_role;
--- GRANT ALL PRIVILEGES ON SCHEMA public TO admin_role;
--- --table privileges
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO admin_role;
--- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin_role;
--- --sequence privileges
--- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO admin_role;
--- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA Finance TO admin_role;
-
--- \c erp_db
-
--- CREATE TABLESPACE hotspace LOCATION '/mnt/ssd_hot';
--- CREATE TABLESPACE coldspace LOCATION '/mnt/hdd_cold';
-
-
+GRANT app_role TO app_user;
+GRANT readonly_role TO analyst;
 -- ============================================================================
-
--- The command GRANT ALL PRIVILEGES is a shortcut that gives the user every possible right for that specific object.
-
--- 1. What does ALL PRIVILEGES actually include?
--- It depends on the object type:
-
--- On a TABLE:
-
--- SELECT: Read data.
--- INSERT: Add new rows.
--- UPDATE: Modify existing rows.
--- DELETE: Remove rows.
--- TRUNCATE: Empty the table.
--- REFERENCES: Create foreign key constraints.
--- INDEX: Create indexes on the table.
-
--- On a FUNCTION / PROCEDURE:
-
--- EXECUTE: Run the function or procedure.
-
--- On a SEQUENCE:
-
--- SELECT: Read the current value.
--- UPDATE: Change the current value (e.g., for auto-incrementing IDs).
-
--- On a SCHEMA:
-
--- USAGE: Access objects inside the schema.
--- CREATE: Create new objects (tables, functions) inside the schema.
-
--- On a DATABASE:
-
--- CONNECT: Log in to the database.
--- TEMPORARY or TEMP: Create temporary tables.
--- CREATE: (Often restricted to superusers, but in some contexts) Create schemas/objects.
-
+-- Guide lines
 -- ============================================================================
+-- 1. Privileges on a SCHEMA
+-- These control what a user can do inside the container itself.
+
+-- Privilege	         Description	                                                                    Common Use Case
+-- CREATE	            Allows creating new objects (tables, views, functions) inside the schema.	        Developers needing to build new features.
+-- USAGE	            Allows the user to access the schema and its objects.                               Without this, they cannot see or use anything inside, even if they have table permissions.	Essential for almost everyone who needs to query the schema.
+-- TEMPORARY (or TEMP)	Allows creating temporary tables (visible only to the session) within the schema.	Debugging or session-specific data processing.
+-- Note: You generally cannot grant DROP on a schema directly to a non-owner.                               Dropping a schema usually requires ownership or superuser rights. However, if a user can CREATE tables, they can usually DROP the tables they created.
+
+-- 2. Privileges on a TABLE (and Views/Sequences)
+-- These control what a user can do to the specific data or structure of the table.
+
+-- Privilege	    Description	                                            Common Use Case
+-- SELECT	        Read data (rows and columns).	                        Analysts, Read-Only apps, Auditors.
+-- INSERT	        Add new rows.	                                        ETL jobs, Staging imports (09_Staging_Import_data_session.sql).
+-- UPDATE	        Modify existing rows.	                                Data correction scripts, Staging sanitation (10_Staging_sanitation.sql).
+-- DELETE	        Remove rows.	                                        Cleaning staging data, archiving.
+-- TRUNCATE	        Quickly delete all rows in the table.	                Resetting staging tables before a new load.
+-- REFERENCES	    Allows creating foreign keys that reference this table.	Developers building relationships between tables.
+-- TRIGGER	        Allows creating triggers on the table.	                Rarely granted to devs in prod; usually reserved for DBAs.
+-- ALL PRIVILEGES	Grants every permission listed above.	                Avoid in production finance schemas.
+-- Note on DROP: There is no DROP privilege on a specific table.
+
+-- Owner Rule: If you grant CREATE on the schema, the user becomes the owner of any table they create. Owners can always DROP their own tables.
+-- Non-Owners: To let a user drop a table they don't own, you usually need to grant them DROP on the schema (in some DBs like SQL Server) or make them a member of the schema owner role (PostgreSQL). In standard PostgreSQL, DROP on a table is an ownership right, not a grantable privilege on the object itself.
+
+-- 3. Special Case: SEQUENCES
+-- Since your finance schema likely uses sequences for IDs (e.g., Finance_Startup.sql), you might need these:
+
+-- Privilege	Description
+-- USAGE	    Allows using nextval() (getting the next ID).
+-- UPDATE	    Allows setval() (manually setting the ID).
+-- SELECT	    Allows reading the current value (currval()).
+
+-- 4. Special Case: FUNCTIONS / PROCEDURES
+-- For your audit functions (19_Audit_log_functions.sql) or validators (24_Compliance_Business_Logic_validators.sql):
+
+-- Privilege	Description
+-- EXECUTE	    Allows running the function or stored procedure.
 
 -- database level command can possible use
 -- GRANT CONNECT ON DATABASE <DATABASE_NAME> TO <ROLE>

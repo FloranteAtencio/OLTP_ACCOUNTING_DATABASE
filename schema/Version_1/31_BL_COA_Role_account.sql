@@ -30,7 +30,6 @@ EXCEPTION
 END;
 $$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
-
 -- ====================================================
 -- COA TEMPLATE
 -- ===================================================
@@ -40,7 +39,9 @@ CREATE OR REPLACE PROCEDURE Finance.apply_coa_template(
 )
 LANGUAGE plpgsql AS $$
 BEGIN
+
     SET LOCAL app.allow_direct_insert = 'true';
+
     PERFORM 1
     FROM Finance.clients
     WHERE client_id = p_clientId

@@ -8,25 +8,45 @@ BEGIN;
 
 -- Enable RLS enforcement on core tables
 ALTER TABLE Finance.clients FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.coa_templates FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.coa_template_accounts FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.charts FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.transactions FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.journals FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_receivables FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.account_payables FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.ar_ext FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.ap_ext FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.customers FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.vendors FORCE ROW LEVEL SECURITY;
-ALTER TABLE Finance.inventory_audits FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.account_roles FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.account_properties FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.transactions FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.journals FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.customers FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.vendors FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.products FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.operations FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.warehouses FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_receivables FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.ar_ext FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.account_payables FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.ap_ext FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.inventory_audits FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.purchase_returns FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.sale_returns FORCE ROW LEVEL SECURITY;
+ALTER TABLE Finance.inventory_transfers FORCE ROW LEVEL SECURITY;
 
 -- Enable RLS on audit tables
--- ALTER TABLE Audit.audit_logs ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.transaction_lifecycle ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.approval_chain ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.reconciliation_tracking ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.record_lineage ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.audit_logs FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.audit_logs_extended FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.transaction_lifecycle FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.approval_chain FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.reconciliation_tracking FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.import_detail_logs FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.import_validation_log FORCE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
+
+--compliance Enable RLS on audit tables
+--ALTER TABLE Compliance.compliance_logs FORCE ROW LEVEL SECURITY;
+--ALTER TABLE Compliance.compliance_rules FORCE ROW LEVEL SECURITY;
+
+--ALTER TABLE Staging.import_workflows FORCE ROW LEVEL SECURITY;
+--ALTER TABLE Staging.stg_ar_imports FORCE ROW LEVEL SECURITY;
+--ALTER TABLE Staging.import_approvals FORCE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION Finance.get_current_client_id()
 RETURNS INT AS $$
@@ -40,6 +60,21 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+-- CREATE POLICY coa_templates_admin ON Finance.coa_templates
+--     FOR ALL 
+--     TO client_role
+--     USING(TRUE)
+
+CREATE POLICY coa_templates_admin ON Finance.coa_templates
+    FOR ALL 
+    TO admin_role
+    USING(TRUE);
+
+CREATE POLICY coa_templates_accounts_admin ON Finance.coa_template_accounts
+    FOR ALL
+    TO admin_role
+    USING(TRUE);
 
 -- Policy 1: Clients can only SELECT their own record
 CREATE POLICY clients_select_own ON Finance.clients
@@ -96,6 +131,11 @@ CREATE POLICY account_roles_insert_for_client ON Finance.account_roles
             WHERE client_id = Finance.get_current_client_id()
         )
     );
+
+-- ========================================================
+-- 
+--
+-- =========================================================
 
 -- Account Properties (same pattern)
 CREATE POLICY account_properties_select_by_client ON Finance.account_properties
@@ -249,32 +289,33 @@ CREATE POLICY inventory_audits_select_by_client ON Finance.inventory_audits
             WHERE client_id = Finance.get_current_client_id()
         )
     );
--- Audit Logs (allow all)
-CREATE POLICY audit_logs_select_auditors ON Audit.audit_logs
-    FOR SELECT
-    USING (true);  -- Auditors see everything
 
--- Transaction Lifecycle
-CREATE POLICY transaction_lifecycle_select_by_client ON Audit.transaction_lifecycle
-    FOR SELECT
-    USING (client_id = Finance.get_current_client_id());
+-- -- Audit Logs (allow all)
+-- CREATE POLICY audit_logs_select_auditors ON Audit.audit_logs
+--     FOR SELECT
+--     USING (true);  -- Auditors see everything
 
--- Approval Chain
-CREATE POLICY approval_chain_select_by_client ON Audit.approval_chain
-    FOR SELECT
-    USING (client_id = Finance.get_current_client_id());
+-- -- Transaction Lifecycle
+-- CREATE POLICY transaction_lifecycle_select_by_client ON Audit.transaction_lifecycle
+--     FOR SELECT
+--     USING (client_id = Finance.get_current_client_id());
 
--- Reconciliation Tracking
-CREATE POLICY reconciliation_tracking_select_by_client ON Audit.reconciliation_tracking
-    FOR SELECT
-    USING (client_id = Finance.get_current_client_id());
+-- -- Approval Chain
+-- CREATE POLICY approval_chain_select_by_client ON Audit.approval_chain
+--     FOR SELECT
+--     USING (client_id = Finance.get_current_client_id());
 
--- Record Lineage
-CREATE POLICY record_lineage_select_by_client ON Audit.record_lineage
-    FOR SELECT
-    USING (
-        COALESCE(client_id, Finance.get_current_client_id()) = Finance.get_current_client_id()
-    );
+-- -- Reconciliation Tracking
+-- CREATE POLICY reconciliation_tracking_select_by_client ON Audit.reconciliation_tracking
+--     FOR SELECT
+--     USING (client_id = Finance.get_current_client_id());
+
+-- -- Record Lineage
+-- CREATE POLICY record_lineage_select_by_client ON Audit.record_lineage
+--     FOR SELECT
+--     USING (
+--         COALESCE(client_id, Finance.get_current_client_id()) = Finance.get_current_client_id()
+--     );
 
 -- ============================================
 -- MISSING: INSERT, UPDATE, DELETE for ar_ext
@@ -638,7 +679,192 @@ CREATE POLICY warehouses_update_policy ON Finance.warehouses
 --     FOR DELETE
 --     USING (client_id = Finance.get_current_client_id());
 
+-- =========================================================
+-- Sales_returns insert, update and delete
+-- =========================================================
 
+CREATE POLICY Sales_return_insert_own_client ON Finance.sales_returns
+    FOR INSERT
+    WITH CHECK (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.sale_returns sr
+            WHERE sr.receivable_id (
+                SELECT receivable_id FROM Finance.account_receivables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+
+CREATE POLICY Sales_return_update_own_client ON Finance.sales_returns
+    FOR UPDATE
+        USING (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.sale_returns sr
+            WHERE sr.receivable_id (
+                SELECT receivable_id FROM Finance.account_receivables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    )
+    WITH CHECK (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.sale_returns sr
+            WHERE sr.receivable_id (
+                SELECT receivable_id FROM Finance.account_receivables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY Sales_return_select_own_client ON Finance.sales_returns
+    FOR SELECT
+    USING (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.sale_returns sr
+            WHERE sr.receivable_id (
+                SELECT receivable_id FROM Finance.account_receivables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY Sales_return_delete_own_client ON Finance.sales_returns
+    FOR DELETE
+    USING (
+        receivable_id IN (
+            SELECT receivable_id FROM Finance.sale_returns sr
+            WHERE sr.receivable_id (
+                SELECT receivable_id FROM Finance.account_receivables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+-- =========================================================
+-- Purchase_returns insert, update and delete
+-- =========================================================
+
+CREATE POLICY purchase_return_insert_own_client ON Finance.sales_returns
+    FOR INSERT
+    WITH CHECK (
+        payable_id IN (
+            SELECT payable_id FROM Finance.purchase_returns sr
+            WHERE sr.payable_id (
+                SELECT payable_id FROM Finance.account_payables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+
+CREATE POLICY purchase_return_update_own_client ON Finance.sales_returns
+    FOR UPDATE
+    USING (
+        payable_id IN (
+            SELECT payable_id FROM Finance.purchase_returns sr
+            WHERE sr.payable_id (
+                SELECT payable_id FROM Finance.account_payables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    )
+    WITH CHECK (
+        payable_id IN (
+            SELECT payable_id FROM Finance.purchase_returns sr
+            WHERE sr.payable_id (
+                SELECT payable_id FROM Finance.account_payables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY purchase_return_select_own_client ON Finance.sales_returns
+    FOR SELECT
+    USING (
+        payable_id IN (
+            SELECT payable_id FROM Finance.purchase_returns sr
+            WHERE sr.payable_id (
+                SELECT payable_id FROM Finance.account_payables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY purchase_return_delete_own_client ON Finance.sales_returns
+    FOR DELETE
+    USING (
+        payable_id IN (
+            SELECT payable_id FROM Finance.purchase_returns sr
+            WHERE sr.payable_id (
+                SELECT payable_id FROM Finance.account_payables ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+
+-- =========================================================
+-- Purchase_returns insert, update and delete
+-- =========================================================
+
+CREATE POLICY inventory_transfer_insert_own_client ON Finance.sales_returns
+    FOR INSERT
+    WITH CHECK (
+        product_id IN (
+            SELECT product_id FROM Finance.inventory_transfers sr
+            WHERE sr.product_id (
+                SELECT product_id FROM Finance.products ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+
+CREATE POLICY inventory_transfer_update_own_client ON Finance.sales_returns
+    FOR UPDATE
+    USING (
+        product_id IN (
+            SELECT product_id FROM Finance.inventory_transfers sr
+            WHERE sr.product_id (
+                SELECT product_id FROM Finance.products ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    )
+    WITH CHECK (
+        product_id IN (
+            SELECT product_id FROM Finance.inventory_transfers sr
+            WHERE sr.product_id (
+                SELECT product_id FROM Finance.products ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY inventory_transfer_select_own_client ON Finance.sales_returns
+    FOR SELECT
+    USING (
+        product_id IN (
+            SELECT product_id FROM Finance.inventory_transfers sr
+            WHERE sr.product_id (
+                SELECT product_id FROM Finance.products ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY inventory_transfer_delete_own_client ON Finance.sales_returns
+    FOR DELETE
+    USING (
+        product_id IN (
+            SELECT product_id FROM Finance.inventory_transfers sr
+            WHERE sr.product_id (
+                SELECT product_id FROM Finance.products ar
+                WHERE ar.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
 
 COMMIT;    
 -- -- ============================================
