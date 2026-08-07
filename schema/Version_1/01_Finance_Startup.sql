@@ -57,6 +57,26 @@ GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
 
+ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON TABLES TO admin_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Finance GRANT ALL ON SEQUENCES TO admin_role;
+
+-- Repeat for other schemas as needed
+ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON TABLES TO admin_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Audit GRANT ALL ON SEQUENCES TO admin_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON TABLES TO admin_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Staging GRANT ALL ON SEQUENCES TO admin_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON TABLES TO admin_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA Compliance GRANT ALL ON SEQUENCES TO admin_role;
+
+GRANT admin_role TO admin_user;
+
+
+-- GRANT finance_readonly TO analyst;
+-- GRANT dev_role TO dev_user;
+-- GRANT admin_role TO admin_user;
+-- GRANT audit_role TO audit_user;
 
 -- -- Grant roles
 -- GRANT finance_readonly TO analyst;
