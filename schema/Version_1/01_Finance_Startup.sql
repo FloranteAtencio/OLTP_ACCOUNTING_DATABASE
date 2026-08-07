@@ -1,4 +1,5 @@
 --CREATE DATABASE erp_db;
+
 -- ================================================================================
 -- SCHEMA CREATE
 -- ================================================================================
@@ -27,84 +28,21 @@ CREATE USER audit_user WITH PASSWORD 'auditpass123';
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
--- Grant roles
-GRANT finance_readonly TO analyst;
-GRANT dev_role TO dev_user;
-GRANT admin_role TO admin_user;
-GRANT audit_role TO audit_user;
-
--- Developer privileges
-GRANT CONNECT ON DATABASE erp_db TO dev_role;
-GRANT USAGE, CREATE ON SCHEMA Finance TO dev_role;
-GRANT USAGE, CREATE ON SCHEMA Staging TO dev_role;
-GRANT USAGE, CREATE ON SCHEMA Audit TO dev_role;
-GRANT USAGE, CREATE ON SCHEMA Compliance TO dev_role;
-
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO dev_role;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Audit TO dev_role;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Staging TO dev_role;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Compliance TO dev_role;
-
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Finance TO dev_role;
-GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Finance TO dev_role;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Staging TO dev_role;
-GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Staging TO dev_role;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO dev_role;
-GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
-GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
-
--- Set defaults for future objects (for dev_user)
-ALTER DEFAULT PRIVILEGES
-FOR ROLE dev_user
-IN SCHEMA Finance
-GRANT ALL ON TABLES TO dev_role;
-
-ALTER DEFAULT PRIVILEGES
-FOR ROLE dev_user
-IN SCHEMA Staging
-GRANT ALL ON TABLES TO dev_role;
-
-ALTER DEFAULT PRIVILEGES
-FOR ROLE dev_user
-IN SCHEMA Audit
-GRANT ALL ON TABLES TO dev_role;
-
-ALTER DEFAULT PRIVILEGES
-FOR ROLE dev_user
-IN SCHEMA Compliance
-GRANT ALL ON TABLES TO dev_role;
-
-
--- Finance team: read-only
-GRANT CONNECT ON DATABASE erp_db TO finance_readonly;
-GRANT USAGE ON SCHEMA Finance TO finance_readonly;
-GRANT SELECT ON ALL TABLES IN SCHEMA Finance TO finance_readonly;
-
--- Set defaults for future objects (for finance_readonly)
-ALTER DEFAULT PRIVILEGES
-FOR ROLE finance_readonly
-IN SCHEMA Finance
-GRANT SELECT ON TABLES TO finance_readonly;
-
--- Audit: read-only
-GRANT CONNECT ON DATABASE erp_db TO audit_role;
-GRANT USAGE ON SCHEMA Finance to audit_role;
-GRANT USAGE ON SCHEMA Audit to audit_role;
-GRANT SELECT ON ALL TABLES IN SCHEMA Finance to audit_role;
-GRANT SELECT ON ALL TABLES IN SCHEMA Audit to audit_role;
-
 -- Admin: full access
 GRANT ALL PRIVILEGES ON DATABASE erp_db TO admin_role;
+
 GRANT ALL PRIVILEGES ON SCHEMA Finance TO admin_role;
+
 GRANT ALL PRIVILEGES ON SCHEMA Staging TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Compliance TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Security TO admin_role;
 GRANT ALL PRIVILEGES ON SCHEMA Audit TO admin_role;
+
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO admin_role;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Audit TO admin_role;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Staging TO admin_role;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Compliance TO admin_role;
+
 GRANT ALL ON ALL SEQUENCES IN SCHEMA Finance TO admin_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA Audit TO admin_role;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA Staging TO admin_role;
@@ -120,27 +58,96 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
 GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
 
 
--- Run this as dev_user or a superuser
--- 1. If YOU (the superuser) create the tables:
--- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- -- Grant roles
+-- GRANT finance_readonly TO analyst;
+-- GRANT dev_role TO dev_user;
+-- GRANT admin_role TO admin_user;
+-- GRANT audit_role TO audit_user;
+
+-- -- Developer privileges
+-- GRANT CONNECT ON DATABASE erp_db TO dev_role;
+-- GRANT USAGE, CREATE ON SCHEMA Finance TO dev_role;
+-- GRANT USAGE, CREATE ON SCHEMA Staging TO dev_role;
+-- GRANT USAGE, CREATE ON SCHEMA Audit TO dev_role;
+-- GRANT USAGE, CREATE ON SCHEMA Compliance TO dev_role;
+
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Finance TO dev_role;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Audit TO dev_role;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Staging TO dev_role;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA Compliance TO dev_role;
+
+-- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Finance TO dev_role;
+-- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Finance TO dev_role;
+-- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Staging TO dev_role;
+-- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Staging TO dev_role;
+-- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Compliance TO dev_role;
+-- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Compliance TO dev_role;
+-- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA Audit TO dev_role;
+-- GRANT EXECUTE ON ALL PROCEDURES IN SCHEMA Audit TO dev_role;
+
+-- -- Set defaults for future objects (for dev_user)
+-- ALTER DEFAULT PRIVILEGES
+-- FOR ROLE dev_user
+-- IN SCHEMA Finance
+-- GRANT ALL ON TABLES TO dev_role;
+
+-- ALTER DEFAULT PRIVILEGES
+-- FOR ROLE dev_user
+-- IN SCHEMA Staging
+-- GRANT ALL ON TABLES TO dev_role;
+
+-- ALTER DEFAULT PRIVILEGES
+-- FOR ROLE dev_user
+-- IN SCHEMA Audit
+-- GRANT ALL ON TABLES TO dev_role;
+
+-- ALTER DEFAULT PRIVILEGES
+-- FOR ROLE dev_user
+-- IN SCHEMA Compliance
+-- GRANT ALL ON TABLES TO dev_role;
+
+
+-- -- Finance team: read-only
+-- GRANT CONNECT ON DATABASE erp_db TO finance_readonly;
+-- GRANT USAGE ON SCHEMA Finance TO finance_readonly;
+-- GRANT SELECT ON ALL TABLES IN SCHEMA Finance TO finance_readonly;
+
+-- -- Set defaults for future objects (for finance_readonly)
+-- ALTER DEFAULT PRIVILEGES
+-- FOR ROLE finance_readonly
+-- IN SCHEMA Finance
+-- GRANT SELECT ON TABLES TO finance_readonly;
+
+-- -- Audit: read-only
+-- GRANT CONNECT ON DATABASE erp_db TO audit_role;
+-- GRANT USAGE ON SCHEMA Finance to audit_role;
+-- GRANT USAGE ON SCHEMA Audit to audit_role;
+-- GRANT SELECT ON ALL TABLES IN SCHEMA Finance to audit_role;
+-- GRANT SELECT ON ALL TABLES IN SCHEMA Audit to audit_role;
+
+
+
+-- -- Run this as dev_user or a superuser
+-- -- 1. If YOU (the superuser) create the tables:
+-- -- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- -- GRANT ALL ON TABLES TO admin_role;
+
+-- -- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- -- GRANT ALL ON SEQUENCES TO admin_role;
+
+-- -- 2. If you plan to use 'dev_user' to create tables in the future:
+-- ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
 -- GRANT ALL ON TABLES TO admin_role;
 
--- ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA Finance 
+-- ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
 -- GRANT ALL ON SEQUENCES TO admin_role;
 
--- 2. If you plan to use 'dev_user' to create tables in the future:
-ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
-GRANT ALL ON TABLES TO admin_role;
-
-ALTER DEFAULT PRIVILEGES FOR ROLE dev_user IN SCHEMA Finance 
-GRANT ALL ON SEQUENCES TO admin_role;
-
--- app: Access
-GRANT CONNECT ON DATABASE erp_db TO erp_app;
-GRANT USAGE ON SCHEMA Finance TO erp_app;
-GRANT USAGE ON SCHEMA Staging TO erp_app;
-GRANT USAGE ON SCHEMA Audit TO erp_app;
-GRANT USAGE ON SCHEMA Compliance TO erp_app;
+-- -- app: Access
+-- GRANT CONNECT ON DATABASE erp_db TO erp_app;
+-- GRANT USAGE ON SCHEMA Finance TO erp_app;
+-- GRANT USAGE ON SCHEMA Staging TO erp_app;
+-- GRANT USAGE ON SCHEMA Audit TO erp_app;
+-- GRANT USAGE ON SCHEMA Compliance TO erp_app;
 
 \c erp_db
 
