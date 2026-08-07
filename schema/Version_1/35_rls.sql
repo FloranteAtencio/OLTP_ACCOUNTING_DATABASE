@@ -22,11 +22,11 @@ ALTER TABLE Finance.account_roles FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.account_properties FORCE ROW LEVEL SECURITY;
 
 -- Enable RLS on audit tables
-ALTER TABLE Audit.audit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Audit.transaction_lifecycle ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Audit.approval_chain ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Audit.reconciliation_tracking ENABLE ROW LEVEL SECURITY;
-ALTER TABLE Audit.record_lineage ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.audit_logs ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.transaction_lifecycle ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.approval_chain ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.reconciliation_tracking ENABLE ROW LEVEL SECURITY;
+-- ALTER TABLE Audit.record_lineage ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION Finance.get_current_client_id()
 RETURNS INT AS $$
