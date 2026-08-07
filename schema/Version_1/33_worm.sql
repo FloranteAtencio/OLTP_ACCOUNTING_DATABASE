@@ -58,7 +58,7 @@ BEGIN;
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE TRIGGER Guard_worms_import_session
-    BEFORE UPDATE OR DELETE ON Audit.import_sessions
+    BEFORE DELETE ON Audit.import_sessions
     FOR EACH ROW EXECUTE FUNCTION Audit.WORM();
 
     CREATE OR REPLACE FUNCTION Audit.WORM_exceptions()
