@@ -5,6 +5,9 @@
 
 BEGIN;
 
+DROP SCHEMA IF EXISTS dba_admin CASCADE;
+CREATE SCHEMA dba_admin;
+
 -- ============================================
 -- 1. USER & ROLE MANAGEMENT TABLES
 -- ============================================
