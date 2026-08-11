@@ -86,9 +86,8 @@ p_database_name, p_backup_type, p_backup_method, p_backup_path, p_pg_version, 'I
 )
 RETURNING backup_id INTO v_backup_id;
 
-```
 RETURN v_backup_id;
-```
+
 
 END;
 $$ LANGUAGE plpgsql;
@@ -112,11 +111,9 @@ checksum = p_checksum,
 error_message = p_error_msg
 WHERE backup_id = p_backup_id;
 
-```
 IF p_error_msg IS NOT NULL THEN
     RAISE WARNING 'Backup failed for ID %: %', p_backup_id, p_error_msg;
 END IF;
-```
 
 END;
 $$ LANGUAGE plpgsql;
