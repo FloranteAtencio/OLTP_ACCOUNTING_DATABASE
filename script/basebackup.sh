@@ -6,6 +6,7 @@ BACKUP_DIR="../backup"
 LOG_DIR="../log"
 LOG_FILE="$LOG_DIR/backup.log"
 
+
 CONTAINER_NAME="erp_postgres"
 DB_USER="erp_admin"
 
