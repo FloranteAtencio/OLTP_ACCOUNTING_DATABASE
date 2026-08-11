@@ -771,7 +771,7 @@ CREATE POLICY inventory_transfer_insert_own_client ON Finance.inventory_transfer
     WITH CHECK (
         product_id IN (
             SELECT product_id FROM Finance.inventory_transfers sr
-            WHERE sr.product_id (
+            WHERE sr.product_id IN  (
                 SELECT product_id FROM Finance.products ar
                 WHERE ar.client_id = Finance.get_current_client_id()
             )
@@ -784,7 +784,7 @@ CREATE POLICY inventory_transfer_update_own_client ON Finance.inventory_transfer
     USING (
         product_id IN (
             SELECT product_id FROM Finance.inventory_transfers sr
-            WHERE sr.product_id (
+            WHERE sr.product_id IN (
                 SELECT product_id FROM Finance.products ar
                 WHERE ar.client_id = Finance.get_current_client_id()
             )
@@ -793,7 +793,7 @@ CREATE POLICY inventory_transfer_update_own_client ON Finance.inventory_transfer
     WITH CHECK (
         product_id IN (
             SELECT product_id FROM Finance.inventory_transfers sr
-            WHERE sr.product_id (
+            WHERE sr.product_id IN (
                 SELECT product_id FROM Finance.products ar
                 WHERE ar.client_id = Finance.get_current_client_id()
             )
@@ -805,7 +805,7 @@ CREATE POLICY inventory_transfer_select_own_client ON Finance.inventory_transfer
     USING (
         product_id IN (
             SELECT product_id FROM Finance.inventory_transfers sr
-            WHERE sr.product_id (
+            WHERE sr.product_id IN (
                 SELECT product_id FROM Finance.products ar
                 WHERE ar.client_id = Finance.get_current_client_id()
             )
@@ -817,7 +817,7 @@ CREATE POLICY inventory_transfer_delete_own_client ON Finance.inventory_transfer
     USING (
         product_id IN (
             SELECT product_id FROM Finance.inventory_transfers sr
-            WHERE sr.product_id (
+            WHERE sr.product_id IN (
                 SELECT product_id FROM Finance.products ar
                 WHERE ar.client_id = Finance.get_current_client_id()
             )
