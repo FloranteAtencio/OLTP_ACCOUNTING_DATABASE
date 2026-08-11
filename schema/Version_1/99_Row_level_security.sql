@@ -53,12 +53,12 @@ $$ LANGUAGE plpgsql STABLE;
 
 CREATE POLICY coa_templates_admin ON Finance.coa_templates
     FOR ALL 
-    TO admin_role
+    TO admin_user
     USING(TRUE);
 
 CREATE POLICY coa_templates_accounts_admin ON Finance.coa_template_accounts
     FOR ALL
-    TO admin_role
+    TO admin_user
     USING(TRUE);
 
 -- Policy 1: Clients can only SELECT their own record
@@ -79,7 +79,7 @@ CREATE POLICY clients_update_own ON Finance.clients
 -- optional
 CREATE POLICY admin_insert_all ON Finance.clients
     FOR INSERT
-    TO admin_role
+    TO admin_user
     WITH CHECK (true); -- Allows admin to insert any row
 
 -- SELECT only charts for current client
