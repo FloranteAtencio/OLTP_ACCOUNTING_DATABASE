@@ -1,4 +1,4 @@
-docker-compose -f ./docker/docker-compose.prod.yml -p production up
+docker-compose -f ./docker/docker-compose.prod.yml -p production up -d
 
 docker exec -it erp_postgres chown postgres:postgres /var/lib/postgresql/wal_archive
 
