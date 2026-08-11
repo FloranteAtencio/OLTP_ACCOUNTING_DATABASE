@@ -920,8 +920,8 @@ CREATE POLICY import_detail_logs_select_own_client ON Audit.import_detail_logs
     TO app_user, admin_user
     WITH CHECK (
         detail_id IN (
-            SELECT detail_id FROM Audit.import_detail_logs is
-            WHERE is.session_id IN (
+            SELECT detail_id FROM Audit.import_detail_logs idl
+            WHERE idl.session_id IN (
                 SELECT session_id FROM Audit.import_sessions iss
                 WHERE iss.client_id = Finance.get_current_client_id()
             )
@@ -938,8 +938,8 @@ CREATE POLICY import_validation_log_insert_own_client ON Audit.import_validation
     TO app_user, admin_user
     WITH CHECK (
         validation_id IN (
-            SELECT validation_id FROM Audit.import_validation_log is
-            WHERE is.session_id IN (
+            SELECT validation_id FROM Audit.import_validation_log ivl
+            WHERE ivl.session_id IN (
                 SELECT session_id FROM Audit.import_sessions iss
                 WHERE iss.client_id = Finance.get_current_client_id()
             )
