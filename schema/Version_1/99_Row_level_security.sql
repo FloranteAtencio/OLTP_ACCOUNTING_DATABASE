@@ -716,7 +716,7 @@ CREATE POLICY purchase_return_insert_own_client ON Finance.purchase_returns
     );
 
 
-CREATE POLICY purchase_return_update_own_client ON Finance.urchase_returns_returns
+CREATE POLICY purchase_return_update_own_client ON Finance.purchase_returns
     FOR UPDATE
     USING (
         payable_id IN (
@@ -737,7 +737,7 @@ CREATE POLICY purchase_return_update_own_client ON Finance.urchase_returns_retur
         )
     );
 
-CREATE POLICY purchase_return_select_own_client ON Finance.purchase_returns_returns
+CREATE POLICY purchase_return_select_own_client ON Finance.purchase_returns
     FOR SELECT
     USING (
         payable_id IN (
