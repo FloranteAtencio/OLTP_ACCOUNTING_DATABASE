@@ -840,7 +840,7 @@ ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY record_lineage_select_own_client ON Audit.record_lineage
     FOR SELECT
-    TO audit_user, admin_user
+    TO auditor_user, admin_user
     USING (TRUE);
 
 CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.record_lineage
@@ -852,7 +852,7 @@ CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.record_lineage
 CREATE POLICY _select_own_client ON Audit.reconciliation_tracking
 
     FOR SELECT
-    TO audit_user, admin_user
+    TO auditor_user, admin_user
     USING (TRUE);
 
 CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.reconciliation_tracking
@@ -862,7 +862,7 @@ CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.reconciliation_
 
 CREATE POLICY approval_chain_select_own_client ON Audit.approval_chain
     FOR SELECT
-    TO audit_user, admin_user
+    TO auditor_user, admin_user
     USING (TRUE);
 
 CREATE POLICY approval_chain_insert_own_client ON Audit.approval_chain
@@ -872,7 +872,7 @@ CREATE POLICY approval_chain_insert_own_client ON Audit.approval_chain
 
 CREATE POLICY transaction_lifecycle_select_own_client ON Audit.transaction_lifecycle
     FOR SELECT
-    TO audit_user, admin_user
+    TO auditor_user, admin_user
     USING (TRUE);
 
 CREATE POLICY transaction_lifecycle_insert_own_client ON Audit.transaction_lifecycle
@@ -882,7 +882,7 @@ CREATE POLICY transaction_lifecycle_insert_own_client ON Audit.transaction_lifec
 
 CREATE POLICY audit_log_select_own_client ON Audit.audit_logs
     FOR SELECT
-    TO audit_user, admin_user
+    TO auditor_user, admin_user
     USING (TRUE);
 
 CREATE POLICY audit_log_insert_own_client ON Audit.audit_logs
@@ -892,7 +892,7 @@ CREATE POLICY audit_log_insert_own_client ON Audit.audit_logs
 
 CREATE POLICY audit_log_extended_select_own_client ON Audit.audit_logs_extended   
     FOR SELECT
-    to audit_id, admin_user
+    to auditor_user, admin_user
     USING (true);
 
 CREATE POLICY audit_log_extended_insert_own_client ON Audit.audit_logs_extended    
@@ -902,7 +902,7 @@ CREATE POLICY audit_log_extended_insert_own_client ON Audit.audit_logs_extended
 
 CREATE POLICY import_session_select_own_client ON Audit.import_sessions
     FOR SELECT
-    to audit_id, admin_user
+    to auditor_user, admin_user
     USING (true);
 
 CREATE POLICY import_session_insert_own_client ON Audit.import_sessions
@@ -912,7 +912,7 @@ CREATE POLICY import_session_insert_own_client ON Audit.import_sessions
 
 CREATE POLICY import_details_log_select_own_client ON Audit.import_detail_logs
     FOR SELECT
-    to audit_id, admin_user
+    to auditor_user, admin_user
     USING (true);
 
 CREATE POLICY import_detail_logs_select_own_client ON Audit.import_detail_logs
@@ -930,7 +930,7 @@ CREATE POLICY import_detail_logs_select_own_client ON Audit.import_detail_logs
 
 CREATE POLICY import_validation_log_select_own_client ON Audit.import_validation_log
     FOR SELECT
-    to audit_id, admin_user
+    to auditor_user, admin_user
     USING (true);
 
 CREATE POLICY import_validation_log_insert_own_client ON Audit.import_validation_log
@@ -952,7 +952,7 @@ ALTER TABLE Compliance.compliance_rules FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY compliance_logs_select_own_client ON Compliance.compliance_logs
     FOR SELECT
-    to audit_id, admin_user
+    to auditor_user, admin_user
     USING (true);
 
 CREATE POLICY compliance_logs_insert_own_client ON Compliance.compliance_logs
