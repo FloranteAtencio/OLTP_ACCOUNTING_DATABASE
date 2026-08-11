@@ -641,7 +641,7 @@ CREATE POLICY warehouses_update_policy ON Finance.warehouses
 -- Sales_returns insert, update and delete
 -- =========================================================
 
-CREATE POLICY Sales_return_insert_own_client ON Finance.sales_returns
+CREATE POLICY Sales_return_insert_own_client ON Finance.sale_returns
     FOR INSERT
     WITH CHECK (
         receivable_id IN (
@@ -654,7 +654,7 @@ CREATE POLICY Sales_return_insert_own_client ON Finance.sales_returns
     );
 
 
-CREATE POLICY Sales_return_update_own_client ON Finance.sales_returns
+CREATE POLICY Sales_return_update_own_client ON Finance.sale_returns
     FOR UPDATE
         USING (
         receivable_id IN (
@@ -675,7 +675,7 @@ CREATE POLICY Sales_return_update_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY Sales_return_select_own_client ON Finance.sales_returns
+CREATE POLICY Sales_return_select_own_client ON Finance.sale_returns
     FOR SELECT
     USING (
         receivable_id IN (
@@ -687,7 +687,7 @@ CREATE POLICY Sales_return_select_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY Sales_return_delete_own_client ON Finance.sales_returns
+CREATE POLICY Sales_return_delete_own_client ON Finance.sale_returns
     FOR DELETE
     USING (
         receivable_id IN (
@@ -716,7 +716,7 @@ CREATE POLICY purchase_return_insert_own_client ON Finance.purchase_returns
     );
 
 
-CREATE POLICY purchase_return_update_own_client ON Finance.sales_returns
+CREATE POLICY purchase_return_update_own_client ON Finance.urchase_returns_returns
     FOR UPDATE
     USING (
         payable_id IN (
@@ -737,7 +737,7 @@ CREATE POLICY purchase_return_update_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY purchase_return_select_own_client ON Finance.sales_returns
+CREATE POLICY purchase_return_select_own_client ON Finance.purchase_returns_returns
     FOR SELECT
     USING (
         payable_id IN (
@@ -749,7 +749,7 @@ CREATE POLICY purchase_return_select_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY purchase_return_delete_own_client ON Finance.sales_returns
+CREATE POLICY purchase_return_delete_own_client ON Finance.purchase_returns
     FOR DELETE
     USING (
         payable_id IN (
