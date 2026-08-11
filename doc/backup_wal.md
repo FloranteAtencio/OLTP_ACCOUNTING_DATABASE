@@ -13,3 +13,6 @@ docker exec -it erp_postgres \
 -c "SELECT pg_switch_wal();"
 
 docker logs erp_postgres
+
+
+Thank you
