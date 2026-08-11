@@ -3,6 +3,10 @@ wal_level = replica
 max_wal_senders = 10
 wal_keep_size = 1GB
 
+# Archiving
+archive_mode = on
+archive_command = 'cp %p /var/lib/postgresql/wal_archive/%f'
+
 # ===== PARTITIONING =====
 constraint_exclusion = partition
 

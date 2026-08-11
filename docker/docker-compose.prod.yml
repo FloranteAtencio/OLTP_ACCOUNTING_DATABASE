@@ -9,6 +9,7 @@ services:
       - "127.0.0.1:5432:5432"   # 🔒 LOCAL ONLY
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - wal_archive:/var/lib/postgresql/wal_archive
       - ../schema/Version_1:/docker-entrypoint-initdb.d
       - ../conf/postgres.conf.prod:/etc/postgresql/postgresql.conf
       - ../conf/pg_hba.conf.prod:/etc/postgresql/pg_hba.conf
@@ -23,6 +24,7 @@ services:
 
 volumes:
   pgdata:
-
+  wal_archive:
+  
 networks:
   erp_network:

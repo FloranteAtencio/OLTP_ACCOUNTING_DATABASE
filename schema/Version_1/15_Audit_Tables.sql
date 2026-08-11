@@ -53,7 +53,6 @@ CREATE TABLE Audit.import_sessions (
     notes TEXT
 );
 
-
 DROP TABLE IF EXISTS Audit.import_detail_logs CASCADE;
 CREATE TABLE Audit.import_detail_logs (
     detail_id BIGSERIAL PRIMARY KEY,

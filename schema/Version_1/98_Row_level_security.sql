@@ -29,21 +29,6 @@ ALTER TABLE Finance.purchase_returns FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.sale_returns FORCE ROW LEVEL SECURITY;
 ALTER TABLE Finance.inventory_transfers FORCE ROW LEVEL SECURITY;
 
--- Enable RLS on audit tables
--- ALTER TABLE Audit.audit_logs FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.audit_logs_extended FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.transaction_lifecycle FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.approval_chain FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.reconciliation_tracking FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.import_detail_logs FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.import_validation_log FORCE ROW LEVEL SECURITY;
--- ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
-
---compliance Enable RLS on audit tables
---ALTER TABLE Compliance.compliance_logs FORCE ROW LEVEL SECURITY;
---ALTER TABLE Compliance.compliance_rules FORCE ROW LEVEL SECURITY;
-
 --ALTER TABLE Staging.import_workflows FORCE ROW LEVEL SECURITY;
 --ALTER TABLE Staging.stg_ar_imports FORCE ROW LEVEL SECURITY;
 --ALTER TABLE Staging.import_approvals FORCE ROW LEVEL SECURITY;
@@ -289,33 +274,6 @@ CREATE POLICY inventory_audits_select_by_client ON Finance.inventory_audits
             WHERE client_id = Finance.get_current_client_id()
         )
     );
-
--- -- Audit Logs (allow all)
--- CREATE POLICY audit_logs_select_auditors ON Audit.audit_logs
---     FOR SELECT
---     USING (true);  -- Auditors see everything
-
--- -- Transaction Lifecycle
--- CREATE POLICY transaction_lifecycle_select_by_client ON Audit.transaction_lifecycle
---     FOR SELECT
---     USING (client_id = Finance.get_current_client_id());
-
--- -- Approval Chain
--- CREATE POLICY approval_chain_select_by_client ON Audit.approval_chain
---     FOR SELECT
---     USING (client_id = Finance.get_current_client_id());
-
--- -- Reconciliation Tracking
--- CREATE POLICY reconciliation_tracking_select_by_client ON Audit.reconciliation_tracking
---     FOR SELECT
---     USING (client_id = Finance.get_current_client_id());
-
--- -- Record Lineage
--- CREATE POLICY record_lineage_select_by_client ON Audit.record_lineage
---     FOR SELECT
---     USING (
---         COALESCE(client_id, Finance.get_current_client_id()) = Finance.get_current_client_id()
---     );
 
 -- ============================================
 -- MISSING: INSERT, UPDATE, DELETE for ar_ext
@@ -687,10 +645,10 @@ CREATE POLICY Sales_return_insert_own_client ON Finance.sales_returns
     FOR INSERT
     WITH CHECK (
         receivable_id IN (
-            SELECT receivable_id FROM Finance.sale_returns sr
-            WHERE sr.receivable_id (
-                SELECT receivable_id FROM Finance.account_receivables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT receivable_id FROM Finance.account_receivables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -700,19 +658,19 @@ CREATE POLICY Sales_return_update_own_client ON Finance.sales_returns
     FOR UPDATE
         USING (
         receivable_id IN (
-            SELECT receivable_id FROM Finance.sale_returns sr
-            WHERE sr.receivable_id (
-                SELECT receivable_id FROM Finance.account_receivables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT receivable_id FROM Finance.account_receivables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     )
     WITH CHECK (
         receivable_id IN (
-            SELECT receivable_id FROM Finance.sale_returns sr
-            WHERE sr.receivable_id (
-                SELECT receivable_id FROM Finance.account_receivables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT receivable_id FROM Finance.account_receivables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -721,10 +679,10 @@ CREATE POLICY Sales_return_select_own_client ON Finance.sales_returns
     FOR SELECT
     USING (
         receivable_id IN (
-            SELECT receivable_id FROM Finance.sale_returns sr
-            WHERE sr.receivable_id (
-                SELECT receivable_id FROM Finance.account_receivables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT receivable_id FROM Finance.account_receivables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -733,10 +691,10 @@ CREATE POLICY Sales_return_delete_own_client ON Finance.sales_returns
     FOR DELETE
     USING (
         receivable_id IN (
-            SELECT receivable_id FROM Finance.sale_returns sr
-            WHERE sr.receivable_id (
-                SELECT receivable_id FROM Finance.account_receivables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT receivable_id FROM Finance.account_receivables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -745,14 +703,14 @@ CREATE POLICY Sales_return_delete_own_client ON Finance.sales_returns
 -- Purchase_returns insert, update and delete
 -- =========================================================
 
-CREATE POLICY purchase_return_insert_own_client ON Finance.sales_returns
+CREATE POLICY purchase_return_insert_own_client ON Finance.purchase_returns
     FOR INSERT
     WITH CHECK (
         payable_id IN (
-            SELECT payable_id FROM Finance.purchase_returns sr
-            WHERE sr.payable_id (
-                SELECT payable_id FROM Finance.account_payables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -762,19 +720,19 @@ CREATE POLICY purchase_return_update_own_client ON Finance.sales_returns
     FOR UPDATE
     USING (
         payable_id IN (
-            SELECT payable_id FROM Finance.purchase_returns sr
-            WHERE sr.payable_id (
-                SELECT payable_id FROM Finance.account_payables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     )
     WITH CHECK (
         payable_id IN (
-            SELECT payable_id FROM Finance.purchase_returns sr
-            WHERE sr.payable_id (
-                SELECT payable_id FROM Finance.account_payables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -783,10 +741,10 @@ CREATE POLICY purchase_return_select_own_client ON Finance.sales_returns
     FOR SELECT
     USING (
         payable_id IN (
-            SELECT payable_id FROM Finance.purchase_returns sr
-            WHERE sr.payable_id (
-                SELECT payable_id FROM Finance.account_payables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -795,10 +753,10 @@ CREATE POLICY purchase_return_delete_own_client ON Finance.sales_returns
     FOR DELETE
     USING (
         payable_id IN (
-            SELECT payable_id FROM Finance.purchase_returns sr
-            WHERE sr.payable_id (
-                SELECT payable_id FROM Finance.account_payables ar
-                WHERE ar.client_id = Finance.get_current_client_id()
+            SELECT payable_id FROM Finance.account_payables ap
+            WHERE ap.transaction_id IN (
+                SELECT transaction_id FROM Finance.transactions 
+                WHERE client_id = Finance.get_current_client_id()
             )
         )
     );
@@ -808,7 +766,7 @@ CREATE POLICY purchase_return_delete_own_client ON Finance.sales_returns
 -- Purchase_returns insert, update and delete
 -- =========================================================
 
-CREATE POLICY inventory_transfer_insert_own_client ON Finance.sales_returns
+CREATE POLICY inventory_transfer_insert_own_client ON Finance.inventory_transfers
     FOR INSERT
     WITH CHECK (
         product_id IN (
@@ -821,7 +779,7 @@ CREATE POLICY inventory_transfer_insert_own_client ON Finance.sales_returns
     );
 
 
-CREATE POLICY inventory_transfer_update_own_client ON Finance.sales_returns
+CREATE POLICY inventory_transfer_update_own_client ON Finance.inventory_transfers
     FOR UPDATE
     USING (
         product_id IN (
@@ -842,7 +800,7 @@ CREATE POLICY inventory_transfer_update_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY inventory_transfer_select_own_client ON Finance.sales_returns
+CREATE POLICY inventory_transfer_select_own_client ON Finance.inventory_transfers    
     FOR SELECT
     USING (
         product_id IN (
@@ -854,7 +812,7 @@ CREATE POLICY inventory_transfer_select_own_client ON Finance.sales_returns
         )
     );
 
-CREATE POLICY inventory_transfer_delete_own_client ON Finance.sales_returns
+CREATE POLICY inventory_transfer_delete_own_client ON Finance.inventory_transfers
     FOR DELETE
     USING (
         product_id IN (
@@ -865,5 +823,141 @@ CREATE POLICY inventory_transfer_delete_own_client ON Finance.sales_returns
             )
         )
     );
+
+
+
+-- Enable RLS on audit tables
+ALTER TABLE Audit.audit_logs FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.audit_logs_extended FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.import_sessions FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.transaction_lifecycle FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.approval_chain FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.reconciliation_tracking FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.import_detail_logs FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.import_validation_log FORCE ROW LEVEL SECURITY;
+ALTER TABLE Audit.record_lineage FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY record_lineage_select_own_client ON Audit.record_lineage
+    FOR SELECT
+    TO audit_user, admin_user
+    USING (TRUE);
+
+CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.record_lineage
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+
+CREATE POLICY _select_own_client ON Audit.reconciliation_tracking
+
+    FOR SELECT
+    TO audit_user, admin_user
+    USING (TRUE);
+
+CREATE POLICY reconciliation_tracking_insert_own_client ON Audit.reconciliation_tracking
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY approval_chain_select_own_client ON Audit.approval_chain
+    FOR SELECT
+    TO audit_user, admin_user
+    USING (TRUE);
+
+CREATE POLICY approval_chain_insert_own_client ON Audit.approval_chain
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY transaction_lifecycle_select_own_client ON Audit.transaction_lifecycle
+    FOR SELECT
+    TO audit_user, admin_user
+    USING (TRUE);
+
+CREATE POLICY transaction_lifecycle_insert_own_client ON Audit.transaction_lifecycle
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY audit_log_select_own_client ON Audit.audit_logs
+    FOR SELECT
+    TO audit_user, admin_user
+    USING (TRUE);
+
+CREATE POLICY audit_log_insert_own_client ON Audit.audit_logs
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (true);
+
+CREATE POLICY audit_log_extended_select_own_client ON Audit.audit_logs_extended   
+    FOR SELECT
+    to audit_id, admin_user
+    USING (true);
+
+CREATE POLICY audit_log_extended_insert_own_client ON Audit.audit_logs_extended    
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY import_session_select_own_client ON Audit.import_sessions
+    FOR SELECT
+    to audit_id, admin_user
+    USING (true);
+
+CREATE POLICY import_session_insert_own_client ON Audit.import_sessions
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
+
+CREATE POLICY import_details_log_select_own_client ON Audit.import_detail_logs
+    FOR SELECT
+    to audit_id, admin_user
+    USING (true);
+
+CREATE POLICY import_detail_logs_select_own_client ON Audit.import_detail_logs
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (
+        detail_id IN (
+            SELECT detail_id FROM Audit.import_detail_logs is
+            WHERE is.session_id IN (
+                SELECT session_id FROM Audit.import_sessions iss
+                WHERE iss.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+CREATE POLICY import_validation_log_select_own_client ON Audit.import_validation_log
+    FOR SELECT
+    to audit_id, admin_user
+    USING (true);
+
+CREATE POLICY import_validation_log_insert_own_client ON Audit.import_validation_log
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (
+        validation_id IN (
+            SELECT validation_id FROM Audit.import_validation_log is
+            WHERE is.session_id IN (
+                SELECT session_id FROM Audit.import_sessions iss
+                WHERE iss.client_id = Finance.get_current_client_id()
+            )
+        )
+    );
+
+--compliance Enable RLS on audit tables
+ALTER TABLE Compliance.compliance_logs FORCE ROW LEVEL SECURITY;
+ALTER TABLE Compliance.compliance_rules FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY compliance_logs_select_own_client ON Compliance.compliance_logs
+    FOR SELECT
+    to audit_id, admin_user
+    USING (true);
+
+CREATE POLICY compliance_logs_insert_own_client ON Compliance.compliance_logs
+    FOR INSERT
+    TO app_user, admin_user
+    WITH CHECK (client_id = Finance.get_current_client_id());
 
 COMMIT;
