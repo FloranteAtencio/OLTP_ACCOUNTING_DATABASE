@@ -10,7 +10,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - wal_archive:/var/lib/postgresql/wal_archive
-      - ../../recovery:/var/lib/postgresql/data
       - ../schema/Version_1:/docker-entrypoint-initdb.d
       - ../conf/postgres.conf.prod:/etc/postgresql/postgresql.conf
       - ../conf/pg_hba.conf.prod:/etc/postgresql/pg_hba.conf
