@@ -14,5 +14,6 @@ docker exec -it erp_postgres \
 
 docker logs erp_postgres
 
+docker-compose logs postgres | grep -iE "(error|warning|recovery|restore|target)"
 
 Thank you
