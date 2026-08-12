@@ -1,3 +1,4 @@
+BEGIN;
 
 -- Get compliance violations
 DROP FUNCTION IF EXISTS Compliance.get_compliance_violations(INT, INT) CASCADE;
@@ -24,10 +25,14 @@ BEGIN
         cl.details::TEXT,
         cl.checked_at,
         COALESCE(cl.resolution_status, 'UNRESOLVED')::VARCHAR
-    FROM Compliance.compliance_log cl
+    FROM Compliance.compliance_logs cl
     WHERE cl.client_id = p_client_id
         AND cl.status != 'PASS'
         AND cl.checked_at >= CURRENT_TIMESTAMP - (p_days || ' days')::INTERVAL
     ORDER BY cl.checked_at DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+COMMIT;
+
+SELECT '29 Compliance violations log' AS STATUS;

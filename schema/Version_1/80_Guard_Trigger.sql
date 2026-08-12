@@ -17,7 +17,8 @@ BEGIN
     END IF;
     
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+;
 -- 1
 CREATE TRIGGER Guard_audit_transactions
 BEFORE INSERT OR UPDATE OR DELETE ON Finance.transactions
@@ -101,4 +102,4 @@ FOR EACH ROW EXECUTE FUNCTION Audit.Guard_trigger();--chart_id);
 
 COMMIT;
 
-SELECT 'Guard Triggers Complete' AS STATUS;
+SELECT '32 Guard Triggers Complete' AS STATUS;

@@ -1,3 +1,5 @@
+BEGIN;
+
 -- ============================================
 -- 7. COMPLETE AUDIT QUERY FUNCTIONS
 -- ============================================
@@ -50,7 +52,8 @@ BEGIN
     
     ORDER BY event_time DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Get reconciliation report
 DROP FUNCTION IF EXISTS Finance.get_reconciliation_report(INT, DATE, DATE) CASCADE;
@@ -84,7 +87,8 @@ BEGIN
         AND rt.reconciliation_date BETWEEN p_from_date AND p_to_date
     ORDER BY rt.reconciliation_date DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Get record lineage
 DROP FUNCTION IF EXISTS Finance.get_record_lineage(VARCHAR, INT) CASCADE;
@@ -112,5 +116,9 @@ BEGIN
     FROM Finance.record_lineage rl
     WHERE rl.table_name = p_table_name AND rl.record_id = p_record_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
+
+COMMIT;
+
+SELECT '21 Audit trail output' AS STATUS;

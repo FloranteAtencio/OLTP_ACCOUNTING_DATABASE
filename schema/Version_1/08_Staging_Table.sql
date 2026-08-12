@@ -2,8 +2,6 @@ SELECT 'Staging table schema start!' as  Status;
 
 BEGIN;
 
-CREATE SCHEMA Staging;
-
 -- 1. STAGING TABLE
 CREATE TABLE IF NOT EXISTS Staging.stg_ar_imports(
     id BIGSERIAL PRIMARY KEY,
@@ -47,4 +45,4 @@ CREATE TABLE IF NOT EXISTS Staging.import_approvals (
 
 COMMIT;
 
-SELECT 'Staging table schema complete!' as  Status;
+SELECT '08 Staging table schema complete!' as  Status;

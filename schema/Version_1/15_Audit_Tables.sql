@@ -1,7 +1,5 @@
 BEGIN;
 
-CREATE SCHEMA Audit;
-
 -- =========================================================
 -- Audit
 -- Loging
@@ -55,7 +53,6 @@ CREATE TABLE Audit.import_sessions (
     notes TEXT
 );
 
-
 DROP TABLE IF EXISTS Audit.import_detail_logs CASCADE;
 CREATE TABLE Audit.import_detail_logs (
     detail_id BIGSERIAL PRIMARY KEY,
@@ -67,6 +64,20 @@ CREATE TABLE Audit.import_detail_logs (
     error_message TEXT,
     warning_message TEXT,
     created_record_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DROP TABLE IF EXISTS Audit.import_validation_log CASCADE;
+CREATE TABLE Audit.import_validation_log (
+    validation_id BIGSERIAL PRIMARY KEY,
+    session_id INT REFERENCES Audit.import_sessions(session_id) ON DELETE NO ACTION,
+    row_number INT NOT NULL,
+    field_name VARCHAR(255) NOT NULL,
+    validation_rule VARCHAR(255) NOT NULL,
+    expected_value TEXT,
+    actual_value TEXT,
+    is_valid BOOLEAN NOT NULL,
+    severity VARCHAR(20) DEFAULT 'ERROR' CHECK (severity IN ('ERROR', 'WARNING', 'INFO')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -148,7 +159,6 @@ CREATE TABLE Audit.record_lineage (
     is_original BOOLEAN DEFAULT TRUE
 );
 
-
 COMMIT;
 
-SELECT 'Audit Schema Tables Complete' as Status;
+SELECT '15 Audit Schema Tables Complete' as Status;

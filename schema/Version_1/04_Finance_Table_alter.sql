@@ -2,25 +2,28 @@
 -- 04 Table alters
 -- 
 -- ======================
-
 BEGIN;
+ALTER TABLE Finance.vendors ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+ALTER TABLE Finance.customers ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+ALTER TABLE Finance.products ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
+ALTER TABLE Finance.warehouses ADD COLUMN client_id INT NOT NULL REFERENCES Finance.clients(client_id) ON DELETE CASCADE;
 
-ALTER TABLE Finance.warehouses ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
+ALTER TABLE Finance.customers ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.vendors ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.products ALTER COLUMN client_id SET NOT NULL;
+ALTER TABLE Finance.Warehouses ALTER COLUMN client_id SET NOT NULL;
 
-ALTER TABLE Finance.operations ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
+-- Add created_at timestamps
+ALTER TABLE Finance.customers ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE Finance.vendors ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE Finance.warehouses ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE Finance.products ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
-ALTER TABLE Finance.vendors ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
-
-ALTER TABLE Finance.customers ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
-
-ALTER TABLE Finance.inventory_audits ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
-
-ALTER TABLE Finance.products ADD COLUMN client_id INT REFERENCES Finance.clients (client_id);
-
+-- Add client settings
 ALTER TABLE Finance.clients 
-    ADD inventory_method VARCHAR(20) CHECK ( inventory_method IN ('PERPETUAL','PERIODIC')),
-    ADD inventory_cost_method VARCHAR(20) CHECK ( inventory_cost_method IN ('FIFO','LIFO','AVCO'));
+    ADD COLUMN inventory_method VARCHAR(20) CHECK (inventory_method IN ('PERPETUAL','PERIODIC')),
+    ADD COLUMN inventory_cost_method VARCHAR(20) CHECK (inventory_cost_method IN ('FIFO','LIFO','AVCO'));
 
 COMMIT;
 
-SELECT 'Finance Schema Table alter complete!' as  Status;
+SELECT '04 Finance Schema Table alter complete!' as  Status;

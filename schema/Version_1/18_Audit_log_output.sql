@@ -38,7 +38,8 @@ BEGIN
     ORDER BY s.started_at DESC
     LIMIT p_limit;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Function to get failed imports
 DROP FUNCTION IF EXISTS Audit.get_failed_imports(INT, INT) CASCADE;
@@ -69,7 +70,7 @@ BEGIN
     ORDER BY idl.created_at DESC
     LIMIT p_limit;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Function to get user audit trail
 DROP FUNCTION IF EXISTS Audit.get_user_audit_trail(VARCHAR, INT) CASCADE;
@@ -101,8 +102,8 @@ BEGIN
         AND ale.changed_at >= CURRENT_TIMESTAMP - (p_days || ' days')::INTERVAL
     ORDER BY ale.changed_at DESC;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 COMMIT;
 
-SELECT 'Audit Schema get report complete' as STATUS;
+SELECT '18 Audit Schema get report complete' as STATUS;

@@ -1,3 +1,4 @@
+BEGIN;
 
 -- ============================================
 -- 4. VALIDATION REPORTING
@@ -24,4 +25,8 @@ BEGIN
     FROM Finance.import_validation_log
     WHERE session_id = p_session_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+COMMIT;
+
+SELECT '26 Compliance validation reporting' AS STATUS;

@@ -23,14 +23,15 @@ BEGIN
     SET
         new_state = 'REJECT',
         previous_state = 'DRAFT'
-    WHERE a.session_id = new_session_id;
+    WHERE a.session_id = new_session_id AND (a.new_state = 'DRAFT' AND a.previous_state IS NULL) OR (  a.new_state = 'PENDING' AND a.previous_state = 'DRAFT');
 
 EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import workflows Rejection Failed % ', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
 
-SELECT 'Staging Schema import data reject complete' as Status;
+SELECT '13 Staging Schema import data reject complete' as Status;

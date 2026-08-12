@@ -6,15 +6,10 @@ AS $$
 DECLARE
     r RECORD;
     new_previous_state VARCHAR(50);
-
+    new_previous_hash VARCHAR(50);
 BEGIN    
 
     SET LOCAL app.allow_direct_insert = 'true';
-    
-    SELECT new_state INTO new_previous_state
-    FROM Staging.import_workflows a
-    WHERE a.session_id = p_session_id
-    LIMIT 1;
     
     FOR r IN
         SELECT a.*
@@ -24,6 +19,7 @@ BEGIN
           AND validation_status = 'VALID'
           AND b.new_state = 'APPROVE_L3'
     LOOP
+        
         CALL Finance.ar_transaction(
             r.client_code::INT,
             r.customer_code::INT,
@@ -33,19 +29,60 @@ BEGIN
             r.status::VARCHAR,
             gen_random_uuid()::TEXT
         );
-    END LOOP;
     
+        SELECT row_hash
+        INTO new_previous_hash
+        FROM Audit.record_lineage
+        ORDER BY lineage_id DESC
+        LIMIT 1
+        FOR UPDATE;
+        
+        INSERT INTO Audit.record_lineage (
+            table_name, 
+            record_id, 
+            client_id, 
+            source_type, 
+            source_file, 
+            import_session_id, 
+            created_by,
+            prev_hash, 
+            row_hash
+        ) VALUES (
+            'stg_ar_import', 
+            r.id, 
+            r.client_code::INT, 
+            'SPREADSHEET_IMPORT',
+            current_setting('app.import_source_file', TRUE),
+            p_session_id::INT,
+            current_user,
+            new_previous_hash,
+            md5(
+                COALESCE(new_previous_hash,'')
+                || p_session_id
+                || 'stg_ar_import'
+                || 'SPREADSHEET_IMPORT'
+                || r.id
+                || current_user
+            )
+        );
+
+    END LOOP;
+        
+    -- IF current_setting('app.import_session_id', TRUE) IS NOT NULL THEN
+
+
     UPDATE Staging.import_workflows
     SET new_state = 'POSTED',
-        previous_state = new_previous_state
+        previous_state = 'APPROVE_L3'
     WHERE session_id = p_session_id AND new_state = 'APPROVE_L3';
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging post for ar import failed : % ', SQLERRM;
+        RAISE EXCEPTION 'Staging post_ar_import failed : % ', SQLERRM;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 CREATE OR REPLACE PROCEDURE Staging.import_workflow_posting(
     IN p_session_id INT
@@ -79,10 +116,12 @@ BEGIN
 
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE EXCEPTION 'Staging main post transaction failed : % ', SQLERRM;
+        RAISE EXCEPTION 'Staging.import_workflow_posting failed : % ', SQLERRM;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+
 COMMIT;
 
-SELECT 'Staging Schema import data posting complete' as Status;
+SELECT '14 Staging Schema import data posting complete' as Status;

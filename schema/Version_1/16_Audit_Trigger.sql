@@ -53,7 +53,8 @@ BEGIN
     RETURN v_audit_id;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- ============================================
 -- Seperated Functions
@@ -104,7 +105,8 @@ BEGIN
     );
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- ============================================
 -- Seperated Functions
@@ -271,7 +273,8 @@ BEGIN
 
     END IF;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 -- 1
 CREATE TRIGGER audit_transactions
 AFTER INSERT OR UPDATE OR DELETE ON Finance.transactions
@@ -353,11 +356,10 @@ CREATE TRIGGER charts_changes
 AFTER INSERT OR UPDATE OR DELETE ON Finance.charts
 FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(chart_id);
 
--- CREATE TRIGGER ar_import_changes
--- AFTER INSERT ON Staging.stg_ar_imports
--- FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
-
+CREATE TRIGGER ar_import_changes
+AFTER UPDATE OR DELETE ON Staging.stg_ar_imports
+FOR EACH ROW EXECUTE FUNCTION Audit.fn_extended_audit_trigger(id);
 
 COMMIT;
 
-SELECT 'Audit Schema Trigger complete!' AS Status;
+SELECT '16 Audit Schema Trigger complete!' AS Status;

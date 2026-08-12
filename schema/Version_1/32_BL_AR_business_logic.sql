@@ -1,3 +1,4 @@
+BEGIN;
 
 -- ============================================
 -- 6. JOURNAL ENTRY PROCEDURE
@@ -33,7 +34,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Journal entry failed: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- ============================================
 -- 7. AR TRANSACTION PROCEDURE (FULLY FIXED)
@@ -214,4 +216,9 @@ BEGIN
         END;
     END LOOP;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+
+COMMIT;
+
+SELECT '32 AR BUSINESS LOGIC' AS STATUS;

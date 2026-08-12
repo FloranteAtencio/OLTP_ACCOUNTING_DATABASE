@@ -6,9 +6,10 @@ services:
     env_file:
       - ../.env.dev
     ports:
-      - "5432:5432"   # 🔒 LOCAL ONLY
+      - "5433:5432"   # 🔒 LOCAL ONLY
     volumes:
       - dev_pgdata:/var/lib/postgresql/data
+      - ../schema/Version_1:/docker-entrypoint-initdb.d
       - ../conf/postgres.conf.dev:/etc/postgresql/postgresql.conf
       - ../conf/pg_hba.conf.dev:/etc/postgresql/pg_hba.conf
     command:

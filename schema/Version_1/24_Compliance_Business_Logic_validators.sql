@@ -5,7 +5,6 @@
 
 BEGIN;
 
-
 -- Customer exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_customer_exists(INT) CASCADE;
 CREATE FUNCTION Compliance.validate_customer_exists(p_customer_id INT)
@@ -17,7 +16,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Customer ID does not exist: ' || p_customer_id::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Vendor exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_vendor_exists(INT) CASCADE;
@@ -30,7 +30,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Vendor ID does not exist: ' || p_vendor_id::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Product exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_product_exists(INT) CASCADE;
@@ -43,7 +44,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Product ID does not exist: ' || p_product_id::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Warehouse exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_warehouse_exists(INT) CASCADE;
@@ -56,7 +58,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Warehouse ID does not exist: ' || p_warehouse_id::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Account exists validator
 DROP FUNCTION IF EXISTS Compliance.validate_account_exists(INT) CASCADE;
@@ -69,7 +72,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Account ID does not exist or is inactive: ' || p_chart_id::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Transaction balance validator (debit = credit)
 DROP FUNCTION IF EXISTS Compliance.validate_transaction_balance(INT) CASCADE;
@@ -93,7 +97,8 @@ BEGIN
             v_debit, v_credit;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Invoice date <= due date validator
 DROP FUNCTION IF EXISTS Compliance.validate_invoice_due_dates(DATE, DATE) CASCADE;
@@ -106,7 +111,8 @@ BEGIN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Receivable overdue check
 DROP FUNCTION IF EXISTS Compliance.is_receivable_overdue(DATE) CASCADE;
@@ -115,7 +121,8 @@ RETURNS BOOLEAN AS $$
 BEGIN
     RETURN p_due_date < CURRENT_DATE;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+ 
 
 -- Payable overdue check
 DROP FUNCTION IF EXISTS Compliance.is_payable_overdue(DATE) CASCADE;
@@ -124,4 +131,10 @@ RETURNS BOOLEAN AS $$
 BEGIN
     RETURN p_due_date < CURRENT_DATE;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+
+
+COMMIT;
+
+SELECT '24 Compliance business logic validation' AS STATUS;

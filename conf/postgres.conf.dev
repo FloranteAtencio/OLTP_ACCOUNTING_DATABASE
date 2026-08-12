@@ -32,3 +32,6 @@ checkpoint_completion_target = 0.7
 log_connections = on
 log_disconnections = on
 log_line_prefix = '%t [%p] %u@%d '
+
+#=== local_host ==
+listen_addresses = '*'

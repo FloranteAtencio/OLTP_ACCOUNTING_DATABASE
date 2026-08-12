@@ -6,9 +6,10 @@ services:
     env_file:
       - ../.env.staging
     ports:
-      - "5432:5432"   # 🔒 LOCAL ONLY
+      - "5434:5432"   # 🔒 LOCAL ONLY
     volumes:
       - staging_pgdata:/var/lib/postgresql/data
+      - ../schema/Version_1:/docker-entrypoint-initdb.d
       - ../conf/postgres.conf.stagin:/etc/postgresql/postgresql.conf
       - ../conf/pg_hba.conf.stagin:/etc/postgresql/pg_hba.conf
     command:

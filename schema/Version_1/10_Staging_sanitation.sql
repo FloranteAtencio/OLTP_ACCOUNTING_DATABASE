@@ -25,7 +25,7 @@ BEGIN
         WHEN OTHERS THEN
             RAISE EXCEPTION 'Table verifications failed : %', SQLERRM;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- =====================================
 -- add more procedure for sanitation for each staging table
@@ -36,35 +36,66 @@ CREATE OR REPLACE PROCEDURE Staging.ar_sanitation(
 )
 LANGUAGE plpgsql as $$
 DECLARE
+    collect_errors TEXT[] := ARRAY[]::TEXT[];
+    r RECORD;
 BEGIN
 
-    UPDATE Staging.stg_ar_imports s
-    SET 
-        validation_status = CASE 
-            WHEN b.customer_id IS NULL THEN 'INVALID'
-            WHEN c.client_id IS NULL THEN 'INVALID'
-            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'INVALID'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'INVALID'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-            ELSE 'VALID'
-        END,
-        validation_errors = CASE 
-            WHEN b.customer_id IS NULL THEN 'Customer not found'
-            WHEN c.client_id IS NULL THEN 'Client not found'
-            WHEN s.amount !~ '^\.?\d+(\.\d+)?$' THEN 'Invalid amount format'
-            WHEN s.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'  
-            WHEN s.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 'Invalid Date'
-            WHEN s.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 'INVALID'
-            ELSE NULL
-        END
-    FROM Finance.clients c,
-        Finance.customers b
-    WHERE
-        c.client_id = s.client_code::INT
-    AND b.customer_id = s.customer_code::INT
-    AND s.session_id = p_session_id
-    AND s.validation_status = 'DRAFT';
+    FOR r IN    
+        SELECT *
+        FROM Staging.stg_ar_imports a
+        WHERE a.session_id = p_session_id
+    LOOP
+
+        IF NOT EXISTS ( SELECT 1 FROM Finance.customers z WHERE z.customer_id = r.customer_code::INT ) THEN 
+            collect_errors := array_append(collect_errors, 'Customer not found');
+        END IF;
+
+        IF NOT EXISTS ( SELECT 1 FROM Finance.clients z WHERE z.client_id = r.client_code::INT )  THEN 
+            collect_errors := array_append(collect_errors, 'Client not found');
+        
+        END IF;
+        
+        IF r.amount !~ '^\.?\d+(\.\d+)?$' THEN 
+            collect_errors := array_append(collect_errors,'Invalid amount format');
+        END IF;
+        
+        IF r.invoice_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
+            collect_errors := array_append(collect_errors,'Invalid Date');  
+        END IF;
+        
+        IF r.due_date !~ '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$' THEN 
+            collect_errors := array_append(collect_errors,'Invalid Date');
+        END IF;
+
+        IF r.status NOT IN ('Pending', 'Paid', 'Overdue','Returned','Partially Returned','Partially Paid') THEN 
+            collect_errors := array_append(collect_errors,'INVALID Status');
+        END IF;
+
+        UPDATE Staging.stg_ar_imports s
+        SET 
+            validation_status = 
+                CASE 
+                WHEN
+                    array_length(collect_errors,1) IS NULL THEN 
+                        'VALID' 
+                ELSE 
+                        'INVALID' 
+                END ,
+            validation_errors = 
+                CASE 
+                WHEN
+                    array_length(collect_errors,1) IS NULL THEN 
+                        NULL  
+                    ELSE 
+                        array_to_string(collect_errors, '; ')
+                END
+        WHERE s.session_id = p_session_id
+        AND s.validation_status = 'DRAFT'
+        AND s.id = r.id;
+        
+        collect_errors := ARRAY[]::TEXT[];
+
+    END LOOP;
 
     UPDATE Staging.import_workflows a
     SET
@@ -82,7 +113,8 @@ EXCEPTION
         RAISE EXCEPTION 'Account Receivables Sanitations Failed: %', SQLERRM;
 
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- =====================================
 -- the main staging work flow santation
@@ -130,7 +162,8 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Staging import sanitation failed for session %: %', p_session_id, SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
-SELECT 'Staging Schema data sanitation complete' as Status;
+SELECT '10 Staging Schema data sanitation complete' as Status;

@@ -13,7 +13,8 @@ BEGIN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Phone validator
 DROP FUNCTION IF EXISTS Compliance.validate_phone(VARCHAR) CASCADE;
@@ -28,7 +29,8 @@ BEGIN
         RETURN QUERY SELECT TRUE::BOOLEAN, ''::TEXT;
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Decimal amount validator
 DROP FUNCTION IF EXISTS Compliance.validate_decimal_amount(VARCHAR) CASCADE;
@@ -48,7 +50,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Invalid decimal format: ' || p_amount::TEXT, NULL::DECIMAL;
     END;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Integer quantity validator
 DROP FUNCTION IF EXISTS Compliance.validate_integer_quantity(VARCHAR) CASCADE;
@@ -68,7 +71,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Invalid integer format: ' || p_quantity::TEXT, NULL::INT;
     END;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 -- Date validator
 DROP FUNCTION IF EXISTS Compliance.validate_date(VARCHAR) CASCADE;
@@ -88,6 +92,8 @@ BEGIN
         RETURN QUERY SELECT FALSE::BOOLEAN, 'Invalid date format: ' || p_date::TEXT, NULL::DATE;
     END;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
 
 COMMIT;
+SELECT '27 Compliance data type validators' AS STATUS;

@@ -31,4 +31,4 @@ CREATE INDEX idx_record_lineage_session ON Audit.record_lineage(import_session_i
 
 COMMIT;
 
-SELECT 'Audit Schema indexs Complete' as Status;
+SELECT '17 Audit Schema indexs Complete' as Status;

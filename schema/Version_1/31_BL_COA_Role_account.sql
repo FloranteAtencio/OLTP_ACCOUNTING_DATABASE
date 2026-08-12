@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE OR REPLACE PROCEDURE Finance.assign_account_role(
     IN p_account_description TEXT,
     IN p_role_name TEXT
@@ -26,7 +28,7 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'Failed to apply role: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- ====================================================
 -- COA TEMPLATE
@@ -37,7 +39,9 @@ CREATE OR REPLACE PROCEDURE Finance.apply_coa_template(
 )
 LANGUAGE plpgsql AS $$
 BEGIN
+
     SET LOCAL app.allow_direct_insert = 'true';
+
     PERFORM 1
     FROM Finance.clients
     WHERE client_id = p_clientId
@@ -61,4 +65,9 @@ EXCEPTION
     WHEN OTHERS THEN
         RAISE EXCEPTION 'COA Transaction Failed to apply template: %', SQLERRM;
 END;
-$$;
+$$ SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
+
+
+COMMIT;
+
+SELECT '31 COA ROLE ACCOUNT' AS STATUS;

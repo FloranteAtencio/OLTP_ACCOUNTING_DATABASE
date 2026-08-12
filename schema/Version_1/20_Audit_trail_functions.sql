@@ -1,3 +1,5 @@
+BEGIN;
+
 -- ============================================
 -- 6. AUDIT TRAIL FUNCTIONS
 -- ============================================
@@ -35,7 +37,7 @@ BEGIN
     
     RETURN v_lifecycle_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Record approval
 DROP FUNCTION IF EXISTS Audit.record_approval(INT, INT, INT, VARCHAR, VARCHAR, VARCHAR, TEXT) CASCADE;
@@ -63,7 +65,7 @@ BEGIN
     
     RETURN v_approval_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
 -- Record lineage
 DROP FUNCTION IF EXISTS Audit.record_lineage_entry(VARCHAR, INT, INT, VARCHAR, VARCHAR, INT, INT, VARCHAR) CASCADE;
@@ -91,5 +93,8 @@ BEGIN
     
     RETURN v_lineage_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = Finance, Audit, Compliance, Security, Staging, pg_catalog;
 
+COMMIT;
+
+SELECT '20 Audit trail functions' AS STATUS;
