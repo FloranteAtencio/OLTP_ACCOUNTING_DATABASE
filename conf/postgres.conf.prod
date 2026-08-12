@@ -50,7 +50,7 @@ listen_addresses = '*'
 restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'
 
 # Target time for recovery (Must be in the future relative to base backup, but before now)
-# recovery_target_time = '2026-08-12 08:03:18.288 GMT'
+recovery_target_time = '2026-08-12 08:39:27 GMT'
 
 # Action after reaching target: promote to primary and accept writes
 recovery_target_action = 'promote'
