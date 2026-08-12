@@ -24,7 +24,7 @@ log_statement = 'all'
 log_min_duration_statement = 1000
 log_duration = on
 logging_collector = off
-
+timezone = 'UTC'
 # ===== CHECKPOINTS =====
 checkpoint_timeout = 15min
 checkpoint_completion_target = 0.9
@@ -47,13 +47,13 @@ listen_addresses = '*'
 
 # ===== RECOVERY SETTINGS =====
 # Fetch WAL files from the archive during startup
-restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'
+#restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'
 
 # Target time for recovery (Must be in the future relative to base backup, but before now)
-# recovery_target_time = '2026-08-12 17:06:00 GMT'
+#recovery_target_time = '2026-08-12 07:04:00 GMT'
 
 # Action after reaching target: promote to primary and accept writes
-recovery_target_action = 'promote'
+#recovery_target_action = 'promote'
 
 # Ensure we stay in recovery mode until the target is hit
-recovery_target_inclusive = 'true'
+#recovery_target_inclusive = 'true'
