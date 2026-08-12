@@ -7,3 +7,4 @@ docker exec -it erp_postgres chmod 700 /var/lib/postgresql/wal_archive
 docker restart erp_postgres
 
 docker exec -i erp_postgres psql -U erp_admin -d erp_db < ./tmp/DATA/data_sample.sql
+
