@@ -395,18 +395,55 @@ This system simulates a real Accounting backend where:
 
 ## 📌 Road Map
 
-* High Availability (HA)
-* Disaster Recovery (DR)
-* Logical replication
-* Backup strategies
-* Query tuning with EXPLAIN ANALYZE
-* PostgreSQL extensions
-* Row-Level Security (RLS)
-* Database migrations
-* CI/CD for database deployments
-* Performance benchmarking
-* Monitoring with tools like pg_stat_statements
-* Event-driven architectures and messaging
-* Archiving
+CORE DATABASE DEVELOPMENT
+        │
+        ├── SQL / PostgreSQL
+        ├── Data Modeling
+        ├── PL/pgSQL
+        ├── Indexes
+        ├── Partitioning
+        ├── Transactions
+        │
+        ↓
+SECURITY
+        │
+        ├── RBAC
+        ├── RLS
+        ├── Auditing
+        ├── SECURITY DEFINER
+        └── search_path
+        │
+        ↓
+BACKUP / RECOVERY
+        │
+        ├── Base Backup
+        ├── WAL
+        ├── Archiving
+        ├── PITR
+        └── Bash + Cron
+        │
+        ↓
+⭐ PERFORMANCE / MAINTENANCE ← NEXT
+        │
+        ├── VACUUM
+        ├── ANALYZE
+        ├── Autovacuum
+        ├── EXPLAIN
+        ├── Query Optimization
+        ├── Index Optimization
+        ├── Locks / Blocking
+        └── Monitoring
+        │
+        ↓
+DATA WAREHOUSING
+        │
+        ├── Dimensional Modeling
+        ├── Star Schema
+        ├── ETL / ELT
+        ├── SCD
+        └── Incremental Loads
+        │
+        ↓
+DATA ENGINEERING / CLOUD
 
 ---
