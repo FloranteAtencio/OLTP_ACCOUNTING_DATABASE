@@ -46,14 +46,8 @@ log_statement = 'all'
 listen_addresses = '*'
 
 # ===== RECOVERY SETTINGS =====
-# Fetch WAL files from the archive during startup
 restore_command = 'cp /var/lib/postgresql/wal_archive/%f %p'
-
-# Target time for recovery (Must be in the future relative to base backup, but before now)
-recovery_target_time = '2026-08-12 04:39:27'
-
-# Action after reaching target: promote to primary and accept writes
+recovery_target_time = '2026-08-12 18:21:22'  # <-- CHANGE THIS to your Baseline Time
 recovery_target_action = 'promote'
+#recovery_target_inclusive = 'true'
 
-# Ensure we stay in recovery mode until the target is hit
-recovery_target_inclusive = 'true'
