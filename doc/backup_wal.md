@@ -1,8 +1,9 @@
 # Postgresql 15.17 Base Back Up and PITR
 
 #pg_hba.conf
-#make sure this is coded
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
+make sure this is coded
+
+TYPE  DATABASE        USER            ADDRESS                 METHOD
 local   replication     <any_user>                               trust
 
 ## yaml 
