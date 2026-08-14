@@ -423,7 +423,7 @@ BACKUP / RECOVERY
         └── Bash + Cron
         │
         ↓
-⭐ PERFORMANCE / MAINTENANCE ← NEXT
+⭐ PERFORMANCE / MAINTENANCE 
         │
         ├── VACUUM
         ├── ANALYZE
@@ -431,7 +431,7 @@ BACKUP / RECOVERY
         ├── EXPLAIN
         ├── Query Optimization
         ├── Index Optimization
-        ├── Locks / Blocking
+        ├── Locks / Blocking ← NEXT
         └── Monitoring
         │
         ↓
