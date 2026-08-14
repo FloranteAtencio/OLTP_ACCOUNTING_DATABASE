@@ -394,7 +394,7 @@ This system simulates a real Accounting backend where:
 ---
 
 ## 📌 Road Map
-
+```
 CORE DATABASE DEVELOPMENT
         │
         ├── SQL / PostgreSQL
@@ -447,3 +447,4 @@ DATA WAREHOUSING
 DATA ENGINEERING / CLOUD
 
 ---
+```
