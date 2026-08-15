@@ -431,11 +431,11 @@ BACKUP / RECOVERY
         ├── EXPLAIN
         ├── Query Optimization
         ├── Index Optimization
-        ├── Locks / Blocking ← NEXT
+        ├── Locks / Blocking
         └── Monitoring
         │
         ↓
-DATA WAREHOUSING
+DATA WAREHOUSING  ← NEXT
         │
         ├── Dimensional Modeling
         ├── Star Schema
