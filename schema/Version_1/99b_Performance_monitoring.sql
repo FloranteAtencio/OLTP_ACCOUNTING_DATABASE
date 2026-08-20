@@ -134,8 +134,8 @@ BEGIN
     
     -- Disk usage
     SELECT 
-        ROUND((pg_database_size('accounting_db')::NUMERIC / 
-        (SELECT pg_total_relation_size('accounting_db'::regclass) * 1.2)) * 100, 2)
+        ROUND((pg_database_size('erp_db')::NUMERIC / 
+        (SELECT pg_total_relation_size('erp_db'::regclass) * 1.2)) * 100, 2)
     INTO v_disk_usage;
     INSERT INTO dba_admin.performance_metrics (metric_name, metric_value, measurement_unit, status)
     VALUES ('disk_space_used', COALESCE(v_disk_usage, 0), 'percent',

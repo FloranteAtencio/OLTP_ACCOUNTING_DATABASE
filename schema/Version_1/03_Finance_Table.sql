@@ -293,6 +293,32 @@ CREATE TABLE IF NOT EXISTS Finance.event_log (
     processed_at TIMESTAMP
 );    
 
+
+DROP TABLE IF EXISTS 
+CREATE TABLE IF NOT EXISTS Finance.ar_product_line(
+
+    ar_line_id BIGSERIAL PRIMARY KEY
+    invoice_id TEXT,
+    product_id INT NOT NULL REFERENCES Finance.products(product_id),
+    receivable_id INT NOT NULL REFERENCES Finance.acount_receivables(receivable_id) ON DELETE NO ACTION,
+    quantity INT,
+    discount DECIMAL(10,2),
+    UNIQUE(invoice_id)
+
+);
+
+DROP TABLE IF EXISTS Finance.tax_types CASCADE;
+CREATE TABLE Finance.tax_types (
+    tax_type_id BIGSERIAL PRIMARY KEY,
+    client_id INT NOT NULL REFERENCES Finance.clients(client_id),
+    chart_id INT NOT NULL REFERENCES Finance.charts(chart_id), -- The Liability Account (e.g., "VAT Payable")
+    tax_name VARCHAR(100) NOT NULL,
+    tax_code VARCHAR(50) NOT NULL, -- e.g., "VAT_OUT", "VAT_IN"
+    tax_rate DECIMAL(5,4) NOT NULL, -- Just a reference rate, not used for calculation logic
+    is_active BOOLEAN DEFAULT TRUE,
+    UNIQUE(client_id, tax_code)
+);
+
 COMMIT;
 
 SELECT '03 Finance Schema Table Complete!' as  Status;

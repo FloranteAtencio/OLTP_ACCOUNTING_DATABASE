@@ -1,3 +1,4 @@
+
 BEGIN;
 
 SELECT 'Payroll table loading';
